@@ -1,6 +1,6 @@
 package com.dohman.holdempucker.cards
 
 class Card {
-    val suit: Suits? = null
-    val rank: Int? = null
+    var suit: Suits? = null
+    var rank: Int? = null
 }
