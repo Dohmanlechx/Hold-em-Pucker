@@ -12,20 +12,19 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
     private var pickedCard: Card = cardDeck.first()
     lateinit var currentCard: Card
 
-    private var teamTop = mutableListOf<Card>()
-    private var teamBottom = mutableListOf<Card>()
+    private val teamTop = arrayOfNulls<Card>(6)
+    private val teamBottom = arrayOfNulls<Card>(6)
 
     /*  Index 0 = Left forward | 1 = Center | 2 = Right forward
                 3 = Left defender | 4 = Right defender
-                            5 = Goalie
-    */
+                            5 = Goalie                          */
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_game)
         setOnClickListeners()
 
-        showRandomCard()
+        showPickedCard()
         letPlayerChooseSpot()
     }
 
@@ -42,43 +41,46 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
             R.id.card_bm_forward_left -> {
                 if (card_bm_forward_left.drawable != null) return
                 card_bm_forward_left.setImageResource(resIdOfCard(currentCard))
-                teamBottom.add(0, currentCard)
+                teamBottom[0] = currentCard
                 takeNewCardFromDeck()
             }
             R.id.card_bm_center -> {
                 if (card_bm_center.drawable != null) return
                 card_bm_center.setImageResource(resIdOfCard(currentCard))
-                teamBottom.add(1, currentCard)
+                teamBottom[1] = currentCard
                 takeNewCardFromDeck()
             }
             R.id.card_bm_forward_right -> {
                 if (card_bm_forward_right.drawable != null) return
                 card_bm_forward_right.setImageResource(resIdOfCard(currentCard))
-                teamBottom.add(2, currentCard)
+                teamBottom[2] = currentCard
                 takeNewCardFromDeck()
             }
             R.id.card_bm_defender_left -> {
                 if (card_bm_defender_left.drawable != null) return
                 card_bm_defender_left.setImageResource(resIdOfCard(currentCard))
-                teamBottom.add(3, currentCard)
+                teamBottom[3] = currentCard
                 takeNewCardFromDeck()
             }
             R.id.card_bm_defender_right -> {
                 if (card_bm_defender_right.drawable != null) return
                 card_bm_defender_right.setImageResource(resIdOfCard(currentCard))
-                teamBottom.add(4, currentCard)
+                teamBottom[4] = currentCard
                 takeNewCardFromDeck()
             }
         }
     }
 
-    private fun showRandomCard() {
+    private fun showPickedCard() {
+        if (!isGoalieThere(pickedCard)) { // If returned false, goalie is added
+            takeNewCardFromDeck()
+            return
+        }
+
         pickedCard.let {
             card_picked.setImageResource(resIdOfCard(it))
             currentCard = it
-            cardDeck.remove(it)
-            pickedCard = cardDeck.first()
-            cards_left.text = cardDeck.size.toString()
+            removeCardFromDeck()
         }
 
         if (cardDeck.isEmpty()) {
@@ -86,9 +88,23 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
         }
     }
 
+    private fun removeCardFromDeck() {
+        cardDeck.remove(pickedCard)
+        pickedCard = cardDeck.first()
+        cards_left.text = cardDeck.size.toString()
+    }
+
     private fun takeNewCardFromDeck() {
         card_picked.setImageDrawable(null)
-        showRandomCard()
+        showPickedCard()
+    }
+
+    private fun isGoalieThere(goalieCard: Card): Boolean {
+        teamBottom.let { if (!it.all { element -> element == null }) return true else it[5] = goalieCard }
+        card_bm_goalie.setImageResource(R.drawable.red_back)
+        removeCardFromDeck()
+
+        return false // But goalie is added now
     }
 
     private fun letPlayerChooseSpot() {
