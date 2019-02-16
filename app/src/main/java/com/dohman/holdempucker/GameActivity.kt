@@ -23,12 +23,37 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
 
     private fun setOnClickListeners() {
         card_bm_forward_left.setOnClickListener(this)
+        card_bm_center.setOnClickListener(this)
+        card_bm_forward_right.setOnClickListener(this)
+        card_bm_defender_left.setOnClickListener(this)
+        card_bm_defender_right.setOnClickListener(this)
     }
 
     override fun onClick(v: View) {
         when (v.id) {
             R.id.card_bm_forward_left -> {
+                if (card_bm_forward_left.drawable != null) return
                 card_bm_forward_left.setImageResource(resIdOfCard(currentCard))
+                clearPickedCard()
+            }
+            R.id.card_bm_center -> {
+                if (card_bm_center.drawable != null) return
+                card_bm_center.setImageResource(resIdOfCard(currentCard))
+                clearPickedCard()
+            }
+            R.id.card_bm_forward_right -> {
+                if (card_bm_forward_right.drawable != null) return
+                card_bm_forward_right.setImageResource(resIdOfCard(currentCard))
+                clearPickedCard()
+            }
+            R.id.card_bm_defender_left -> {
+                if (card_bm_defender_left.drawable != null) return
+                card_bm_defender_left.setImageResource(resIdOfCard(currentCard))
+                clearPickedCard()
+            }
+            R.id.card_bm_defender_right -> {
+                if (card_bm_defender_right.drawable != null) return
+                card_bm_defender_right.setImageResource(resIdOfCard(currentCard))
                 clearPickedCard()
             }
         }
@@ -42,9 +67,16 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
             pickedCard = cardDeck.first()
             cards_left.text = cardDeck.size.toString()
         }
+
+        if (cardDeck.isEmpty()) {
+            //halfTime() // FIXME
+        }
     }
 
-    private fun clearPickedCard() = card_picked.setImageDrawable(null)
+    private fun clearPickedCard() {
+        card_picked.setImageDrawable(null)
+        showRandomCard()
+    }
 
     private fun letPlayerChooseSpot() {
 
