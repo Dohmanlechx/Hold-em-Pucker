@@ -34,27 +34,27 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
             R.id.card_bm_forward_left -> {
                 if (card_bm_forward_left.drawable != null) return
                 card_bm_forward_left.setImageResource(resIdOfCard(currentCard))
-                clearPickedCard()
+                takeNewCardFromDeck()
             }
             R.id.card_bm_center -> {
                 if (card_bm_center.drawable != null) return
                 card_bm_center.setImageResource(resIdOfCard(currentCard))
-                clearPickedCard()
+                takeNewCardFromDeck()
             }
             R.id.card_bm_forward_right -> {
                 if (card_bm_forward_right.drawable != null) return
                 card_bm_forward_right.setImageResource(resIdOfCard(currentCard))
-                clearPickedCard()
+                takeNewCardFromDeck()
             }
             R.id.card_bm_defender_left -> {
                 if (card_bm_defender_left.drawable != null) return
                 card_bm_defender_left.setImageResource(resIdOfCard(currentCard))
-                clearPickedCard()
+                takeNewCardFromDeck()
             }
             R.id.card_bm_defender_right -> {
                 if (card_bm_defender_right.drawable != null) return
                 card_bm_defender_right.setImageResource(resIdOfCard(currentCard))
-                clearPickedCard()
+                takeNewCardFromDeck()
             }
         }
     }
@@ -73,7 +73,7 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
         }
     }
 
-    private fun clearPickedCard() {
+    private fun takeNewCardFromDeck() {
         card_picked.setImageDrawable(null)
         showRandomCard()
     }
