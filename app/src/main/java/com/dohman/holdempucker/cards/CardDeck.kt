@@ -1,7 +1,7 @@
 package com.dohman.holdempucker.cards
 
 class CardDeck {
-    private val cardDeck = mutableListOf<Card>()
+    val cardDeck = mutableListOf<Card>()
 
     init {
         initializeCards()
