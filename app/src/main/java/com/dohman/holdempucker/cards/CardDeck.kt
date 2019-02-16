@@ -1,13 +1,14 @@
 package com.dohman.holdempucker.cards
 
 class CardDeck {
+    private val cardDeck = mutableListOf<Card>()
 
     init {
         initializeCards()
+        cardDeck.shuffle()
     }
 
     private fun initializeCards(): List<Card> {
-        val cardDeck = mutableListOf<Card>()
         enumValues<Suits>().forEach { suit ->
             suit.let {
                 for (i in 2..14) {
@@ -19,13 +20,12 @@ class CardDeck {
                 }
             }
         }
-
+        
         return cardDeck
     }
 
     private fun getImageStr(suit: Suits, rank: Int): String {
         val suitFirstChar: Char = suit.toString().first().toLowerCase()
-
         val rankAsStr: String = if (rank <= 10) {
             rank.toString()
         } else {
