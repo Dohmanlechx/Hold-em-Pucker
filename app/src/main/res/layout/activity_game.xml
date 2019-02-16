@@ -1,100 +1,100 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/board"
-        tools:context=".GameActivity">
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:background="@color/board"
+	tools:context=".GameActivity">
 
-    <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/card_bm_center"
-            android:layout_width="70dp"
-            android:layout_height="110dp"
-            android:src="@drawable/ca"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:elevation="100dp"
-            app:layout_constraintVertical_bias="0.60"
-            android:visibility="invisible"
-            tools:visibility="visible"/>
+	<androidx.appcompat.widget.AppCompatTextView
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		app:layout_constraintBottom_toTopOf="@id/card_bm_center"
+		app:layout_constraintStart_toStartOf="parent"
+		tools:text="Cards left: 52" />
 
-    <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/card_bm_forward_left"
-            android:layout_width="70dp"
-            android:layout_height="110dp"
-            android:layout_marginEnd="10dp"
-            android:src="@drawable/ca"
-            app:layout_constraintEnd_toStartOf="@id/card_bm_center"
-            app:layout_constraintTop_toTopOf="@id/card_bm_center"
-            android:elevation="100dp"
-            android:visibility="invisible"
-            tools:visibility="visible"/>
+	<androidx.appcompat.widget.AppCompatImageView
+		android:id="@+id/card_bm_center"
+		android:layout_width="70dp"
+		android:layout_height="110dp"
+		android:background="@drawable/image_border"
+		android:elevation="100dp"
+		android:padding="1dp"
+		app:layout_constraintBottom_toBottomOf="parent"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toTopOf="parent"
+		app:layout_constraintVertical_bias="0.60" />
 
-    <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/card_bm_forward_right"
-            android:layout_width="70dp"
-            android:layout_height="110dp"
-            android:layout_marginEnd="10dp"
-            android:src="@drawable/ca"
-            android:layout_marginStart="10dp"
-            app:layout_constraintStart_toEndOf="@id/card_bm_center"
-            app:layout_constraintTop_toTopOf="@id/card_bm_center"
-            android:elevation="100dp"
-            android:visibility="invisible"
-            tools:visibility="visible"/>
+	<androidx.appcompat.widget.AppCompatImageView
+		android:id="@+id/card_bm_forward_left"
+		android:layout_width="70dp"
+		android:layout_height="110dp"
+		android:layout_marginEnd="10dp"
+		android:background="@drawable/image_border"
+		android:elevation="100dp"
+		android:padding="1dp"
+		app:layout_constraintEnd_toStartOf="@id/card_bm_center"
+		app:layout_constraintTop_toTopOf="@id/card_bm_center" />
 
-    <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guideline"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="visible"
-            android:orientation="vertical"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintGuide_percent="0.5"/>
+	<androidx.appcompat.widget.AppCompatImageView
+		android:id="@+id/card_bm_forward_right"
+		android:layout_width="70dp"
+		android:layout_height="110dp"
+		android:layout_marginStart="10dp"
+		android:layout_marginEnd="10dp"
+		android:background="@drawable/image_border"
+		android:elevation="100dp"
+		android:padding="1dp"
+		app:layout_constraintStart_toEndOf="@id/card_bm_center"
+		app:layout_constraintTop_toTopOf="@id/card_bm_center" />
 
-    <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/card_bm_defender_left"
-            android:layout_width="70dp"
-            android:layout_height="110dp"
-            android:layout_marginEnd="5dp"
-            android:src="@drawable/ca"
-            app:layout_constraintEnd_toEndOf="@id/guideline"
-            app:layout_constraintTop_toBottomOf="@id/card_bm_center"
-            android:layout_marginTop="10dp"
-            android:elevation="100dp"
-            android:visibility="invisible"
-            tools:visibility="visible"/>
+	<androidx.constraintlayout.widget.Guideline
+		android:id="@+id/guideline"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:orientation="vertical"
+		android:visibility="visible"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintGuide_percent="0.5"
+		app:layout_constraintStart_toStartOf="parent" />
 
-    <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/card_bm_defender_right"
-            android:layout_width="70dp"
-            android:layout_height="110dp"
-            android:src="@drawable/ca"
-            android:layout_marginStart="5dp"
-            app:layout_constraintStart_toEndOf="@id/guideline"
-            app:layout_constraintTop_toBottomOf="@id/card_bm_center"
-            android:layout_marginTop="10dp"
-            android:elevation="100dp"
-            android:visibility="invisible"
-            tools:visibility="visible"/>
+	<androidx.appcompat.widget.AppCompatImageView
+		android:id="@+id/card_bm_defender_left"
+		android:layout_width="70dp"
+		android:layout_height="110dp"
+		android:layout_marginTop="10dp"
+		android:layout_marginEnd="5dp"
+		android:background="@drawable/image_border"
+		android:elevation="100dp"
+		android:padding="1dp"
+		app:layout_constraintEnd_toEndOf="@id/guideline"
+		app:layout_constraintTop_toBottomOf="@id/card_bm_center" />
 
-    <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/card_bm_goalie"
-            android:layout_width="110dp"
-            android:layout_height="70dp"
-            android:src="@drawable/red_back"
-            android:layout_marginStart="5dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/card_bm_defender_left"
-            android:layout_marginTop="10dp"
-            android:elevation="100dp"
-            android:visibility="invisible"
-            tools:visibility="visible"/>
+	<androidx.appcompat.widget.AppCompatImageView
+		android:id="@+id/card_bm_defender_right"
+		android:layout_width="70dp"
+		android:layout_height="110dp"
+		android:layout_marginStart="5dp"
+		android:layout_marginTop="10dp"
+		android:background="@drawable/image_border"
+		android:elevation="100dp"
+		android:padding="1dp"
+		app:layout_constraintStart_toEndOf="@id/guideline"
+		app:layout_constraintTop_toBottomOf="@id/card_bm_center" />
+
+	<androidx.appcompat.widget.AppCompatImageView
+		android:id="@+id/card_bm_goalie"
+		android:layout_width="110dp"
+		android:layout_height="70dp"
+		android:layout_marginStart="5dp"
+		android:layout_marginTop="10dp"
+		android:background="@drawable/image_border"
+		android:elevation="100dp"
+		android:padding="1dp"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toBottomOf="@id/card_bm_defender_left" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
