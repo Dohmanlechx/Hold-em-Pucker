@@ -12,6 +12,14 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
     private var pickedCard: Card = cardDeck.first()
     lateinit var currentCard: Card
 
+    private var teamTop = mutableListOf<Card>()
+    private var teamBottom = mutableListOf<Card>()
+
+    /*  Index 0 = Left forward | 1 = Center | 2 = Right forward
+                3 = Left defender | 4 = Right defender
+                            5 = Goalie
+    */
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_game)
@@ -34,26 +42,31 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
             R.id.card_bm_forward_left -> {
                 if (card_bm_forward_left.drawable != null) return
                 card_bm_forward_left.setImageResource(resIdOfCard(currentCard))
+                teamBottom.add(0, currentCard)
                 takeNewCardFromDeck()
             }
             R.id.card_bm_center -> {
                 if (card_bm_center.drawable != null) return
                 card_bm_center.setImageResource(resIdOfCard(currentCard))
+                teamBottom.add(1, currentCard)
                 takeNewCardFromDeck()
             }
             R.id.card_bm_forward_right -> {
                 if (card_bm_forward_right.drawable != null) return
                 card_bm_forward_right.setImageResource(resIdOfCard(currentCard))
+                teamBottom.add(2, currentCard)
                 takeNewCardFromDeck()
             }
             R.id.card_bm_defender_left -> {
                 if (card_bm_defender_left.drawable != null) return
                 card_bm_defender_left.setImageResource(resIdOfCard(currentCard))
+                teamBottom.add(3, currentCard)
                 takeNewCardFromDeck()
             }
             R.id.card_bm_defender_right -> {
                 if (card_bm_defender_right.drawable != null) return
                 card_bm_defender_right.setImageResource(resIdOfCard(currentCard))
+                teamBottom.add(4, currentCard)
                 takeNewCardFromDeck()
             }
         }
