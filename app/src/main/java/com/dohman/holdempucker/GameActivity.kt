@@ -3,6 +3,8 @@ package com.dohman.holdempucker
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
 import com.dohman.holdempucker.cards.Card
 import com.dohman.holdempucker.cards.CardDeck
 import kotlinx.android.synthetic.main.activity_game.*
@@ -22,6 +24,8 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_game)
+        val vm = ViewModelProviders.of(this).get(GameViewModel::class.java)
+
         setOnClickListeners()
 
         showPickedCard()
