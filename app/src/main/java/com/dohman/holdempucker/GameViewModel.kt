@@ -14,24 +14,33 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     val pickedCardNotifier = MutableLiveData<Int>()
     val cardsCountNotifier = MutableLiveData<Int>()
 
+    val nfyTopGoalie = MutableLiveData<Boolean>() // FIXME notify for team top
+
     val nfyBtmGoalie = MutableLiveData<Boolean>()
+    val nfyBtmLeftDefender = MutableLiveData<Card>()
+    val nfyBtmRightDefender = MutableLiveData<Card>()
+    val nfyBtmLeftForward = MutableLiveData<Card>()
+    val nfyBtmCenter = MutableLiveData<Card>()
+    val nfyBtmRightForward = MutableLiveData<Card>()
 
     init {
         showPickedCard()
     }
 
-    // Private functions
-    private fun setResIdForNewPickedCard() {
+    // ----- Notify functions ----- //
+    private fun notifyPickedCard() {
         pickedCardNotifier.value = resIdOfCard(pickedCard)
     }
 
-    private fun setGoalie(isBottom: Boolean) {
+    private fun notifyGoalie(isBottom: Boolean) {
         when (isBottom) {
             true -> nfyBtmGoalie.value = true
+            false -> nfyTopGoalie.value = true
         }
-
     }
 
+
+    // ----- Private functions ----- //
     private fun removeCardFromDeck() {
         cardDeck.remove(pickedCard)
         pickedCard = cardDeck.first()
@@ -39,20 +48,20 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     private fun takeNewCardFromDeck() {
-        //pickedCard = null
+        //pickedCard = null // FIXME: Needed?
         showPickedCard()
     }
 
     private fun isGoalieThere(goalieCard: Card, team: Array<Card?>): Boolean {
-        team.let { if (!it.all { element -> element == null}) return true else it[5] = goalieCard }
-        setGoalie(isBottom = true)
+        team.let { if (!it.all { element -> element == null }) return true else it[5] = goalieCard }
+        notifyGoalie(isBottom = true)
         removeCardFromDeck()
 
         return false // But goalie is added now
     }
 
-    // Public functions
 
+    // ----- Public functions ----- //
     fun showPickedCard() {
         if (!isGoalieThere(pickedCard, GameActivity.teamBottom)) { // If returned false, goalie is added
             takeNewCardFromDeck()
@@ -60,7 +69,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         }
 
         pickedCard.let {
-            setResIdForNewPickedCard()
+            notifyPickedCard()
             currentCard = it
             removeCardFromDeck()
         }

@@ -30,8 +30,6 @@
 		android:layout_width="70dp"
 		android:layout_height="110dp"
 		android:background="@drawable/image_border"
-		android:elevation="100dp"
-		android:padding="1dp"
 		app:layout_constraintBottom_toBottomOf="parent"
 		app:layout_constraintEnd_toEndOf="parent"
 		app:layout_constraintStart_toStartOf="parent"
@@ -45,7 +43,6 @@
 		android:layout_marginEnd="10dp"
 		android:background="@drawable/image_border"
 		android:elevation="100dp"
-		android:padding="1dp"
 		app:layout_constraintEnd_toStartOf="@id/card_bm_center"
 		app:layout_constraintTop_toTopOf="@id/card_bm_center" />
 
@@ -56,8 +53,6 @@
 		android:layout_marginStart="10dp"
 		android:layout_marginEnd="10dp"
 		android:background="@drawable/image_border"
-		android:elevation="100dp"
-		android:padding="1dp"
 		app:layout_constraintStart_toEndOf="@id/card_bm_center"
 		app:layout_constraintTop_toTopOf="@id/card_bm_center" />
 
@@ -78,8 +73,6 @@
 		android:layout_marginTop="10dp"
 		android:layout_marginEnd="5dp"
 		android:background="@drawable/image_border"
-		android:elevation="100dp"
-		android:padding="1dp"
 		app:layout_constraintEnd_toEndOf="@id/guideline"
 		app:layout_constraintTop_toBottomOf="@id/card_bm_center" />
 
@@ -90,8 +83,6 @@
 		android:layout_marginStart="5dp"
 		android:layout_marginTop="10dp"
 		android:background="@drawable/image_border"
-		android:elevation="100dp"
-		android:padding="1dp"
 		app:layout_constraintStart_toEndOf="@id/guideline"
 		app:layout_constraintTop_toBottomOf="@id/card_bm_center" />
 
@@ -102,8 +93,6 @@
 		android:layout_marginStart="5dp"
 		android:layout_marginTop="10dp"
 		android:background="@drawable/image_border"
-		android:elevation="100dp"
-		android:padding="1dp"
 		app:layout_constraintEnd_toEndOf="parent"
 		app:layout_constraintStart_toStartOf="parent"
 		app:layout_constraintTop_toBottomOf="@id/card_bm_defender_left" />

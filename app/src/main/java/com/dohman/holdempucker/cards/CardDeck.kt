@@ -20,7 +20,7 @@ class CardDeck {
                 }
             }
         }
-        
+
         return cardDeck
     }
 
@@ -38,9 +38,5 @@ class CardDeck {
         }
 
         return "$suitFirstChar$rankAsStr"
-    }
-
-    companion object {
-        const val TAG = "CardDeck.kt"
     }
 }

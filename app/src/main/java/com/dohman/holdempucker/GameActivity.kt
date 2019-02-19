@@ -67,7 +67,7 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
             }
         }
     }
-    
+
     companion object {
         const val TAG = "GameActivity.kt"
 
