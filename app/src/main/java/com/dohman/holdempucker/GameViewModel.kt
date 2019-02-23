@@ -17,18 +17,11 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
 
     val nfyCard = MutableLiveData<Map<Array<Card?>, Int>>() // FIXME: Not needed?
 
-    val nfyTopGoalie = MutableLiveData<Boolean>() // FIXME notify for team top
+    val nfyTopGoalie = MutableLiveData<Boolean>()
     val nfyBtmGoalie = MutableLiveData<Boolean>()
-
-    val nfyBtmLeftDefender = MutableLiveData<Card>()
-    val nfyBtmRightDefender = MutableLiveData<Card>()
-    val nfyBtmLeftForward = MutableLiveData<Card>()
-    val nfyBtmCenter = MutableLiveData<Card>()
-    val nfyBtmRightForward = MutableLiveData<Card>()
 
     init {
         showPickedCard()
-
     }
 
     // ----- Notify functions ----- //
@@ -49,13 +42,13 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
 
 
     // ----- Private functions ----- //
-    private fun showPickedCard() {
+    private fun showPickedCard(doNotToggleTurn: Boolean = false) {
         checkIfTeamsAreReady()
-        toggleTurn()
+        if (!doNotToggleTurn) toggleTurn()
         Log.d(TAG, GameActivity.whoseTurn.toString())
 
         if (!isGoalieThere(pickedCard)) { // If returned false, goalie is added
-            takeNewCardFromDeck()
+            showPickedCard()
             return
         }
 
@@ -64,21 +57,15 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
             currentCard = it
             removeCardFromDeck()
         }
-
-        if (cardDeck.isEmpty()) {
-            //halfTime() // FIXME
-        }
     }
 
     private fun removeCardFromDeck() {
+        if (cardDeck.isEmpty()) {
+            //halfTime() // FIXME
+        }
         cardDeck.remove(pickedCard)
         pickedCard = cardDeck.first()
         cardsCountNotifier.value = cardDeck.size
-    }
-
-    private fun takeNewCardFromDeck() {
-        //pickedCard = null // FIXME: Needed?
-        showPickedCard()
     }
 
     private fun isGoalieThere(goalieCard: Card/*, team: Array<Card?>*/): Boolean {
@@ -109,8 +96,26 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         victimTeam.let {
             if (currentCard.rank ?: 0 >= it[spotIndex]?.rank ?: 0) {
                 it[spotIndex] = null
+                removeCardFromDeck()
+                showPickedCard(doNotToggleTurn = true)
                 return true
             }
+        }
+
+        return false
+    }
+
+    fun areAllForwardsOut(victimTeam: Array<Card?>): Boolean {
+        for (i in 0..2) {
+            if (victimTeam[i] != null) return false
+        }
+
+        return true
+    }
+
+    fun isAtLeastOneDefenderOut(victimTeam: Array<Card?>): Boolean {
+        for (i in 4..5) {
+            if (victimTeam[i] == null) return true
         }
 
         return false
@@ -121,7 +126,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         val map = mutableMapOf<Array<Card?>, Int>() // FIXME: Not needed?
         map[team] = spotIndex // FIXME: Not needed?
         notifyCard(map) // FIXME: Not needed?
-        takeNewCardFromDeck()
+        showPickedCard()
     }
 
     fun resIdOfCard(card: Card): Int {

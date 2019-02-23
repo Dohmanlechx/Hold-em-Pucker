@@ -42,12 +42,16 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
         card_top_forward_right.setOnClickListener(this)
         card_top_defender_left.setOnClickListener(this)
         card_top_defender_right.setOnClickListener(this)
+        card_top_goalie.setOnClickListener(this)
 
         card_bm_forward_left.setOnClickListener(this)
         card_bm_center.setOnClickListener(this)
         card_bm_forward_right.setOnClickListener(this)
         card_bm_defender_left.setOnClickListener(this)
         card_bm_defender_right.setOnClickListener(this)
+        card_bm_goalie.setOnClickListener(this)
+
+        btn_debug.setOnClickListener(this)
     }
 
     private fun updateCardImageView(view: AppCompatImageView) {
@@ -56,49 +60,97 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
 
     override fun onClick(v: View) { // FIXME observe all cards?
         if (isOngoingGame) {
-                if (whoseTurn == WhoseTurn.BOTTOM) {
-                    when (v.id) {
-                        R.id.card_top_forward_left -> {
-                            if (vm.attack(teamTop, 0)) {
-                                card_top_forward_left.setImageResource(R.drawable.skull)
-                            }
-                        }
-                        R.id.card_top_center -> {
-
-                        }
-                        R.id.card_top_forward_right -> {
-
-                        }
-                        R.id.card_top_defender_left -> {
-
-                        }
-                        R.id.card_top_defender_right -> {
-
-                        }
-                        R.id.card_top_goalie -> {
-
+            if (whoseTurn == WhoseTurn.BOTTOM) {
+                when (v.id) {
+                    R.id.card_top_forward_left -> {
+                        if (vm.attack(teamTop, 0)) {
+                            card_top_forward_left.setImageResource(R.drawable.skull)
                         }
                     }
-                } else {
-                    when (v.id) {
-                        R.id.card_bm_forward_left -> {
-
+                    R.id.card_top_center -> {
+                        if (vm.attack(teamTop, 1)) {
+                            card_top_center.setImageResource(R.drawable.skull)
                         }
-                        R.id.card_bm_center -> {
-
+                    }
+                    R.id.card_top_forward_right -> {
+                        if (vm.attack(teamTop, 2)) {
+                            card_top_forward_right.setImageResource(R.drawable.skull)
                         }
-                        R.id.card_bm_forward_right -> {
-
+                    }
+                    R.id.card_top_defender_left -> {
+                        if (vm.areAllForwardsOut(teamTop)) {
+                            if (vm.attack(teamTop, 3)) {
+                                card_top_defender_left.setImageResource(R.drawable.skull)
+                            }
                         }
-                        R.id.card_bm_defender_left -> {
-
+                    }
+                    R.id.card_top_defender_right -> {
+                        if (vm.areAllForwardsOut(teamTop)) {
+                            if (vm.attack(teamTop, 4)) {
+                                card_top_defender_right.setImageResource(R.drawable.skull)
+                            }
                         }
-                        R.id.card_bm_defender_right -> {
-
+                    }
+                    R.id.card_top_goalie -> {
+                        if (vm.areAllForwardsOut(teamTop)) {
+                            if (vm.isAtLeastOneDefenderOut(teamTop)) {
+                                if (vm.attack(teamTop, 5)) {
+                                    card_top_goalie.setImageResource(R.drawable.skull)
+                                    txt_whoseturn.text = "GOAL!"
+                                }
+                            }
                         }
-                        R.id.card_bm_goalie -> {
-
+                    }
+                    R.id.btn_debug -> {
+                        WhoseTurn.toggleTurn()
+                        btn_debug.text = whoseTurn.name
+                    }
+                }
+            } else {
+                when (v.id) {
+                    R.id.card_bm_forward_left -> {
+                        if (vm.attack(teamBottom, 0)) {
+                            card_bm_forward_left.setImageResource(R.drawable.skull)
                         }
+                    }
+                    R.id.card_bm_center -> {
+                        if (vm.attack(teamBottom, 1)) {
+                            card_bm_center.setImageResource(R.drawable.skull)
+                        }
+                    }
+                    R.id.card_bm_forward_right -> {
+                        if (vm.attack(teamBottom, 2)) {
+                            card_bm_forward_right.setImageResource(R.drawable.skull)
+                        }
+                    }
+                    R.id.card_bm_defender_left -> {
+                        if (vm.areAllForwardsOut(teamBottom)) {
+                            if (vm.attack(teamBottom, 3)) {
+                                card_bm_defender_left.setImageResource(R.drawable.skull)
+                            }
+                        }
+                    }
+                    R.id.card_bm_defender_right -> {
+                        if (vm.areAllForwardsOut(teamBottom)) {
+                            if (vm.attack(teamBottom, 4)) {
+                                card_bm_defender_right.setImageResource(R.drawable.skull)
+                            }
+                        }
+                    }
+                    R.id.card_bm_goalie -> {
+                        if (vm.areAllForwardsOut(teamBottom)) {
+                            if (vm.isAtLeastOneDefenderOut(teamBottom)) {
+                                if (vm.attack(teamBottom, 5)) {
+                                    card_bm_goalie.setImageResource(R.drawable.skull)
+                                    txt_whoseturn.text = "GOAL!"
+                                }
+                            }
+                        }
+                    }
+                    R.id.btn_debug -> {
+                        WhoseTurn.toggleTurn()
+                        btn_debug.text = whoseTurn.name
+                    }
                 }
             }
         } else {
