@@ -45,7 +45,6 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     private fun showPickedCard(doNotToggleTurn: Boolean = false) {
         checkIfTeamsAreReady()
         if (!doNotToggleTurn) toggleTurn()
-        Log.d(TAG, GameActivity.whoseTurn.toString())
 
         if (!isGoalieThere(pickedCard)) { // If returned false, goalie is added
             showPickedCard()
@@ -105,7 +104,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         return false
     }
 
-    fun areAllForwardsOut(victimTeam: Array<Card?>): Boolean {
+    fun areAllForwardsOut(victimTeam: Array<Card?>): Boolean { // FIXME Not all attackers must be out, The defender cant to be out if the center and the forward at its side is alive
         for (i in 0..2) {
             if (victimTeam[i] != null) return false
         }
