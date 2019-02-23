@@ -2,7 +2,9 @@ package com.dohman.holdempucker
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
+import androidx.appcompat.widget.AppCompatImageView
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.dohman.holdempucker.cards.Card
@@ -19,10 +21,15 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
         vm.pickedCardNotifier.observe(this, Observer { card_picked.setImageResource(it) })
         vm.cardsCountNotifier.observe(this, Observer { cards_left.text = it.toString() })
 
-        vm.nfyBtmGoalie.observe(this, Observer { if (it) card_bm_goalie.setImageResource(R.drawable.red_back) })
+        vm.nfyCard.observe(this, Observer { updateCardImageResource(it) })
+        vm.nfyBtmGoalie.observe(this, Observer { if (it) card_bm_goalie.setImageResource(R.drawable.red_back) }) // FIXME false = topGoalie
 
         setOnClickListeners()
 
+    }
+
+    private fun updateCardImageResource(value: Map<Array<Card?>, Int>) { // FIXME: Not needed?
+        Log.d(TAG, value.toString())
     }
 
     private fun setOnClickListeners() {
@@ -33,37 +40,36 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
         card_bm_defender_right.setOnClickListener(this)
     }
 
+    private fun updateCardImageView(view: AppCompatImageView) {
+        view.setImageResource(vm.resIdOfCard(vm.currentCard))
+    }
+
     override fun onClick(v: View) { // FIXME observe all cards?
         when (v.id) {
             R.id.card_bm_forward_left -> {
                 if (card_bm_forward_left.drawable != null) return
-                card_bm_forward_left.setImageResource(vm.resIdOfCard(vm.currentCard))
-                teamBottom[0] = vm.currentCard
-                vm.showPickedCard()
+                updateCardImageView(card_bm_forward_left)
+                vm.setPlayerInTeam(teamBottom, 0)
             }
             R.id.card_bm_center -> {
                 if (card_bm_center.drawable != null) return
-                card_bm_center.setImageResource(vm.resIdOfCard(vm.currentCard))
-                teamBottom[1] = vm.currentCard
-                vm.showPickedCard()
+                updateCardImageView(card_bm_center)
+                vm.setPlayerInTeam(teamBottom, 1)
             }
             R.id.card_bm_forward_right -> {
                 if (card_bm_forward_right.drawable != null) return
-                card_bm_forward_right.setImageResource(vm.resIdOfCard(vm.currentCard))
-                teamBottom[2] = vm.currentCard
-                vm.showPickedCard()
+                updateCardImageView(card_bm_forward_right)
+                vm.setPlayerInTeam(teamBottom, 2)
             }
             R.id.card_bm_defender_left -> {
                 if (card_bm_defender_left.drawable != null) return
-                card_bm_defender_left.setImageResource(vm.resIdOfCard(vm.currentCard))
-                teamBottom[3] = vm.currentCard
-                vm.showPickedCard()
+                updateCardImageView(card_bm_defender_left)
+                vm.setPlayerInTeam(teamBottom, 3)
             }
             R.id.card_bm_defender_right -> {
                 if (card_bm_defender_right.drawable != null) return
-                card_bm_defender_right.setImageResource(vm.resIdOfCard(vm.currentCard))
-                teamBottom[4] = vm.currentCard
-                vm.showPickedCard()
+                updateCardImageView(card_bm_defender_right)
+                vm.setPlayerInTeam(teamBottom, 4)
             }
         }
     }

@@ -14,6 +14,8 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     val pickedCardNotifier = MutableLiveData<Int>()
     val cardsCountNotifier = MutableLiveData<Int>()
 
+    val nfyCard = MutableLiveData<Map<Array<Card?>, Int>>() // FIXME: Not needed?
+
     val nfyTopGoalie = MutableLiveData<Boolean>() // FIXME notify for team top
 
     val nfyBtmGoalie = MutableLiveData<Boolean>()
@@ -25,6 +27,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
 
     init {
         showPickedCard()
+
     }
 
     // ----- Notify functions ----- //
@@ -37,6 +40,10 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
             true -> nfyBtmGoalie.value = true
             false -> nfyTopGoalie.value = true
         }
+    }
+
+    private fun notifyCard(value: Map<Array<Card?>, Int>) { // FIXME: Not needed?
+        nfyCard.value = value
     }
 
 
@@ -77,6 +84,14 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         if (cardDeck.isEmpty()) {
             //halfTime() // FIXME
         }
+    }
+
+    fun setPlayerInTeam(team: Array<Card?>, spotIndex: Int) {
+        team[spotIndex] = currentCard
+        val map = mutableMapOf<Array<Card?>, Int>() // FIXME: Not needed?
+        map[team] = spotIndex // FIXME: Not needed?
+        notifyCard(map) // FIXME: Not needed?
+        takeNewCardFromDeck()
     }
 
     fun resIdOfCard(card: Card): Int {
