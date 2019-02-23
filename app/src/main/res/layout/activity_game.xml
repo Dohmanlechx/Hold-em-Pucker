@@ -11,19 +11,22 @@
 		android:id="@+id/cards_left"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		app:layout_constraintBottom_toTopOf="@id/card_bm_center"
+		app:layout_constraintEnd_toEndOf="@id/card_picked"
 		app:layout_constraintStart_toStartOf="parent"
-		tools:text="Cards left: 52" />
+		app:layout_constraintTop_toBottomOf="@id/card_picked"
+		tools:text="52" />
 
 	<androidx.appcompat.widget.AppCompatImageView
 		android:id="@+id/card_picked"
 		android:layout_width="70dp"
 		android:layout_height="110dp"
 		android:background="@drawable/image_border"
-		app:layout_constraintBottom_toBottomOf="@id/card_bm_center"
-		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintBottom_toBottomOf="parent"
+		app:layout_constraintEnd_toStartOf="@id/card_bm_forward_left"
 		app:layout_constraintStart_toStartOf="parent"
 		app:layout_constraintTop_toTopOf="parent" />
+
+	<!-- TEAM BOTTOM -->
 
 	<androidx.appcompat.widget.AppCompatImageView
 		android:id="@+id/card_bm_center"
@@ -34,7 +37,7 @@
 		app:layout_constraintEnd_toEndOf="parent"
 		app:layout_constraintStart_toStartOf="parent"
 		app:layout_constraintTop_toTopOf="parent"
-		app:layout_constraintVertical_bias="0.60" />
+		app:layout_constraintVertical_bias="0.65" />
 
 	<androidx.appcompat.widget.AppCompatImageView
 		android:id="@+id/card_bm_forward_left"
@@ -42,7 +45,6 @@
 		android:layout_height="110dp"
 		android:layout_marginEnd="10dp"
 		android:background="@drawable/image_border"
-		android:elevation="100dp"
 		app:layout_constraintEnd_toStartOf="@id/card_bm_center"
 		app:layout_constraintTop_toTopOf="@id/card_bm_center" />
 
@@ -96,5 +98,66 @@
 		app:layout_constraintEnd_toEndOf="parent"
 		app:layout_constraintStart_toStartOf="parent"
 		app:layout_constraintTop_toBottomOf="@id/card_bm_defender_left" />
+
+	<!-- TEAM TOP -->
+
+	<androidx.appcompat.widget.AppCompatImageView
+		android:id="@+id/card_top_center"
+		android:layout_width="70dp"
+		android:layout_height="110dp"
+		android:background="@drawable/image_border"
+		app:layout_constraintBottom_toBottomOf="parent"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toTopOf="parent"
+		app:layout_constraintVertical_bias="0.35" />
+
+	<androidx.appcompat.widget.AppCompatImageView
+		android:id="@+id/card_top_forward_left"
+		android:layout_width="70dp"
+		android:layout_height="110dp"
+		android:layout_marginStart="10dp"
+		android:background="@drawable/image_border"
+		app:layout_constraintBottom_toBottomOf="@id/card_top_center"
+		app:layout_constraintStart_toEndOf="@id/card_top_center" />
+
+	<androidx.appcompat.widget.AppCompatImageView
+		android:id="@+id/card_top_forward_right"
+		android:layout_width="70dp"
+		android:layout_height="110dp"
+		android:layout_marginEnd="10dp"
+		android:background="@drawable/image_border"
+		app:layout_constraintBottom_toBottomOf="@id/card_top_center"
+		app:layout_constraintEnd_toStartOf="@id/card_top_center" />
+
+	<androidx.appcompat.widget.AppCompatImageView
+		android:id="@+id/card_top_defender_left"
+		android:layout_width="70dp"
+		android:layout_height="110dp"
+		android:layout_marginStart="5dp"
+		android:layout_marginBottom="10dp"
+		android:background="@drawable/image_border"
+		app:layout_constraintBottom_toTopOf="@id/card_top_center"
+		app:layout_constraintStart_toEndOf="@id/guideline" />
+
+	<androidx.appcompat.widget.AppCompatImageView
+		android:id="@+id/card_top_defender_right"
+		android:layout_width="70dp"
+		android:layout_height="110dp"
+		android:layout_marginEnd="5dp"
+		android:layout_marginBottom="10dp"
+		android:background="@drawable/image_border"
+		app:layout_constraintBottom_toTopOf="@id/card_top_center"
+		app:layout_constraintEnd_toStartOf="@id/guideline" />
+
+	<androidx.appcompat.widget.AppCompatImageView
+		android:id="@+id/card_top_goalie"
+		android:layout_width="110dp"
+		android:layout_height="70dp"
+		android:layout_marginBottom="10dp"
+		android:background="@drawable/image_border"
+		app:layout_constraintBottom_toTopOf="@id/card_top_defender_left"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
