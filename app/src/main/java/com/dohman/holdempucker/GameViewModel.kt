@@ -105,6 +105,17 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
 
 
     // ----- Public functions ----- //
+    fun attack(victimTeam: Array<Card?>, spotIndex: Int): Boolean {
+        victimTeam.let {
+            if (currentCard.rank ?: 0 >= it[spotIndex]?.rank ?: 0) {
+                it[spotIndex] = null
+                return true
+            }
+        }
+
+        return false
+    }
+
     fun setPlayerInTeam(team: Array<Card?>, spotIndex: Int) {
         team[spotIndex] = currentCard
         val map = mutableMapOf<Array<Card?>, Int>() // FIXME: Not needed?

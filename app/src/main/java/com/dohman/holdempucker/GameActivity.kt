@@ -56,8 +56,50 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
 
     override fun onClick(v: View) { // FIXME observe all cards?
         if (isOngoingGame) {
-            when (v.id) {
+                if (whoseTurn == WhoseTurn.BOTTOM) {
+                    when (v.id) {
+                        R.id.card_top_forward_left -> {
+                            if (vm.attack(teamTop, 0)) {
+                                card_top_forward_left.setImageResource(R.drawable.skull)
+                            }
+                        }
+                        R.id.card_top_center -> {
 
+                        }
+                        R.id.card_top_forward_right -> {
+
+                        }
+                        R.id.card_top_defender_left -> {
+
+                        }
+                        R.id.card_top_defender_right -> {
+
+                        }
+                        R.id.card_top_goalie -> {
+
+                        }
+                    }
+                } else {
+                    when (v.id) {
+                        R.id.card_bm_forward_left -> {
+
+                        }
+                        R.id.card_bm_center -> {
+
+                        }
+                        R.id.card_bm_forward_right -> {
+
+                        }
+                        R.id.card_bm_defender_left -> {
+
+                        }
+                        R.id.card_bm_defender_right -> {
+
+                        }
+                        R.id.card_bm_goalie -> {
+
+                        }
+                }
             }
         } else {
             if (whoseTurn == WhoseTurn.BOTTOM) {
