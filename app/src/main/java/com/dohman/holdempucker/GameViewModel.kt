@@ -1,6 +1,7 @@
 package com.dohman.holdempucker
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import com.dohman.holdempucker.cards.Card
@@ -48,6 +49,25 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
 
 
     // ----- Private functions ----- //
+    private fun showPickedCard() {
+        if (checkIfTeamsAreReady()) Log.d("MATCHEN ÄR REDO FAN", "REDO")
+
+        if (!isGoalieThere(pickedCard, GameActivity.teamBottom)) { // If returned false, goalie is added
+            takeNewCardFromDeck()
+            return
+        }
+
+        pickedCard.let {
+            notifyPickedCard()
+            currentCard = it
+            removeCardFromDeck()
+        }
+
+        if (cardDeck.isEmpty()) {
+            //halfTime() // FIXME
+        }
+    }
+
     private fun removeCardFromDeck() {
         cardDeck.remove(pickedCard)
         pickedCard = cardDeck.first()
@@ -67,25 +87,16 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         return false // But goalie is added now
     }
 
+    private fun checkIfTeamsAreReady(): Boolean {
+        GameActivity.teamBottom.forEach { if (it == null) return false }
+        //GameActivity.teamTop.forEach { if (it == null) return false }
 
-    // ----- Public functions ----- //
-    fun showPickedCard() {
-        if (!isGoalieThere(pickedCard, GameActivity.teamBottom)) { // If returned false, goalie is added
-            takeNewCardFromDeck()
-            return
-        }
-
-        pickedCard.let {
-            notifyPickedCard()
-            currentCard = it
-            removeCardFromDeck()
-        }
-
-        if (cardDeck.isEmpty()) {
-            //halfTime() // FIXME
-        }
+        GameActivity.isOngoingGame = true
+        return true
     }
 
+
+    // ----- Public functions ----- //
     fun setPlayerInTeam(team: Array<Card?>, spotIndex: Int) {
         team[spotIndex] = currentCard
         val map = mutableMapOf<Array<Card?>, Int>() // FIXME: Not needed?

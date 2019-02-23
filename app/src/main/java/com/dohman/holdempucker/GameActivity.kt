@@ -22,7 +22,9 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
         vm.cardsCountNotifier.observe(this, Observer { cards_left.text = it.toString() })
 
         vm.nfyCard.observe(this, Observer { updateCardImageResource(it) })
-        vm.nfyBtmGoalie.observe(this, Observer { if (it) card_bm_goalie.setImageResource(R.drawable.red_back) }) // FIXME false = topGoalie
+        vm.nfyBtmGoalie.observe(
+            this,
+            Observer { if (it) card_bm_goalie.setImageResource(R.drawable.red_back) }) // FIXME false = topGoalie
 
         setOnClickListeners()
 
@@ -45,37 +47,45 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     override fun onClick(v: View) { // FIXME observe all cards?
-        when (v.id) {
-            R.id.card_bm_forward_left -> {
-                if (card_bm_forward_left.drawable != null) return
-                updateCardImageView(card_bm_forward_left)
-                vm.setPlayerInTeam(teamBottom, 0)
+        if (isOngoingGame) {
+            when (v.id) {
+
             }
-            R.id.card_bm_center -> {
-                if (card_bm_center.drawable != null) return
-                updateCardImageView(card_bm_center)
-                vm.setPlayerInTeam(teamBottom, 1)
-            }
-            R.id.card_bm_forward_right -> {
-                if (card_bm_forward_right.drawable != null) return
-                updateCardImageView(card_bm_forward_right)
-                vm.setPlayerInTeam(teamBottom, 2)
-            }
-            R.id.card_bm_defender_left -> {
-                if (card_bm_defender_left.drawable != null) return
-                updateCardImageView(card_bm_defender_left)
-                vm.setPlayerInTeam(teamBottom, 3)
-            }
-            R.id.card_bm_defender_right -> {
-                if (card_bm_defender_right.drawable != null) return
-                updateCardImageView(card_bm_defender_right)
-                vm.setPlayerInTeam(teamBottom, 4)
+        } else {
+            when (v.id) {
+                R.id.card_bm_forward_left -> {
+                    if (card_bm_forward_left.drawable != null) return
+                    updateCardImageView(card_bm_forward_left)
+                    vm.setPlayerInTeam(teamBottom, 0)
+                }
+                R.id.card_bm_center -> {
+                    if (card_bm_center.drawable != null) return
+                    updateCardImageView(card_bm_center)
+                    vm.setPlayerInTeam(teamBottom, 1)
+                }
+                R.id.card_bm_forward_right -> {
+                    if (card_bm_forward_right.drawable != null) return
+                    updateCardImageView(card_bm_forward_right)
+                    vm.setPlayerInTeam(teamBottom, 2)
+                }
+                R.id.card_bm_defender_left -> {
+                    if (card_bm_defender_left.drawable != null) return
+                    updateCardImageView(card_bm_defender_left)
+                    vm.setPlayerInTeam(teamBottom, 3)
+                }
+                R.id.card_bm_defender_right -> {
+                    if (card_bm_defender_right.drawable != null) return
+                    updateCardImageView(card_bm_defender_right)
+                    vm.setPlayerInTeam(teamBottom, 4)
+                }
             }
         }
     }
 
     companion object {
         const val TAG = "GameActivity.kt"
+
+        var isOngoingGame = false // Set to true when all cards are laid out
 
         val teamTop = arrayOfNulls<Card>(6)
         val teamBottom = arrayOfNulls<Card>(6)
