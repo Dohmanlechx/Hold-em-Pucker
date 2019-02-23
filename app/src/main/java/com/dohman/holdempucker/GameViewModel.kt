@@ -18,8 +18,8 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     val nfyCard = MutableLiveData<Map<Array<Card?>, Int>>() // FIXME: Not needed?
 
     val nfyTopGoalie = MutableLiveData<Boolean>() // FIXME notify for team top
-
     val nfyBtmGoalie = MutableLiveData<Boolean>()
+
     val nfyBtmLeftDefender = MutableLiveData<Card>()
     val nfyBtmRightDefender = MutableLiveData<Card>()
     val nfyBtmLeftForward = MutableLiveData<Card>()
@@ -36,10 +36,10 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         pickedCardNotifier.value = resIdOfCard(pickedCard)
     }
 
-    private fun notifyGoalie(isBottom: Boolean) {
-        when (isBottom) {
-            true -> nfyBtmGoalie.value = true
-            false -> nfyTopGoalie.value = true
+    private fun notifyGoalie() {
+        when (GameActivity.whoseTurn) {
+            GameActivity.WhoseTurn.BOTTOM -> nfyBtmGoalie.value = true
+            GameActivity.WhoseTurn.TOP -> nfyTopGoalie.value = true
         }
     }
 
@@ -50,9 +50,11 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
 
     // ----- Private functions ----- //
     private fun showPickedCard() {
-        if (checkIfTeamsAreReady()) Log.d("MATCHEN ÄR REDO FAN", "REDO")
+        checkIfTeamsAreReady()
+        toggleTurn()
+        Log.d(TAG, GameActivity.whoseTurn.toString())
 
-        if (!isGoalieThere(pickedCard, GameActivity.teamBottom)) { // If returned false, goalie is added
+        if (!isGoalieThere(pickedCard)) { // If returned false, goalie is added
             takeNewCardFromDeck()
             return
         }
@@ -79,9 +81,11 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         showPickedCard()
     }
 
-    private fun isGoalieThere(goalieCard: Card, team: Array<Card?>): Boolean {
+    private fun isGoalieThere(goalieCard: Card/*, team: Array<Card?>*/): Boolean {
+        val team =
+            if (GameActivity.whoseTurn == GameActivity.WhoseTurn.BOTTOM) GameActivity.teamBottom else GameActivity.teamTop
         team.let { if (!it.all { element -> element == null }) return true else it[5] = goalieCard }
-        notifyGoalie(isBottom = true)
+        notifyGoalie()
         removeCardFromDeck()
 
         return false // But goalie is added now
@@ -89,10 +93,14 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
 
     private fun checkIfTeamsAreReady(): Boolean {
         GameActivity.teamBottom.forEach { if (it == null) return false }
-        //GameActivity.teamTop.forEach { if (it == null) return false }
+        GameActivity.teamTop.forEach { if (it == null) return false }
 
         GameActivity.isOngoingGame = true
         return true
+    }
+
+    private fun toggleTurn() {
+        GameActivity.WhoseTurn.toggleTurn()
     }
 
 
@@ -111,5 +119,9 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
                 it.src, "drawable", getApplication<Application>().packageName
             )
         }
+    }
+
+    companion object {
+        const val TAG = "DBG: GameViewModel.kt"
     }
 }

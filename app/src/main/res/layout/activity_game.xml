@@ -8,6 +8,15 @@
 	tools:context=".GameActivity">
 
 	<androidx.appcompat.widget.AppCompatTextView
+		android:id="@+id/txt_whoseturn"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		app:layout_constraintBottom_toBottomOf="parent"
+		app:layout_constraintStart_toEndOf="@id/card_bm_forward_right"
+		app:layout_constraintTop_toTopOf="parent"
+		tools:text="Bottom" />
+
+	<androidx.appcompat.widget.AppCompatTextView
 		android:id="@+id/cards_left"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
@@ -26,18 +35,37 @@
 		app:layout_constraintStart_toStartOf="parent"
 		app:layout_constraintTop_toTopOf="parent" />
 
+	<androidx.constraintlayout.widget.Guideline
+		android:id="@+id/guideline_vertical"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:orientation="vertical"
+		android:visibility="visible"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintGuide_percent="0.5"
+		app:layout_constraintStart_toStartOf="parent" />
+
+	<androidx.constraintlayout.widget.Guideline
+		android:id="@+id/guideline_horizontal"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:orientation="horizontal"
+		android:visibility="visible"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintGuide_percent="0.5"
+		app:layout_constraintStart_toStartOf="parent" />
+
 	<!-- TEAM BOTTOM -->
 
 	<androidx.appcompat.widget.AppCompatImageView
 		android:id="@+id/card_bm_center"
 		android:layout_width="70dp"
 		android:layout_height="110dp"
+		android:layout_marginTop="8dp"
 		android:background="@drawable/image_border"
-		app:layout_constraintBottom_toBottomOf="parent"
 		app:layout_constraintEnd_toEndOf="parent"
 		app:layout_constraintStart_toStartOf="parent"
-		app:layout_constraintTop_toTopOf="parent"
-		app:layout_constraintVertical_bias="0.65" />
+		app:layout_constraintTop_toBottomOf="@id/guideline_horizontal" />
 
 	<androidx.appcompat.widget.AppCompatImageView
 		android:id="@+id/card_bm_forward_left"
@@ -58,16 +86,6 @@
 		app:layout_constraintStart_toEndOf="@id/card_bm_center"
 		app:layout_constraintTop_toTopOf="@id/card_bm_center" />
 
-	<androidx.constraintlayout.widget.Guideline
-		android:id="@+id/guideline"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:orientation="vertical"
-		android:visibility="visible"
-		app:layout_constraintEnd_toEndOf="parent"
-		app:layout_constraintGuide_percent="0.5"
-		app:layout_constraintStart_toStartOf="parent" />
-
 	<androidx.appcompat.widget.AppCompatImageView
 		android:id="@+id/card_bm_defender_left"
 		android:layout_width="70dp"
@@ -75,7 +93,7 @@
 		android:layout_marginTop="10dp"
 		android:layout_marginEnd="5dp"
 		android:background="@drawable/image_border"
-		app:layout_constraintEnd_toEndOf="@id/guideline"
+		app:layout_constraintEnd_toEndOf="@id/guideline_vertical"
 		app:layout_constraintTop_toBottomOf="@id/card_bm_center" />
 
 	<androidx.appcompat.widget.AppCompatImageView
@@ -85,7 +103,7 @@
 		android:layout_marginStart="5dp"
 		android:layout_marginTop="10dp"
 		android:background="@drawable/image_border"
-		app:layout_constraintStart_toEndOf="@id/guideline"
+		app:layout_constraintStart_toEndOf="@id/guideline_vertical"
 		app:layout_constraintTop_toBottomOf="@id/card_bm_center" />
 
 	<androidx.appcompat.widget.AppCompatImageView
@@ -105,12 +123,12 @@
 		android:id="@+id/card_top_center"
 		android:layout_width="70dp"
 		android:layout_height="110dp"
+		android:layout_marginBottom="8dp"
 		android:background="@drawable/image_border"
-		app:layout_constraintBottom_toBottomOf="parent"
+		app:layout_constraintBottom_toBottomOf="@id/guideline_horizontal"
 		app:layout_constraintEnd_toEndOf="parent"
 		app:layout_constraintStart_toStartOf="parent"
-		app:layout_constraintTop_toTopOf="parent"
-		app:layout_constraintVertical_bias="0.35" />
+		app:layout_constraintVertical_bias="0.38" />
 
 	<androidx.appcompat.widget.AppCompatImageView
 		android:id="@+id/card_top_forward_left"
@@ -138,7 +156,7 @@
 		android:layout_marginBottom="10dp"
 		android:background="@drawable/image_border"
 		app:layout_constraintBottom_toTopOf="@id/card_top_center"
-		app:layout_constraintStart_toEndOf="@id/guideline" />
+		app:layout_constraintStart_toEndOf="@id/guideline_vertical" />
 
 	<androidx.appcompat.widget.AppCompatImageView
 		android:id="@+id/card_top_defender_right"
@@ -148,7 +166,7 @@
 		android:layout_marginBottom="10dp"
 		android:background="@drawable/image_border"
 		app:layout_constraintBottom_toTopOf="@id/card_top_center"
-		app:layout_constraintEnd_toStartOf="@id/guideline" />
+		app:layout_constraintEnd_toStartOf="@id/guideline_vertical" />
 
 	<androidx.appcompat.widget.AppCompatImageView
 		android:id="@+id/card_top_goalie"

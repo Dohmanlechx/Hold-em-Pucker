@@ -12,6 +12,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     companion object {
-        const val TAG = "MainActivity.kt"
+        const val TAG = "DBG: MainActivity.kt"
     }
 }
