@@ -122,9 +122,18 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         return false
     }
 
-    fun areAllForwardsOut(victimTeam: Array<Card?>): Boolean { // FIXME Not all attackers must be out, The defender cant to be out if the center and the forward at its side is alive
-        for (i in 0..2) {
-            if (victimTeam[i] != null) return false
+    fun areEnoughForwardsOut(victimTeam: Array<Card?>, defenderPos: Int): Boolean {
+        when (defenderPos) {
+            3 -> {
+                for (i in 0..1) {
+                    if (victimTeam[i] != null) return false
+                }
+            }
+            4 -> {
+                for (i in 1..2) {
+                    if (victimTeam[i] != null) return false
+                }
+            }
         }
 
         return true
