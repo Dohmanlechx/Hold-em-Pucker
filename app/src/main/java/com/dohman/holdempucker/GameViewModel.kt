@@ -2,6 +2,8 @@ package com.dohman.holdempucker
 
 import android.app.Application
 import android.util.Log
+import androidx.appcompat.widget.AppCompatImageView
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import com.dohman.holdempucker.cards.Card
@@ -91,10 +93,14 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
 
 
     // ----- Public functions ----- //
-    fun attack(victimTeam: Array<Card?>, spotIndex: Int): Boolean {
+    fun attack(victimTeam: Array<Card?>, spotIndex: Int, view: AppCompatImageView): Boolean {
+        if (view.tag == Integer.valueOf(R.drawable.skull)) return false
+
         victimTeam.let {
             if (currentCard.rank ?: 0 >= it[spotIndex]?.rank ?: 0) {
                 it[spotIndex] = null
+                view.setImageResource(R.drawable.skull)
+                view.tag = Integer.valueOf(R.drawable.skull)
                 removeCardFromDeck()
                 showPickedCard(doNotToggleTurn = true)
                 return true
@@ -134,6 +140,10 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
                 it.src, "drawable", getApplication<Application>().packageName
             )
         }
+    }
+
+    fun updateCardImageView(view: AppCompatImageView) {
+        view.setImageResource(resIdOfCard(currentCard))
     }
 
     companion object {

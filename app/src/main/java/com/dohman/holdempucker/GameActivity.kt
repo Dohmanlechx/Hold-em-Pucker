@@ -54,49 +54,34 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
         btn_debug.setOnClickListener(this)
     }
 
-    private fun updateCardImageView(view: AppCompatImageView) {
-        view.setImageResource(vm.resIdOfCard(vm.currentCard))
-    }
-
     override fun onClick(v: View) { // FIXME observe all cards?
         if (isOngoingGame) {
             if (whoseTurn == WhoseTurn.BOTTOM) {
                 when (v.id) {
                     R.id.card_top_forward_left -> {
-                        if (vm.attack(teamTop, 0)) {
-                            card_top_forward_left.setImageResource(R.drawable.skull)
-                        }
+                        vm.attack(teamTop, 0, card_top_forward_left)
                     }
                     R.id.card_top_center -> {
-                        if (vm.attack(teamTop, 1)) {
-                            card_top_center.setImageResource(R.drawable.skull)
-                        }
+                        vm.attack(teamTop, 1, card_top_center)
                     }
                     R.id.card_top_forward_right -> {
-                        if (vm.attack(teamTop, 2)) {
-                            card_top_forward_right.setImageResource(R.drawable.skull)
-                        }
+                        vm.attack(teamTop, 2, card_top_forward_right)
                     }
                     R.id.card_top_defender_left -> {
                         if (vm.areAllForwardsOut(teamTop)) {
-                            if (vm.attack(teamTop, 3)) {
-                                card_top_defender_left.setImageResource(R.drawable.skull)
-                            }
+                            vm.attack(teamTop, 3, card_top_defender_left)
                         }
                     }
                     R.id.card_top_defender_right -> {
                         if (vm.areAllForwardsOut(teamTop)) {
-                            if (vm.attack(teamTop, 4)) {
-                                card_top_defender_right.setImageResource(R.drawable.skull)
-                            }
+                            vm.attack(teamTop, 4, card_top_defender_right)
                         }
                     }
                     R.id.card_top_goalie -> {
                         if (vm.areAllForwardsOut(teamTop)) {
                             if (vm.isAtLeastOneDefenderOut(teamTop)) {
-                                if (vm.attack(teamTop, 5)) {
-                                    card_top_goalie.setImageResource(R.drawable.skull)
-                                    txt_whoseturn.text = "GOAL!"
+                                if (vm.attack(teamTop, 5, card_top_goalie)) {
+                                    txt_whoseturn.text = "GOAL!" // FIXME Goal!
                                 }
                             }
                         }
@@ -109,40 +94,29 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
             } else {
                 when (v.id) {
                     R.id.card_bm_forward_left -> {
-                        if (vm.attack(teamBottom, 0)) {
-                            card_bm_forward_left.setImageResource(R.drawable.skull)
-                        }
+                        vm.attack(teamBottom, 0, card_bm_forward_left)
                     }
                     R.id.card_bm_center -> {
-                        if (vm.attack(teamBottom, 1)) {
-                            card_bm_center.setImageResource(R.drawable.skull)
-                        }
+                        vm.attack(teamBottom, 1, card_bm_center)
                     }
                     R.id.card_bm_forward_right -> {
-                        if (vm.attack(teamBottom, 2)) {
-                            card_bm_forward_right.setImageResource(R.drawable.skull)
-                        }
+                        vm.attack(teamBottom, 2, card_bm_forward_right)
                     }
                     R.id.card_bm_defender_left -> {
                         if (vm.areAllForwardsOut(teamBottom)) {
-                            if (vm.attack(teamBottom, 3)) {
-                                card_bm_defender_left.setImageResource(R.drawable.skull)
-                            }
+                            vm.attack(teamBottom, 3, card_bm_defender_left)
                         }
                     }
                     R.id.card_bm_defender_right -> {
                         if (vm.areAllForwardsOut(teamBottom)) {
-                            if (vm.attack(teamBottom, 4)) {
-                                card_bm_defender_right.setImageResource(R.drawable.skull)
-                            }
+                            vm.attack(teamBottom, 4, card_bm_defender_right)
                         }
                     }
                     R.id.card_bm_goalie -> {
                         if (vm.areAllForwardsOut(teamBottom)) {
                             if (vm.isAtLeastOneDefenderOut(teamBottom)) {
-                                if (vm.attack(teamBottom, 5)) {
-                                    card_bm_goalie.setImageResource(R.drawable.skull)
-                                    txt_whoseturn.text = "GOAL!"
+                                if (vm.attack(teamBottom, 5, card_bm_goalie)) {
+                                    txt_whoseturn.text = "GOAL!" // FIXME Goal!
                                 }
                             }
                         }
@@ -158,27 +132,27 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
                 when (v.id) {
                     R.id.card_bm_forward_left -> {
                         if (card_bm_forward_left.drawable != null) return
-                        updateCardImageView(card_bm_forward_left)
+                        vm.updateCardImageView(card_bm_forward_left)
                         vm.setPlayerInTeam(teamBottom, 0)
                     }
                     R.id.card_bm_center -> {
                         if (card_bm_center.drawable != null) return
-                        updateCardImageView(card_bm_center)
+                        vm.updateCardImageView(card_bm_center)
                         vm.setPlayerInTeam(teamBottom, 1)
                     }
                     R.id.card_bm_forward_right -> {
                         if (card_bm_forward_right.drawable != null) return
-                        updateCardImageView(card_bm_forward_right)
+                        vm.updateCardImageView(card_bm_forward_right)
                         vm.setPlayerInTeam(teamBottom, 2)
                     }
                     R.id.card_bm_defender_left -> {
                         if (card_bm_defender_left.drawable != null) return
-                        updateCardImageView(card_bm_defender_left)
+                        vm.updateCardImageView(card_bm_defender_left)
                         vm.setPlayerInTeam(teamBottom, 3)
                     }
                     R.id.card_bm_defender_right -> {
                         if (card_bm_defender_right.drawable != null) return
-                        updateCardImageView(card_bm_defender_right)
+                        vm.updateCardImageView(card_bm_defender_right)
                         vm.setPlayerInTeam(teamBottom, 4)
                     }
                 }
@@ -186,27 +160,27 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
                 when (v.id) {
                     R.id.card_top_forward_left -> {
                         if (card_top_forward_left.drawable != null) return
-                        updateCardImageView(card_top_forward_left)
+                        vm.updateCardImageView(card_top_forward_left)
                         vm.setPlayerInTeam(teamTop, 0)
                     }
                     R.id.card_top_center -> {
                         if (card_top_center.drawable != null) return
-                        updateCardImageView(card_top_center)
+                        vm.updateCardImageView(card_top_center)
                         vm.setPlayerInTeam(teamTop, 1)
                     }
                     R.id.card_top_forward_right -> {
                         if (card_top_forward_right.drawable != null) return
-                        updateCardImageView(card_top_forward_right)
+                        vm.updateCardImageView(card_top_forward_right)
                         vm.setPlayerInTeam(teamTop, 2)
                     }
                     R.id.card_top_defender_left -> {
                         if (card_top_defender_left.drawable != null) return
-                        updateCardImageView(card_top_defender_left)
+                        vm.updateCardImageView(card_top_defender_left)
                         vm.setPlayerInTeam(teamTop, 3)
                     }
                     R.id.card_top_defender_right -> {
                         if (card_top_defender_right.drawable != null) return
-                        updateCardImageView(card_top_defender_right)
+                        vm.updateCardImageView(card_top_defender_right)
                         vm.setPlayerInTeam(teamTop, 4)
                     }
                 }
