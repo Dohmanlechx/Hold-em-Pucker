@@ -47,7 +47,7 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
         btn_debug.setOnClickListener(this)
     }
 
-    override fun onClick(v: View) { // FIXME observe all cards?
+    override fun onClick(v: View) {
         if (isOngoingGame) {
             if (whoseTurn == WhoseTurn.BOTTOM) {
                 when (v.id) {

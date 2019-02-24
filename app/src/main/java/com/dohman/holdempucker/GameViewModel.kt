@@ -2,6 +2,7 @@ package com.dohman.holdempucker
 
 import android.app.Application
 import android.util.Log
+import android.widget.Toast
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.content.ContextCompat
@@ -52,6 +53,8 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
             currentCard = it
             removeCardFromDeck()
         }
+
+        //if (GameActivity.isOngoingGame) checkPossibleMoves() // FIXME
     }
 
     fun removeCardFromDeck() { // FIXME set private
@@ -64,12 +67,13 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    private fun isGoalieThere(goalieCard: Card/*, team: Array<Card?>*/): Boolean {
+    private fun isGoalieThere(goalieCard: Card): Boolean {
         val team =
             if (GameActivity.whoseTurn == GameActivity.WhoseTurn.BOTTOM) GameActivity.teamBottom else GameActivity.teamTop
         team.let { if (!it.all { element -> element == null }) return true else it[5] = goalieCard }
         notifyGoalie()
         removeCardFromDeck()
+        Toast.makeText(getApplication<Application>().applicationContext, "Goalie ${GameActivity.whoseTurn} added!", Toast.LENGTH_SHORT).show()
 
         return false // But goalie is added now
     }
@@ -140,7 +144,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun isAtLeastOneDefenderOut(victimTeam: Array<Card?>): Boolean {
-        for (i in 4..5) {
+        for (i in 3..4) {
             if (victimTeam[i] == null) return true
         }
 
