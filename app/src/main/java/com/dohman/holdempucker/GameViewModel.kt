@@ -17,8 +17,6 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     val pickedCardNotifier = MutableLiveData<Int>()
     val cardsCountNotifier = MutableLiveData<Int>()
 
-    val nfyCard = MutableLiveData<Map<Array<Card?>, Int>>() // FIXME: Not needed?
-
     val nfyTopGoalie = MutableLiveData<Boolean>()
     val nfyBtmGoalie = MutableLiveData<Boolean>()
 
@@ -37,11 +35,6 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
             GameActivity.WhoseTurn.TOP -> nfyTopGoalie.value = true
         }
     }
-
-    private fun notifyCard(value: Map<Array<Card?>, Int>) { // FIXME: Not needed?
-        nfyCard.value = value
-    }
-
 
     // ----- Private functions ----- //
     private fun showPickedCard(doNotToggleTurn: Boolean = false) {
@@ -79,6 +72,11 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         return false // But goalie is added now
     }
 
+    private fun setPlayerInTeam(team: Array<Card?>, spotIndex: Int) {
+        team[spotIndex] = currentCard
+        showPickedCard()
+    }
+
     private fun checkIfTeamsAreReady(): Boolean {
         GameActivity.teamBottom.forEach { if (it == null) return false }
         GameActivity.teamTop.forEach { if (it == null) return false }
@@ -87,10 +85,17 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         return true
     }
 
+    private fun resIdOfCard(card: Card): Int {
+        return card.let {
+            getApplication<Application>().resources.getIdentifier(
+                it.src, "drawable", getApplication<Application>().packageName
+            )
+        }
+    }
+
     private fun toggleTurn() {
         GameActivity.WhoseTurn.toggleTurn()
     }
-
 
     // ----- Public functions ----- //
     fun attack(victimTeam: Array<Card?>, spotIndex: Int, view: AppCompatImageView): Boolean {
@@ -126,24 +131,10 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         return false
     }
 
-    fun setPlayerInTeam(team: Array<Card?>, spotIndex: Int) {
-        team[spotIndex] = currentCard
-        val map = mutableMapOf<Array<Card?>, Int>() // FIXME: Not needed?
-        map[team] = spotIndex // FIXME: Not needed?
-        notifyCard(map) // FIXME: Not needed?
-        showPickedCard()
-    }
-
-    fun resIdOfCard(card: Card): Int {
-        return card.let {
-            getApplication<Application>().resources.getIdentifier(
-                it.src, "drawable", getApplication<Application>().packageName
-            )
-        }
-    }
-
-    fun updateCardImageView(view: AppCompatImageView) {
+    fun addPlayer(view: AppCompatImageView, team: Array<Card?>, spotIndex: Int) {
+        if (view.drawable != null) return
         view.setImageResource(resIdOfCard(currentCard))
+        setPlayerInTeam(team, spotIndex)
     }
 
     companion object {
