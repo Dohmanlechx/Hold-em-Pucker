@@ -3,6 +3,7 @@ package com.dohman.holdempucker
 import android.app.Application
 import android.util.Log
 import androidx.appcompat.widget.AppCompatImageView
+import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
@@ -37,7 +38,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     // ----- Private functions ----- //
-    private fun showPickedCard(doNotToggleTurn: Boolean = false) {
+    fun showPickedCard(doNotToggleTurn: Boolean = false) { // FIXME set private
         checkIfTeamsAreReady()
         if (!doNotToggleTurn) toggleTurn()
 
@@ -53,13 +54,14 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    private fun removeCardFromDeck() {
+    fun removeCardFromDeck() { // FIXME set private
         if (cardDeck.isEmpty()) {
             //halfTime() // FIXME
+        } else {
+            cardDeck.remove(pickedCard)
+            pickedCard = cardDeck.first()
+            cardsCountNotifier.value = cardDeck.size
         }
-        cardDeck.remove(pickedCard)
-        pickedCard = cardDeck.first()
-        cardsCountNotifier.value = cardDeck.size
     }
 
     private fun isGoalieThere(goalieCard: Card/*, team: Array<Card?>*/): Boolean {
@@ -98,6 +100,11 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     // ----- Public functions ----- //
+    fun updateScores(topTeam: AppCompatTextView, bottomTeam: AppCompatTextView) {
+        topTeam.text = GameActivity.teamTopScore.toString()
+        bottomTeam.text = GameActivity.teamBottomScore.toString()
+    }
+
     fun attack(victimTeam: Array<Card?>, spotIndex: Int, view: AppCompatImageView): Boolean {
         if (view.tag == Integer.valueOf(R.drawable.skull)) return false
 

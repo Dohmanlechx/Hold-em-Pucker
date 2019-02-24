@@ -63,6 +63,30 @@
 		app:layout_constraintGuide_percent="0.5"
 		app:layout_constraintStart_toStartOf="parent" />
 
+	<androidx.appcompat.widget.AppCompatTextView
+		android:id="@+id/top_team_score"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_margin="20dp"
+		android:fontFamily="@font/hockey_score_font"
+		android:textColor="@color/black"
+		android:textSize="52sp"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toTopOf="parent"
+		tools:text="0" />
+
+	<androidx.appcompat.widget.AppCompatTextView
+		android:id="@+id/bm_team_score"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_margin="20dp"
+		android:fontFamily="@font/hockey_score_font"
+		android:textColor="@color/black"
+		android:textSize="52sp"
+		app:layout_constraintBottom_toBottomOf="parent"
+		app:layout_constraintStart_toStartOf="parent"
+		tools:text="1" />
+
 	<!-- TEAM BOTTOM -->
 
 	<androidx.appcompat.widget.AppCompatImageView

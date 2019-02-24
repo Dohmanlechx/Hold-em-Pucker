@@ -6,4 +6,5 @@
 
     <!--GAME ACTIVITY-->
     <color name="board">#1D9B1E</color>
+    <color name="black">#000</color>
 </resources>

@@ -2,7 +2,6 @@ package com.dohman.holdempucker
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -25,8 +24,9 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
         vm.nfyBtmGoalie.observe(this, Observer { if (it) card_bm_goalie.setImageResource(R.drawable.red_back) })
         vm.nfyTopGoalie.observe(this, Observer { if (it) card_top_goalie.setImageResource(R.drawable.red_back) })
 
-        setOnClickListeners()
+        vm.updateScores(top_team_score, bm_team_score)
 
+        setOnClickListeners()
     }
 
     private fun setOnClickListeners() {
@@ -60,14 +60,15 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
                         if (vm.areAllForwardsOut(teamTop)) {
                             if (vm.isAtLeastOneDefenderOut(teamTop)) {
                                 if (vm.attack(teamTop, 5, card_top_goalie)) {
-                                    txt_whoseturn.text = "GOAL!" // FIXME Goal!
+                                    teamBottomScore++
+                                    vm.updateScores(top_team_score, bm_team_score)
                                 }
                             }
                         }
                     }
                     R.id.btn_debug -> {
-                        WhoseTurn.toggleTurn()
-                        btn_debug.text = whoseTurn.name
+                        vm.removeCardFromDeck()
+                        vm.showPickedCard()
                     }
                 }
             } else {
@@ -81,14 +82,15 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
                         if (vm.areAllForwardsOut(teamBottom)) {
                             if (vm.isAtLeastOneDefenderOut(teamBottom)) {
                                 if (vm.attack(teamBottom, 5, card_bm_goalie)) {
-                                    txt_whoseturn.text = "GOAL!" // FIXME Goal!
+                                    teamTopScore++
+                                    vm.updateScores(top_team_score, bm_team_score)
                                 }
                             }
                         }
                     }
                     R.id.btn_debug -> {
-                        WhoseTurn.toggleTurn()
-                        btn_debug.text = whoseTurn.name
+                        vm.removeCardFromDeck()
+                        vm.showPickedCard()
                     }
                 }
             }
@@ -118,6 +120,8 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
 
         var isOngoingGame = false // Set to true when all cards are laid out
         var whoseTurn = WhoseTurn.TOP
+        var teamTopScore: Int = 0
+        var teamBottomScore: Int = 0
         val teamTop = arrayOfNulls<Card>(6)
         val teamBottom = arrayOfNulls<Card>(6)
 
