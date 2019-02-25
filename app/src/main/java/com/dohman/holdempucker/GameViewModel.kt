@@ -1,11 +1,9 @@
 package com.dohman.holdempucker
 
 import android.app.Application
-import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import com.dohman.holdempucker.cards.Card
@@ -15,7 +13,7 @@ import com.dohman.holdempucker.util.GameLogic
 class GameViewModel(application: Application) : AndroidViewModel(application) {
     private val cardDeck = CardDeck().cardDeck
     private var pickedCard: Card = cardDeck.first()
-    lateinit var currentCard: Card
+    private lateinit var currentCard: Card
 
     val pickedCardNotifier = MutableLiveData<Int>()
     val cardsCountNotifier = MutableLiveData<Int>()
