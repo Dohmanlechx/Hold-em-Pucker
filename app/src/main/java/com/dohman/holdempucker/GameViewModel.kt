@@ -53,7 +53,15 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
             removeCardFromDeck()
         }
 
-        //if (GameActivity.isOngoingGame) checkPossibleMoves() // FIXME
+        if (GameActivity.isOngoingGame) {
+            if (!GameLogic.isTherePossibleMove(GameActivity.whoseTurn)) {
+                Toast.makeText(
+                    getApplication<Application>().applicationContext,
+                    "No possible move. Switching turn...",
+                    Toast.LENGTH_SHORT
+                ).show()// FIXME
+            }
+        }
     }
 
     fun removeCardFromDeck() { // FIXME set private
