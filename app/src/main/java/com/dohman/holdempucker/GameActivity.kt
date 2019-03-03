@@ -77,7 +77,7 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
                         }
                     }
                     R.id.btn_debug -> {
-                        vm.removeCardFromDeck()
+                        //vm.removeCardFromDeck()
                         vm.showPickedCard()
                     }
                 }
@@ -109,7 +109,7 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
                         }
                     }
                     R.id.btn_debug -> {
-                        vm.removeCardFromDeck()
+                        //vm.removeCardFromDeck()
                         vm.showPickedCard()
                     }
                 }

@@ -50,40 +50,77 @@ object GameLogic {
         return false
     }
 
-    fun isTherePossibleMove(whoseTurn: Enum<GameActivity.WhoseTurn>): Boolean {
+    fun isTherePossibleMove(whoseTurn: Enum<GameActivity.WhoseTurn>, currentCard: Card): Boolean {
         val victimTeam =
             if (whoseTurn == GameActivity.WhoseTurn.BOTTOM) GameActivity.teamTop else GameActivity.teamBottom
 
-        val thisCase = arrayListOf<Int>()
-        //val survivorsInTeam = arrayOfNulls<Card>(6) // FIXME Not needed?
-        victimTeam.forEachIndexed { index, card -> // Looking after survivors
-            if (card != null) thisCase.add(index)
-            //survivorsInTeam[index] = card // FIXME Not needed?
+        val currentCase = arrayListOf<Int>()
+        victimTeam.forEachIndexed { index, card ->
+            // Looking after survivors
+            if (card != null) currentCase.add(index)
+        }
+        //currentCase.removeAt(currentCase.last())
+
+        cases.forEachIndexed { index, case ->
+            if (case == currentCase) {
+                when (index) {
+                    0 -> { // x xx xxx
+                        for (i in 0..2) if (currentCard.rank!! >= victimTeam[i]?.rank!!) return true
+                    }
+
+                    1 -> { // x xx xx-
+                        for (i in 1..2) if (currentCard.rank!! >= victimTeam[i]?.rank!!) return true
+                    }
+
+                    2 -> { // x xx x-x
+                        for (i in 0..2 step 2) if (currentCard.rank!! >= victimTeam[i]?.rank!!) return true
+                    }
+
+                    3 -> { // x xx -xx
+                        for (i in 0..1) if (currentCard.rank!! >= victimTeam[i]?.rank!!) return true
+                    }
+
+                    4 -> { // x xx --x
+                        for (i in 0..4 step 4) if (currentCard.rank!! >= victimTeam[i]?.rank!!) return true
+                    }
+
+                    5 -> { // x xx -x-
+                        if (currentCard.rank!! >= victimTeam[1]?.rank!!) return true
+                    }
+
+                    6 -> { // x xx x--
+                        for (i in 2..3) if (currentCard.rank!! >= victimTeam[i]?.rank!!) return true
+                    }
+
+                    7 -> { // x xx ---
+                        for (i in 3..4) if (currentCard.rank!! >= victimTeam[i]?.rank!!) return true
+                    }
+                    else -> { // An alone defender
+                        return true
+                    }
+                }
+            }
         }
 
-        thisCase.removeAt(thisCase.last()) // Removing goalie, not needed for cases
-
-//        thisCase.let { thisCase -> // FIXME
-//            cases.forEach {
-//                if (it == thisCase) }
-//        }
-
-        return true
+        return false
     }
 
     class Cases {
         companion object {
             val cases = mutableListOf<List<Int>>().apply {
-                add(0, listOf(0, 1, 2, 3, 4)) // ( 0, 1, 2)
-                add(1, listOf(1, 2, 3, 4)) // (1, 2, 3)
-                add(2, listOf(0, 2, 3, 4)) // (0, 2)
-                add(3, listOf(0, 1, 3, 4)) // (0, 1)
-                add(4, listOf(0, 3, 4)) // (0, 4)
-                add(5, listOf(1, 3, 4)) // (1)
-                add(6, listOf(2, 3, 4)) // (2, 4)
-                add(7, listOf(3, 4)) // (3, 4)
-                add(8, listOf(4)) // (4) // FIXME This case and 9 probably not needed, since it is free to shoot at the goalie
-                add(9, listOf(3)) // (3)
+                add(0, listOf(0, 1, 2, 3, 4, 5)) // ( 0, 1, 2)
+                add(1, listOf(1, 2, 3, 4, 5)) // (1, 2, 3)
+                add(2, listOf(0, 2, 3, 4, 5)) // (0, 2)
+                add(3, listOf(0, 1, 3, 4, 5)) // (0, 1)
+                add(4, listOf(0, 3, 4, 5)) // (0, 4)
+                add(5, listOf(1, 3, 4, 5)) // (1)
+                add(6, listOf(2, 3, 4, 5)) // (2, 3)
+                add(7, listOf(3, 4, 5)) // (3, 4)
+                add(8, listOf(3, 5))
+                add(9, listOf(4, 5))
+                add(10, listOf(0, 3, 5))
+                add(11, listOf(2, 4, 5))
+                add(12, listOf(5))
             }
         }
     }

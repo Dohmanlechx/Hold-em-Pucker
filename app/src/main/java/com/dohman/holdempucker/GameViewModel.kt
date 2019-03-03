@@ -26,8 +26,9 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     // ----- Notify functions ----- //
-    private fun notifyPickedCard() {
+    private fun notifyPickedCard(pickedCard: Card) {
         pickedCardNotifier.value = resIdOfCard(pickedCard)
+        currentCard = pickedCard
     }
 
     private fun notifyGoalie() {
@@ -48,18 +49,21 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         }
 
         pickedCard.let {
-            notifyPickedCard()
-            currentCard = it
+            notifyPickedCard(it)
+            //currentCard = it
             removeCardFromDeck()
         }
 
         if (GameActivity.isOngoingGame) {
-            if (!GameLogic.isTherePossibleMove(GameActivity.whoseTurn)) {
+            while (!GameLogic.isTherePossibleMove(GameActivity.whoseTurn, currentCard)) {
                 Toast.makeText(
                     getApplication<Application>().applicationContext,
-                    "No possible move. Switching turn...",
-                    Toast.LENGTH_SHORT
+                    "No possible move. Card (Rank ${currentCard.rank}) discarded, Switching turn...",
+                    Toast.LENGTH_LONG
                 ).show()// FIXME
+                removeCardFromDeck()
+                GameActivity.WhoseTurn.toggleTurn()
+                notifyPickedCard(pickedCard)
             }
         }
     }
@@ -124,7 +128,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         if (GameLogic.attack(currentCard, victimTeam, spotIndex)) {
             view.setImageResource(R.drawable.skull)
             view.tag = Integer.valueOf(R.drawable.skull)
-            removeCardFromDeck()
+            //removeCardFromDeck()
             showPickedCard(doNotToggleTurn = true)
             return true
         }
