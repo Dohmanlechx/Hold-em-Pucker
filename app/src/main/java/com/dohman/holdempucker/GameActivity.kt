@@ -16,11 +16,11 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
         setContentView(R.layout.activity_game)
         vm = ViewModelProviders.of(this).get(GameViewModel::class.java)
 
-        vm.pickedCardNotifier.observe(this, Observer {
-            card_picked.setImageResource(it)
-            txt_whoseturn.text = whoseTurn.name
-        })
+        vm.whoseTurnNotifier.observe(this, Observer { txt_whoseturn.text = it })
+
+        vm.pickedCardNotifier.observe(this, Observer { card_picked.setImageResource(it) })
         vm.cardsCountNotifier.observe(this, Observer { cards_left.text = it.toString() })
+
         vm.nfyBtmGoalie.observe(this, Observer { if (it) card_bm_goalie.setImageResource(R.drawable.red_back) })
         vm.nfyTopGoalie.observe(this, Observer { if (it) card_top_goalie.setImageResource(R.drawable.red_back) })
 
@@ -73,6 +73,8 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
                             if (vm.attack(teamTop, 5, card_top_goalie)) {
                                 teamBottomScore++
                                 vm.updateScores(top_team_score, bm_team_score)
+                            } else {
+                                vm.goalieAttacked(teamTop)
                             }
                         }
                     }
@@ -105,6 +107,8 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
                             if (vm.attack(teamBottom, 5, card_bm_goalie)) {
                                 teamTopScore++
                                 vm.updateScores(top_team_score, bm_team_score)
+                            } else {
+                                vm.goalieAttacked(teamBottom)
                             }
                         }
                     }
@@ -159,6 +163,8 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
         const val TAG = "DBG: GameActivity.kt"
 
         var isOngoingGame = false // Set to true when all cards are laid out
+        var restoringPlayers = false // Set to true when a team need to lay out new cards to fulfill
+        var areTeamsReadyToStartPeriod = false // Set to true as soon as both teams are full in the very beginning
         var whoseTurn = WhoseTurn.TOP
         var teamTopScore: Int = 0
         var teamBottomScore: Int = 0

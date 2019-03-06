@@ -12,8 +12,10 @@ import com.dohman.holdempucker.util.GameLogic
 
 class GameViewModel(application: Application) : AndroidViewModel(application) {
     private val cardDeck = CardDeck().cardDeck
-    private var pickedCard: Card = cardDeck.first()
-    private lateinit var currentCard: Card
+    private var firstCardInDeck: Card = cardDeck.first()
+//    private var pickedCard: Card = firstCardInDeck
+
+    val whoseTurnNotifier = MutableLiveData<String>()
 
     val pickedCardNotifier = MutableLiveData<Int>()
     val cardsCountNotifier = MutableLiveData<Int>()
@@ -26,9 +28,8 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     // ----- Notify functions ----- //
-    private fun notifyPickedCard(pickedCard: Card) {
-        pickedCardNotifier.value = resIdOfCard(pickedCard)
-        currentCard = pickedCard
+    private fun notifyPickedCard() {
+        pickedCardNotifier.value = resIdOfCard(firstCardInDeck)
     }
 
     private fun notifyGoalie() {
@@ -40,67 +41,81 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
 
     // ----- Private functions ----- //
     fun showPickedCard(doNotToggleTurn: Boolean = false) { // FIXME set private
-        checkIfTeamsAreReady()
-        if (!doNotToggleTurn) toggleTurn()
+        if (!doNotToggleTurn && !GameActivity.restoringPlayers) toggleTurn()
 
-        if (!isGoalieThere(pickedCard)) { // If returned false, goalie is added
+        if (!GameActivity.areTeamsReadyToStartPeriod) {
+            areTeamsReady()
+        } else {
+            if (isThisTeamReady() && !GameActivity.isOngoingGame) {
+                GameActivity.isOngoingGame = true
+            }
+        }
+
+        if (!isGoalieThereOrAdd(firstCardInDeck)) { // If returned false, goalie is added
             showPickedCard()
             return
         }
 
-        pickedCard.let {
-            notifyPickedCard(it)
-            //currentCard = it
+        while (GameActivity.isOngoingGame && !GameLogic.isTherePossibleMove(GameActivity.whoseTurn, firstCardInDeck)) {
+            Toast.makeText(
+                getApplication<Application>().applicationContext,
+                "No possible move. Card (Rank ${firstCardInDeck.rank}) discarded, Switching turn...",
+                Toast.LENGTH_LONG
+            ).show()// FIXME
+            toggleTurn()
             removeCardFromDeck()
-        }
 
-        if (GameActivity.isOngoingGame) {
-            while (!GameLogic.isTherePossibleMove(GameActivity.whoseTurn, currentCard)) {
-                Toast.makeText(
-                    getApplication<Application>().applicationContext,
-                    "No possible move. Card (Rank ${currentCard.rank}) discarded, Switching turn...",
-                    Toast.LENGTH_LONG
-                ).show()// FIXME
-                removeCardFromDeck()
-                GameActivity.WhoseTurn.toggleTurn()
-                notifyPickedCard(pickedCard)
+            if (!isThisTeamReady()) {
+                GameActivity.isOngoingGame = false
+                GameActivity.restoringPlayers = true
             }
         }
+
     }
+
 
     fun removeCardFromDeck() { // FIXME set private
         if (cardDeck.isEmpty()) {
             //halfTime() // FIXME
         } else {
-            cardDeck.remove(pickedCard)
-            pickedCard = cardDeck.first()
+            cardDeck.remove(firstCardInDeck)
+            firstCardInDeck = cardDeck.first()
+            notifyPickedCard()
             cardsCountNotifier.value = cardDeck.size
         }
     }
 
-    private fun isGoalieThere(goalieCard: Card): Boolean {
+    private fun isGoalieThereOrAdd(goalieCard: Card): Boolean {
         if (GameLogic.isGoalieThere(goalieCard)) return true
 
         notifyGoalie()
         removeCardFromDeck()
-        Toast.makeText( // FIXME Remove later
-            getApplication<Application>().applicationContext,
-            "Goalie ${GameActivity.whoseTurn} added!", Toast.LENGTH_SHORT
-        ).show()
 
         return false // But goalie is added now
     }
 
     private fun setPlayerInTeam(team: Array<Card?>, spotIndex: Int) {
-        team[spotIndex] = currentCard
+        team[spotIndex] = firstCardInDeck
+        removeCardFromDeck()
         showPickedCard()
     }
 
-    private fun checkIfTeamsAreReady(): Boolean {
+    private fun areTeamsReady(): Boolean {
         GameActivity.teamBottom.forEach { if (it == null) return false }
         GameActivity.teamTop.forEach { if (it == null) return false }
 
         GameActivity.isOngoingGame = true
+        GameActivity.areTeamsReadyToStartPeriod = true
+        return true
+    }
+
+    private fun isThisTeamReady(): Boolean {
+        val teamToCheck =
+            if (GameActivity.whoseTurn == GameActivity.WhoseTurn.BOTTOM) GameActivity.teamBottom else GameActivity.teamTop
+
+        teamToCheck.forEach { if (it == null) return false }
+
+        GameActivity.restoringPlayers = false
         return true
     }
 
@@ -114,6 +129,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
 
     private fun toggleTurn() {
         GameActivity.WhoseTurn.toggleTurn()
+        whoseTurnNotifier.value = GameActivity.whoseTurn.name
     }
 
     // ----- Public functions ----- //
@@ -125,15 +141,40 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     fun attack(victimTeam: Array<Card?>, spotIndex: Int, view: AppCompatImageView): Boolean {
         if (view.tag == Integer.valueOf(R.drawable.skull)) return false
 
-        if (GameLogic.attack(currentCard, victimTeam, spotIndex)) {
+        if (GameLogic.attack(firstCardInDeck, victimTeam, spotIndex) && spotIndex == 5) {
+            // Goalie is attacked and it is Goal!
+            Toast.makeText(
+                getApplication<Application>().applicationContext,
+                "Goal! Added new goalie.",
+                Toast.LENGTH_LONG
+            ).show()
+            GameActivity.isOngoingGame = false
+            GameActivity.restoringPlayers = true
+            removeCardFromDeck()
+            showPickedCard()
+            return true
+        } else if (GameLogic.attack(firstCardInDeck, victimTeam, spotIndex)) {
             view.setImageResource(R.drawable.skull)
             view.tag = Integer.valueOf(R.drawable.skull)
-            //removeCardFromDeck()
+            removeCardFromDeck()
             showPickedCard(doNotToggleTurn = true)
             return true
         }
 
         return false
+    }
+
+    fun goalieAttacked(victimTeam: Array<Card?>) {
+        Toast.makeText(
+            getApplication<Application>().applicationContext,
+            "Not goal. Goalie too strong. Added new goalie.",
+            Toast.LENGTH_LONG
+        ).show()
+        victimTeam[5] = null
+        GameActivity.isOngoingGame = false
+        GameActivity.restoringPlayers = true
+        removeCardFromDeck()
+        showPickedCard()
     }
 
     fun areEnoughForwardsOut(victimTeam: Array<Card?>, defenderPos: Int): Boolean {
@@ -145,8 +186,9 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun addPlayer(view: AppCompatImageView, team: Array<Card?>, spotIndex: Int) {
-        if (view.drawable != null) return
-        view.setImageResource(resIdOfCard(currentCard))
+        if (view.tag == Integer.valueOf(R.drawable.skull) && GameActivity.isOngoingGame) return
+        view.setImageResource(resIdOfCard(firstCardInDeck))
+        view.tag = null
         setPlayerInTeam(team, spotIndex)
     }
 

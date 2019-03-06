@@ -9,7 +9,8 @@ object GameLogic {
     fun isGoalieThere(goalieCard: Card): Boolean {
         val team =
             if (GameActivity.whoseTurn == GameActivity.WhoseTurn.BOTTOM) GameActivity.teamBottom else GameActivity.teamTop
-        team.let { if (!it.all { element -> element == null }) return true else it[5] = goalieCard }
+        //team.let { if (!it.all { element -> element == null }) return true else it[5] = goalieCard }
+        team.let { if (it[5] != null) return true else it[5] = goalieCard }
 
         return false // But goalie is added now
     }
@@ -59,7 +60,6 @@ object GameLogic {
             // Looking after survivors
             if (card != null) currentCase.add(index)
         }
-        //currentCase.removeAt(currentCase.last())
 
         cases.forEachIndexed { index, case ->
             if (case == currentCase) {
@@ -116,6 +116,8 @@ object GameLogic {
                 add(5, listOf(1, 3, 4, 5)) // (1)
                 add(6, listOf(2, 3, 4, 5)) // (2, 3)
                 add(7, listOf(3, 4, 5)) // (3, 4)
+                // Below cases are not being checked, but needed so the attacker
+                // can continue playing his turn.
                 add(8, listOf(3, 5))
                 add(9, listOf(4, 5))
                 add(10, listOf(0, 3, 5))
