@@ -3,6 +3,7 @@ package com.dohman.holdempucker
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
+import androidx.appcompat.widget.AppCompatImageView
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.dohman.holdempucker.cards.Card
@@ -16,6 +17,8 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
         setContentView(R.layout.activity_game)
         vm = ViewModelProviders.of(this).get(GameViewModel::class.java)
 
+        vm.halfTimeNotifier.observe(this, Observer { clearAllCards(it) })
+
         vm.whoseTurnNotifier.observe(this, Observer { txt_whoseturn.text = it })
 
         vm.pickedCardNotifier.observe(this, Observer { card_picked.setImageResource(it) })
@@ -25,6 +28,8 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
         vm.nfyTopGoalie.observe(this, Observer { if (it) card_top_goalie.setImageResource(R.drawable.red_back) })
 
         vm.updateScores(top_team_score, bm_team_score)
+
+        btn_debug.setOnClickListener(this)
 
         setOnClickListeners()
     }
@@ -45,6 +50,51 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
         card_bm_goalie.setOnClickListener(this)
 
         btn_debug.setOnClickListener(this)
+    }
+
+    private fun gameOver() {
+        card_top_forward_left.setOnClickListener(null)
+        card_top_center.setOnClickListener(null)
+        card_top_forward_right.setOnClickListener(null)
+        card_top_defender_left.setOnClickListener(null)
+        card_top_defender_right.setOnClickListener(null)
+        card_top_goalie.setOnClickListener(null)
+
+        card_bm_forward_left.setOnClickListener(null)
+        card_bm_center.setOnClickListener(null)
+        card_bm_forward_right.setOnClickListener(null)
+        card_bm_defender_left.setOnClickListener(null)
+        card_bm_defender_right.setOnClickListener(null)
+        card_bm_goalie.setOnClickListener(null)
+
+        btn_debug.setOnClickListener(null)
+    }
+
+    private fun clearAllCards(nextPeriod: Int) {
+        period + nextPeriod
+
+        if (period > 3 && (teamBottomScore != teamTopScore)) {
+            if (teamBottomScore > teamTopScore) btn_debug.text = "Bottom won!" else "Top won!"
+            gameOver()
+        } else {
+            btn_debug.text = "Period: $period"
+
+            whoseTurn = if (whoseTeamStartedLastPeriod == WhoseTurn.BOTTOM) WhoseTurn.TOP else WhoseTurn.BOTTOM
+
+            card_top_forward_left.setImageResource(android.R.color.transparent)
+            card_top_center.setImageResource(android.R.color.transparent)
+            card_top_forward_right.setImageResource(android.R.color.transparent)
+            card_top_defender_left.setImageResource(android.R.color.transparent)
+            card_top_defender_right.setImageResource(android.R.color.transparent)
+            card_top_goalie.setImageResource(android.R.color.transparent)
+
+            card_bm_forward_left.setImageResource(android.R.color.transparent)
+            card_bm_center.setImageResource(android.R.color.transparent)
+            card_bm_forward_right.setImageResource(android.R.color.transparent)
+            card_bm_defender_left.setImageResource(android.R.color.transparent)
+            card_bm_defender_right.setImageResource(android.R.color.transparent)
+            card_bm_goalie.setImageResource(android.R.color.transparent)
+        }
     }
 
     override fun onClick(v: View) {
@@ -74,12 +124,12 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
                                 teamBottomScore++
                                 vm.updateScores(top_team_score, bm_team_score)
                             } else {
-                                vm.goalieAttacked(teamTop)
+                                vm.goalieSaved(teamTop)
                             }
                         }
                     }
                     R.id.btn_debug -> {
-                        //vm.removeCardFromDeck()
+                        vm.removeCardFromDeck()
                         vm.showPickedCard()
                     }
                 }
@@ -108,12 +158,12 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
                                 teamTopScore++
                                 vm.updateScores(top_team_score, bm_team_score)
                             } else {
-                                vm.goalieAttacked(teamBottom)
+                                vm.goalieSaved(teamBottom)
                             }
                         }
                     }
                     R.id.btn_debug -> {
-                        //vm.removeCardFromDeck()
+                        vm.removeCardFromDeck()
                         vm.showPickedCard()
                     }
                 }
@@ -162,10 +212,12 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
     companion object {
         const val TAG = "DBG: GameActivity.kt"
 
+        var period = 1
         var isOngoingGame = false // Set to true when all cards are laid out
         var restoringPlayers = false // Set to true when a team need to lay out new cards to fulfill
         var areTeamsReadyToStartPeriod = false // Set to true as soon as both teams are full in the very beginning
         var whoseTurn = WhoseTurn.TOP
+        var whoseTeamStartedLastPeriod = WhoseTurn.BOTTOM
         var teamTopScore: Int = 0
         var teamBottomScore: Int = 0
         val teamTop = arrayOfNulls<Card>(6)

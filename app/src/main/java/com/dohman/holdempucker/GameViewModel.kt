@@ -1,6 +1,7 @@
 package com.dohman.holdempucker
 
 import android.app.Application
+import android.os.Handler
 import android.widget.Toast
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
@@ -11,9 +12,10 @@ import com.dohman.holdempucker.cards.CardDeck
 import com.dohman.holdempucker.util.GameLogic
 
 class GameViewModel(application: Application) : AndroidViewModel(application) {
-    private val cardDeck = CardDeck().cardDeck
+    private var cardDeck = CardDeck().cardDeck
     private var firstCardInDeck: Card = cardDeck.first()
-//    private var pickedCard: Card = firstCardInDeck
+
+    val halfTimeNotifier = MutableLiveData<Int>()
 
     val whoseTurnNotifier = MutableLiveData<String>()
 
@@ -41,7 +43,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
 
     // ----- Private functions ----- //
     fun showPickedCard(doNotToggleTurn: Boolean = false) { // FIXME set private
-        if (!doNotToggleTurn && !GameActivity.restoringPlayers) toggleTurn()
+        if ((!doNotToggleTurn && !GameActivity.restoringPlayers) || !GameActivity.areTeamsReadyToStartPeriod) toggleTurn()
 
         if (!GameActivity.areTeamsReadyToStartPeriod) {
             areTeamsReady()
@@ -75,10 +77,18 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
 
 
     fun removeCardFromDeck() { // FIXME set private
+        cardDeck.remove(firstCardInDeck)
         if (cardDeck.isEmpty()) {
-            //halfTime() // FIXME
+            cardDeck = CardDeck().cardDeck
+            for (index in 0..5) {
+                GameActivity.teamBottom[index] = null
+                GameActivity.teamTop[index] = null
+            }
+            halfTimeNotifier.value = 1
+            GameActivity.isOngoingGame = false
+            GameActivity.areTeamsReadyToStartPeriod = false
+            showPickedCard(doNotToggleTurn = true)
         } else {
-            cardDeck.remove(firstCardInDeck)
             firstCardInDeck = cardDeck.first()
             notifyPickedCard()
             cardsCountNotifier.value = cardDeck.size
@@ -139,7 +149,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun attack(victimTeam: Array<Card?>, spotIndex: Int, view: AppCompatImageView): Boolean {
-        if (view.tag == Integer.valueOf(R.drawable.skull)) return false
+        if (view.tag == Integer.valueOf(android.R.color.transparent)) return false
 
         if (GameLogic.attack(firstCardInDeck, victimTeam, spotIndex) && spotIndex == 5) {
             // Goalie is attacked and it is Goal!
@@ -148,14 +158,15 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
                 "Goal! Added new goalie.",
                 Toast.LENGTH_LONG
             ).show()
+            toggleTurn()
             GameActivity.isOngoingGame = false
             GameActivity.restoringPlayers = true
             removeCardFromDeck()
             showPickedCard()
             return true
         } else if (GameLogic.attack(firstCardInDeck, victimTeam, spotIndex)) {
-            view.setImageResource(R.drawable.skull)
-            view.tag = Integer.valueOf(R.drawable.skull)
+            view.setImageResource(android.R.color.transparent)
+            view.tag = Integer.valueOf(android.R.color.transparent)
             removeCardFromDeck()
             showPickedCard(doNotToggleTurn = true)
             return true
@@ -164,17 +175,20 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         return false
     }
 
-    fun goalieAttacked(victimTeam: Array<Card?>) {
+    fun goalieSaved(victimTeam: Array<Card?>) {
         Toast.makeText(
             getApplication<Application>().applicationContext,
             "Not goal. Goalie too strong. Added new goalie.",
             Toast.LENGTH_LONG
         ).show()
-        victimTeam[5] = null
-        GameActivity.isOngoingGame = false
-        GameActivity.restoringPlayers = true
-        removeCardFromDeck()
-        showPickedCard()
+        Handler().postDelayed({
+            toggleTurn()
+            victimTeam[5] = null
+            GameActivity.isOngoingGame = false
+            GameActivity.restoringPlayers = true
+            removeCardFromDeck()
+            showPickedCard()
+        }, 2000)
     }
 
     fun areEnoughForwardsOut(victimTeam: Array<Card?>, defenderPos: Int): Boolean {
@@ -186,7 +200,8 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun addPlayer(view: AppCompatImageView, team: Array<Card?>, spotIndex: Int) {
-        if (view.tag == Integer.valueOf(R.drawable.skull) && GameActivity.isOngoingGame) return
+        if ((view.tag == Integer.valueOf(android.R.color.transparent) && GameActivity.isOngoingGame)
+            || team[spotIndex] != null) return
         view.setImageResource(resIdOfCard(firstCardInDeck))
         view.tag = null
         setPlayerInTeam(team, spotIndex)
