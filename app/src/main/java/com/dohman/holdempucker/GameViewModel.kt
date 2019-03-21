@@ -80,6 +80,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         cardDeck.remove(firstCardInDeck)
         if (cardDeck.isEmpty()) {
             cardDeck = CardDeck().cardDeck
+            firstCardInDeck = cardDeck.first()
             for (index in 0..5) {
                 GameActivity.teamBottom[index] = null
                 GameActivity.teamTop[index] = null

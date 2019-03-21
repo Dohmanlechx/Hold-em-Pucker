@@ -71,7 +71,7 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun clearAllCards(nextPeriod: Int) {
-        period + nextPeriod
+        period += nextPeriod
 
         if (period > 3 && (teamBottomScore != teamTopScore)) {
             if (teamBottomScore > teamTopScore) btn_debug.text = "Bottom won!" else "Top won!"
