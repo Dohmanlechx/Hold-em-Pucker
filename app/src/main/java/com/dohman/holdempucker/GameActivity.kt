@@ -2,14 +2,9 @@ package com.dohman.holdempucker
 
 import android.animation.Animator
 import android.animation.ObjectAnimator
-import android.graphics.Path
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
-import android.view.ViewGroup
-import android.view.animation.Animation
-import androidx.appcompat.widget.AppCompatImageView
-import androidx.core.animation.addListener
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.dohman.holdempucker.cards.Card
@@ -26,8 +21,8 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
         vm = ViewModelProviders.of(this).get(GameViewModel::class.java)
 
         vm.halfTimeNotifier.observe(this, Observer { clearAllCards(it) })
-        vm.whoseTurnNotifier.observe(this, Observer { txt_whoseturn.text = it })
-        vm.pickedCardNotifier.observe(this, Observer { /*card_picked.setImageResource(it)*/ animateCard(it) })
+        vm.whoseTurnNotifier.observe(this, Observer { turnSwitch(it) })
+        vm.pickedCardNotifier.observe(this, Observer { animateCard(it) })
         vm.cardsCountNotifier.observe(this, Observer { cards_left.text = it.toString() })
         vm.nfyBtmGoalie.observe(this, Observer { if (it) card_bm_goalie.setImageResource(R.drawable.red_back) })
         vm.nfyTopGoalie.observe(this, Observer { if (it) card_top_goalie.setImageResource(R.drawable.red_back) })
@@ -53,7 +48,7 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
                 start()
             }
 
-            ObjectAnimator.ofFloat(it, View.TRANSLATION_Y, 50f).apply {
+            ObjectAnimator.ofFloat(it, View.TRANSLATION_Y, 70f).apply {
                 addListener(object : Animator.AnimatorListener {
                     override fun onAnimationStart(animation: Animator?) { isAnimationRunning = true }
                     override fun onAnimationCancel(animation: Animator?) {}
@@ -69,6 +64,12 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
         }
 
 
+    }
+
+    private fun turnSwitch(team: String) {
+        txt_whoseturn.text = team
+        val resId = if (team.toLowerCase() == "bottom") R.drawable.gradient_bottom else R.drawable.gradient_top
+        board_layout.setBackgroundResource(resId)
     }
 
     private fun setOnClickListeners() {
@@ -111,7 +112,7 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
         period += nextPeriod
 
         if (period > 3 && (teamBottomScore != teamTopScore)) {
-            if (teamBottomScore > teamTopScore) btn_debug.text = "Bottom won!" else "Top won!"
+            if (teamBottomScore > teamTopScore) btn_debug.text = "Bottom won!" else btn_debug.text = "Top won!"
             gameOver()
         } else {
             btn_debug.text = "Period: $period"
