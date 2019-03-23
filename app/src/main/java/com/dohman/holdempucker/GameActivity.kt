@@ -5,6 +5,7 @@ import android.animation.ObjectAnimator
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
+import android.view.WindowManager
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.dohman.holdempucker.cards.Card
@@ -17,6 +18,7 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN)
         setContentView(R.layout.activity_game)
         vm = ViewModelProviders.of(this).get(GameViewModel::class.java)
 
@@ -43,12 +45,12 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
         }
 
         flip_view.let {
-            ObjectAnimator.ofFloat(it, View.TRANSLATION_Y, 0f).apply {
+            ObjectAnimator.ofFloat(it, View.TRANSLATION_X, 0f).apply {
                 duration = 0
                 start()
             }
 
-            ObjectAnimator.ofFloat(it, View.TRANSLATION_Y, 70f).apply {
+            ObjectAnimator.ofFloat(it, View.TRANSLATION_X, 60f).apply {
                 addListener(object : Animator.AnimatorListener {
                     override fun onAnimationStart(animation: Animator?) { isAnimationRunning = true }
                     override fun onAnimationCancel(animation: Animator?) {}
@@ -58,7 +60,7 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
                         isAnimationRunning = false
                     }
                 })
-                duration = 150
+                duration = 100
                 start()
             }
         }
