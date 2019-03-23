@@ -67,7 +67,7 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun turnSwitch(team: String) {
-        txt_whoseturn.text = team
+//        txt_whoseturn.text = team
         val resId = if (team.toLowerCase() == "bottom") R.drawable.gradient_bottom else R.drawable.gradient_top
         board_layout.setBackgroundResource(resId)
     }

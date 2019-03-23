@@ -76,16 +76,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     fun removeCardFromDeck() { // FIXME set private
         cardDeck.remove(firstCardInDeck)
         if (cardDeck.isEmpty()) {
-            cardDeck = CardDeck().cardDeck
-            firstCardInDeck = cardDeck.first()
-            for (index in 0..5) {
-                GameActivity.teamBottom[index] = null
-                GameActivity.teamTop[index] = null
-            }
-            halfTimeNotifier.value = 1
-            GameActivity.isOngoingGame = false
-            GameActivity.areTeamsReadyToStartPeriod = false
-            showPickedCard(doNotToggleTurn = true)
+            halfTime()
         } else {
             firstCardInDeck = cardDeck.first()
             notifyPickedCard()
@@ -135,6 +126,34 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    private fun halfTime() {
+        cardDeck = CardDeck().cardDeck
+        firstCardInDeck = cardDeck.first()
+        for (index in 0..5) {
+            GameActivity.teamBottom[index] = null
+            GameActivity.teamTop[index] = null
+        }
+        halfTimeNotifier.value = 1
+        GameActivity.isOngoingGame = false
+        GameActivity.areTeamsReadyToStartPeriod = false
+        showPickedCard(doNotToggleTurn = true)
+    }
+
+    private fun areThereEnoughCards(team: Array<Card?>): Boolean {
+        val amountOfNulls = team.filter { it == null }.size
+        if ((amountOfNulls + 4) > cardDeck.size) { // 4 is the minimum amount to score an goal
+            halfTime()
+            Toast.makeText(
+                getApplication<Application>().applicationContext,
+                "Not enough cards. New period started.",
+                Toast.LENGTH_LONG
+            ).show()
+            return false
+        }
+
+        return true
+    }
+
     private fun toggleTurn() {
         GameActivity.WhoseTurn.toggleTurn()
         whoseTurnNotifier.value = GameActivity.whoseTurn.name
@@ -149,11 +168,12 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     fun attack(victimTeam: Array<Card?>, spotIndex: Int, view: AppCompatImageView): Boolean {
         if (view.tag == Integer.valueOf(android.R.color.transparent)) return false
 
+        val goalieRank = victimTeam[5]?.rank
         if (GameLogic.attack(firstCardInDeck, victimTeam, spotIndex) && spotIndex == 5) {
             // Goalie is attacked and it is Goal!
             Toast.makeText(
                 getApplication<Application>().applicationContext,
-                "Goal! Added new goalie.",
+                "Goal against goalie (Rank: $goalieRank)! Added new goalie.",
                 Toast.LENGTH_LONG
             ).show()
             toggleTurn()
@@ -176,7 +196,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     fun goalieSaved(victimTeam: Array<Card?>) {
         Toast.makeText(
             getApplication<Application>().applicationContext,
-            "Not goal. Goalie too strong. Added new goalie.",
+            "Not goal. Goalie (Rank: ${victimTeam[5]?.rank}) too strong. Added new goalie.",
             Toast.LENGTH_LONG
         ).show()
         Handler().postDelayed({
@@ -198,8 +218,9 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun addPlayer(view: AppCompatImageView, team: Array<Card?>, spotIndex: Int) {
-        if ((view.tag == Integer.valueOf(android.R.color.transparent) && GameActivity.isOngoingGame)
-            || team[spotIndex] != null) return
+        if (cardDeck.size <= 8 && !areThereEnoughCards(team)) return
+
+        if ((view.tag == Integer.valueOf(android.R.color.transparent) && GameActivity.isOngoingGame) || team[spotIndex] != null) return
         view.setImageResource(resIdOfCard(firstCardInDeck))
         view.tag = null
         setPlayerInTeam(team, spotIndex)
