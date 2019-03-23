@@ -1,16 +1,24 @@
 package com.dohman.holdempucker
 
+import android.animation.Animator
+import android.animation.ObjectAnimator
+import android.graphics.Path
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
+import android.view.ViewGroup
+import android.view.animation.Animation
 import androidx.appcompat.widget.AppCompatImageView
+import androidx.core.animation.addListener
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.dohman.holdempucker.cards.Card
 import kotlinx.android.synthetic.main.activity_game.*
 
 class GameActivity : AppCompatActivity(), View.OnClickListener {
-    lateinit var vm: GameViewModel
+    private lateinit var vm: GameViewModel
+
+    private var isAnimationRunning = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -18,20 +26,49 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
         vm = ViewModelProviders.of(this).get(GameViewModel::class.java)
 
         vm.halfTimeNotifier.observe(this, Observer { clearAllCards(it) })
-
         vm.whoseTurnNotifier.observe(this, Observer { txt_whoseturn.text = it })
-
-        vm.pickedCardNotifier.observe(this, Observer { card_picked.setImageResource(it) })
+        vm.pickedCardNotifier.observe(this, Observer { /*card_picked.setImageResource(it)*/ animateCard(it) })
         vm.cardsCountNotifier.observe(this, Observer { cards_left.text = it.toString() })
-
         vm.nfyBtmGoalie.observe(this, Observer { if (it) card_bm_goalie.setImageResource(R.drawable.red_back) })
         vm.nfyTopGoalie.observe(this, Observer { if (it) card_top_goalie.setImageResource(R.drawable.red_back) })
 
         vm.updateScores(top_team_score, bm_team_score)
 
         btn_debug.setOnClickListener(this)
-
         setOnClickListeners()
+    }
+
+    private fun animateCard(resId: Int) {
+        if (flip_view.isBackSide) {
+            card_deck.setImageResource(resId)
+            card_picked.setImageResource(R.drawable.red_back_vertical)
+        } else {
+            card_picked.setImageResource(resId)
+            card_deck.setImageResource(R.drawable.red_back_vertical)
+        }
+
+        flip_view.let {
+            ObjectAnimator.ofFloat(it, View.TRANSLATION_Y, 0f).apply {
+                duration = 0
+                start()
+            }
+
+            ObjectAnimator.ofFloat(it, View.TRANSLATION_Y, 50f).apply {
+                addListener(object : Animator.AnimatorListener {
+                    override fun onAnimationStart(animation: Animator?) { isAnimationRunning = true }
+                    override fun onAnimationCancel(animation: Animator?) {}
+                    override fun onAnimationRepeat(animation: Animator?) {}
+                    override fun onAnimationEnd(animation: Animator?) {
+                        flip_view.flipTheView()
+                        isAnimationRunning = false
+                    }
+                })
+                duration = 150
+                start()
+            }
+        }
+
+
     }
 
     private fun setOnClickListeners() {
@@ -98,6 +135,7 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     override fun onClick(v: View) {
+        if (isAnimationRunning) return
         if (isOngoingGame) {
             if (whoseTurn == WhoseTurn.BOTTOM) {
                 when (v.id) {

@@ -16,12 +16,9 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     private var firstCardInDeck: Card = cardDeck.first()
 
     val halfTimeNotifier = MutableLiveData<Int>()
-
     val whoseTurnNotifier = MutableLiveData<String>()
-
     val pickedCardNotifier = MutableLiveData<Int>()
     val cardsCountNotifier = MutableLiveData<Int>()
-
     val nfyTopGoalie = MutableLiveData<Boolean>()
     val nfyBtmGoalie = MutableLiveData<Boolean>()
 
