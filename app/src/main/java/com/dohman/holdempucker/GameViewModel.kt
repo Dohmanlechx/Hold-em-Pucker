@@ -166,7 +166,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun attack(victimTeam: Array<Card?>, spotIndex: Int, view: AppCompatImageView): Boolean {
-//        if (view.tag == Integer.valueOf(android.R.color.transparent)) return false
+        if (view.tag == Integer.valueOf(android.R.color.transparent)) return false
 
         val goalieRank = victimTeam[5]?.rank
         if (GameLogic.attack(firstCardInDeck, victimTeam, spotIndex) && spotIndex == 5) {
@@ -183,8 +183,8 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
             showPickedCard()
             return true
         } else if (GameLogic.attack(firstCardInDeck, victimTeam, spotIndex)) {
-//            view.setImageResource(android.R.color.transparent)
-//            view.tag = Integer.valueOf(android.R.color.transparent)
+            view.setImageResource(android.R.color.transparent)
+            view.tag = Integer.valueOf(android.R.color.transparent)
             removeCardFromDeck()
             showPickedCard(doNotToggleTurn = true)
             return true

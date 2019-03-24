@@ -7,9 +7,9 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.view.WindowManager
-import android.view.animation.OvershootInterpolator
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.core.animation.doOnEnd
+import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.dohman.holdempucker.cards.Card
@@ -19,8 +19,9 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
     private lateinit var vm: GameViewModel
 
     private var isAnimationRunning = false
-    private var flipViewOriginalX: Float? = null
-    private var flipViewOriginalY: Float? = null
+    private var ranTooSoon = false
+    private var flipViewOriginalX: Float = 0f
+    private var flipViewOriginalY: Float = 0f
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,7 +39,8 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
         vm.updateScores(top_team_score, bm_team_score)
 
         flip_view.post {
-            flipViewOriginalX = flip_view.x
+            flip_view.bringToFront()
+            flipViewOriginalX = if (ranTooSoon) flip_view.x - 60f else flip_view.x
             flipViewOriginalY = flip_view.y
         }
 
@@ -56,17 +58,16 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
         }
 
         flip_view.let {
-            ObjectAnimator.ofFloat(it, View.TRANSLATION_X, 0f).apply {
-                duration = 0
-                start()
-            }
-
             ObjectAnimator.ofFloat(it, View.TRANSLATION_X, 60f).apply {
                 addListener(object : Animator.AnimatorListener {
-                    override fun onAnimationStart(animation: Animator?) { isAnimationRunning = true }
+                    override fun onAnimationStart(animation: Animator?) {
+                        isAnimationRunning = true
+                    }
+
                     override fun onAnimationCancel(animation: Animator?) {}
                     override fun onAnimationRepeat(animation: Animator?) {}
                     override fun onAnimationEnd(animation: Animator?) {
+                        ranTooSoon = true
                         flip_view.flipTheView()
                         isAnimationRunning = false
                     }
@@ -75,33 +76,32 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
                 start()
             }
         }
-
-
     }
 
     private fun restoreFlipViewPosition() {
-        flip_view.x = flipViewOriginalX!!
-        flip_view.y = flipViewOriginalY!!
+        flip_view.x = flipViewOriginalX
+        flip_view.y = flipViewOriginalY
     }
 
     private fun animateAddPlayer(targetView: AppCompatImageView, team: Array<Card?>, spotIndex: Int) {
         val set = AnimatorSet()
-        val animationX = ObjectAnimator.ofFloat(flip_view, View.TRANSLATION_X, targetView.x - flip_view.x)
+        val animationX = ObjectAnimator.ofFloat(flip_view, View.TRANSLATION_X, targetView.x - flip_view.x + 60f)
         val animationY = ObjectAnimator.ofFloat(flip_view, View.TRANSLATION_Y, targetView.y - flip_view.y)
 
         set.playTogether(animationX, animationY)
-        set.interpolator = OvershootInterpolator()
-        set.duration = 400
+        set.interpolator = FastOutSlowInInterpolator()
+        set.duration = 500
+        isAnimationRunning = true
         set.start()
 
         set.doOnEnd {
-            vm.playerAddedOnAnimationEnd(targetView, team, spotIndex)
             restoreFlipViewPosition()
+            vm.playerAddedOnAnimationEnd(targetView, team, spotIndex)
+            isAnimationRunning = false
         }
     }
 
     private fun turnSwitch(team: String) {
-//        txt_whoseturn.text = team
         val resId = if (team.toLowerCase() == "bottom") R.drawable.gradient_bottom else R.drawable.gradient_top
         board_layout.setBackgroundResource(resId)
     }
@@ -169,6 +169,11 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
         }
     }
 
+    private fun addPlayer(view: AppCompatImageView, team: Array<Card?>, spotIndex: Int) {
+        if (vm.addPlayer(view, team, spotIndex))
+            animateAddPlayer(view, team, spotIndex)
+    }
+
     override fun onClick(v: View) {
         if (isAnimationRunning) return
         if (isOngoingGame) {
@@ -177,10 +182,6 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
                     R.id.card_top_forward_left -> {
                         card_top_forward_left.let {
                             vm.attack(teamTop, 0, it)
-//                            if (vm.attack(teamTop, 0, it))
-//                            {
-//                                animateAddPlayer(it)
-//                            }
                         }
                     }
                     R.id.card_top_center -> {
@@ -248,43 +249,27 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
                 }
             }
         } else {
+            val spotIndex: Int
             if (whoseTurn == WhoseTurn.BOTTOM) {
-                when (v.id) {
-                    R.id.card_bm_forward_left -> {
-                        if (vm.addPlayer(card_bm_forward_left, teamBottom, 0)) animateAddPlayer(card_bm_forward_left, teamBottom, 0)
-                    }
-                    R.id.card_bm_center -> {
-                        vm.addPlayer(card_bm_center, teamBottom, 1)
-                    }
-                    R.id.card_bm_forward_right -> {
-                        vm.addPlayer(card_bm_forward_right, teamBottom, 2)
-                    }
-                    R.id.card_bm_defender_left -> {
-                        vm.addPlayer(card_bm_defender_left, teamBottom, 3)
-                    }
-                    R.id.card_bm_defender_right -> {
-                        vm.addPlayer(card_bm_defender_right, teamBottom, 4)
-                    }
+                spotIndex = when (v.id) {
+                    R.id.card_bm_forward_left -> 0
+                    R.id.card_bm_center -> 1
+                    R.id.card_bm_forward_right -> 2
+                    R.id.card_bm_defender_left -> 3
+                    R.id.card_bm_defender_right -> 4
+                    else -> return
                 }
             } else {
-                when (v.id) {
-                    R.id.card_top_forward_left -> {
-                        if (vm.addPlayer(card_top_forward_left, teamTop, 0)) animateAddPlayer(card_top_forward_left, teamTop, 0)
-                    }
-                    R.id.card_top_center -> {
-                        vm.addPlayer(card_top_center, teamTop, 1)
-                    }
-                    R.id.card_top_forward_right -> {
-                        vm.addPlayer(card_top_forward_right, teamTop, 2)
-                    }
-                    R.id.card_top_defender_left -> {
-                        vm.addPlayer(card_top_defender_left, teamTop, 3)
-                    }
-                    R.id.card_top_defender_right -> {
-                        vm.addPlayer(card_top_defender_right, teamTop, 4)
-                    }
+                spotIndex = when (v.id) {
+                    R.id.card_top_forward_left -> 0
+                    R.id.card_top_center -> 1
+                    R.id.card_top_forward_right -> 2
+                    R.id.card_top_defender_left -> 3
+                    R.id.card_top_defender_right -> 4
+                    else -> return
                 }
             }
+            addPlayer(findViewById(v.id), if (whoseTurn == WhoseTurn.BOTTOM) teamBottom else teamTop, spotIndex)
         }
     }
 

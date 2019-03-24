@@ -7,7 +7,7 @@
     <!--GAME ACTIVITY-->
     <color name="board">#1ACA1D</color>
     <color name="black">#000</color>
-    <color name="victim">#0F530F</color>
-    <color name="white">#0020FF</color>
+    <color name="victim">#0D3D0D</color>
+    <color name="white">#FFFFFF</color>
     <color name="transparent">#00FFFFFF</color>
 </resources>
