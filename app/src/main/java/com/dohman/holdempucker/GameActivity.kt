@@ -7,9 +7,11 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.view.WindowManager
+import android.view.animation.AnticipateInterpolator
+import android.view.animation.LinearInterpolator
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.core.animation.doOnEnd
-import androidx.interpolator.view.animation.FastOutSlowInInterpolator
+import androidx.interpolator.view.animation.LinearOutSlowInInterpolator
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.dohman.holdempucker.cards.Card
@@ -63,7 +65,6 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
                     override fun onAnimationStart(animation: Animator?) {
                         isAnimationRunning = true
                     }
-
                     override fun onAnimationCancel(animation: Animator?) {}
                     override fun onAnimationRepeat(animation: Animator?) {}
                     override fun onAnimationEnd(animation: Animator?) {
@@ -85,19 +86,58 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
 
     private fun animateAddPlayer(targetView: AppCompatImageView, team: Array<Card?>, spotIndex: Int) {
         val set = AnimatorSet()
-        val animationX = ObjectAnimator.ofFloat(flip_view, View.TRANSLATION_X, targetView.x - flip_view.x + 60f)
-        val animationY = ObjectAnimator.ofFloat(flip_view, View.TRANSLATION_Y, targetView.y - flip_view.y)
+        val aniX = ObjectAnimator.ofFloat(flip_view, View.TRANSLATION_X, targetView.x - flip_view.x + 60f)
+        val aniY = ObjectAnimator.ofFloat(flip_view, View.TRANSLATION_Y, targetView.y - flip_view.y)
 
-        set.playTogether(animationX, animationY)
-        set.interpolator = FastOutSlowInInterpolator()
+        set.playTogether(aniX, aniY)
+        set.interpolator = LinearOutSlowInInterpolator()
         set.duration = 500
         isAnimationRunning = true
         set.start()
 
         set.doOnEnd {
             restoreFlipViewPosition()
-            vm.playerAddedOnAnimationEnd(targetView, team, spotIndex)
+            vm.onPlayerAddedAnimationEnd(targetView, team, spotIndex)
             isAnimationRunning = false
+        }
+    }
+
+    private fun animateAttack(targetView: AppCompatImageView) {
+        val victimX = targetView.x
+        val victimY = targetView.y
+
+        val flipViewSet = AnimatorSet()
+        val flipAniX = ObjectAnimator.ofFloat(flip_view, View.TRANSLATION_X, targetView.x - flip_view.x - 30f)
+        val flipAniY = ObjectAnimator.ofFloat(flip_view, View.TRANSLATION_Y, targetView.y - flip_view.y + 30f)
+
+        flipViewSet.apply {
+            playTogether(flipAniX, flipAniY)
+            interpolator = LinearInterpolator()
+            duration = 300
+            isAnimationRunning = true
+            start()
+            doOnEnd {
+                targetView.bringToFront()
+                flip_view.bringToFront()
+
+                val outOfScreenSet = AnimatorSet()
+                val flipOutAni = ObjectAnimator.ofFloat(flip_view, View.TRANSLATION_X, 2000f)
+                val victimOutAni = ObjectAnimator.ofFloat(targetView, View.TRANSLATION_X, 2000f)
+
+                outOfScreenSet.apply {
+                    playTogether(flipOutAni, victimOutAni)
+                    interpolator = AnticipateInterpolator(1.5f)
+                    duration = 600
+                    start()
+                    doOnEnd {
+                        targetView.x = victimX
+                        targetView.y = victimY
+                        restoreFlipViewPosition()
+                        vm.onAttackedAnimationEnd(targetView)
+                        isAnimationRunning = false
+                    }
+                }
+            }
         }
     }
 
@@ -174,82 +214,111 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
             animateAddPlayer(view, team, spotIndex)
     }
 
+    private fun attackPlayer(victimTeam: Array<Card?>, spotIndex: Int, victimView: AppCompatImageView) {
+        if (vm.attack(victimTeam, spotIndex, victimView))
+            animateAttack(victimView)
+    }
+
     override fun onClick(v: View) {
+        val spotIndex: Int
         if (isAnimationRunning) return
         if (isOngoingGame) {
-            if (whoseTurn == WhoseTurn.BOTTOM) {
-                when (v.id) {
-                    R.id.card_top_forward_left -> {
-                        card_top_forward_left.let {
-                            vm.attack(teamTop, 0, it)
+//            if (whoseTurn == WhoseTurn.BOTTOM) {
+//                spotIndex = when (v.id) {
+//                    R.id.card_top_forward_left -> 0
+//                    R.id.card_top_center -> 1
+//                    R.id.card_top_forward_right -> 2
+//                    R.id.card_top_defender_left -> 3
+//                    R.id.card_top_defender_right -> 4
+//                    R.id.card_top_goalie -> 5
+//                    else -> return
+//                }
+//            } else {
+//                spotIndex = when (v.id) {
+//                    R.id.card_bm_forward_left -> 0
+//                    R.id.card_bm_center -> 1
+//                    R.id.card_bm_forward_right -> 2
+//                    R.id.card_bm_defender_left -> 3
+//                    R.id.card_bm_defender_right -> 4
+//                    R.id.card_bm_goalie -> 5
+//                    else -> return
+//                }
+//            }
+//            attackPlayer(findViewById(v.id), if (whoseTurn == WhoseTurn.BOTTOM) teamTop else teamBottom, spotIndex)
+                if (whoseTurn == WhoseTurn.BOTTOM) {
+                    when (v.id) {
+                        R.id.card_top_forward_left -> {
+                            attackPlayer(teamTop, 0, card_top_forward_left)
                         }
-                    }
-                    R.id.card_top_center -> {
-                        vm.attack(teamTop, 1, card_top_center)
-                    }
-                    R.id.card_top_forward_right -> {
-                        vm.attack(teamTop, 2, card_top_forward_right)
-                    }
-                    R.id.card_top_defender_left -> {
-                        if (vm.areEnoughForwardsOut(teamTop, 3))
-                            vm.attack(teamTop, 3, card_top_defender_left)
-                    }
-                    R.id.card_top_defender_right -> {
-                        if (vm.areEnoughForwardsOut(teamTop, 4))
-                            vm.attack(teamTop, 4, card_top_defender_right)
-                    }
-                    R.id.card_top_goalie -> {
-                        if (vm.isAtLeastOneDefenderOut(teamTop)) {
-                            if (vm.attack(teamTop, 5, card_top_goalie)) {
-                                teamBottomScore++
-                                vm.updateScores(top_team_score, bm_team_score)
-                            } else {
-                                vm.goalieSaved(teamTop)
+                        R.id.card_top_center -> {
+                            attackPlayer(teamTop, 1, card_top_center)
+                        }
+                        R.id.card_top_forward_right -> {
+                            attackPlayer(teamTop, 2, card_top_forward_right)
+                        }
+                        R.id.card_top_defender_left -> {
+                            if (vm.areEnoughForwardsOut(teamTop, 3))
+                                attackPlayer(teamTop, 3, card_top_defender_left)
+                        }
+                        R.id.card_top_defender_right -> {
+                            if (vm.areEnoughForwardsOut(teamTop, 4))
+                                attackPlayer(teamTop, 4, card_top_defender_right)
+                        }
+                        R.id.card_top_goalie -> {
+                            if (vm.isAtLeastOneDefenderOut(teamTop)) {
+                                if (vm.attack(teamTop, 5, card_top_goalie)) {
+                                    teamBottomScore++
+                                    vm.updateScores(top_team_score, bm_team_score)
+                                    restoreFlipViewPosition()
+                                } else {
+                                    vm.goalieSaved(teamTop)
+                                    restoreFlipViewPosition()
+                                }
                             }
                         }
-                    }
-                    R.id.btn_debug -> {
-                        vm.removeCardFromDeck()
-                        vm.showPickedCard()
-                    }
-                }
-            } else {
-                when (v.id) {
-                    R.id.card_bm_forward_left -> {
-                        vm.attack(teamBottom, 0, card_bm_forward_left)
-                    }
-                    R.id.card_bm_center -> {
-                        vm.attack(teamBottom, 1, card_bm_center)
-                    }
-                    R.id.card_bm_forward_right -> {
-                        vm.attack(teamBottom, 2, card_bm_forward_right)
-                    }
-                    R.id.card_bm_defender_left -> {
-                        if (vm.areEnoughForwardsOut(teamBottom, 3))
-                            vm.attack(teamBottom, 3, card_bm_defender_left)
-                    }
-                    R.id.card_bm_defender_right -> {
-                        if (vm.areEnoughForwardsOut(teamBottom, 4))
-                            vm.attack(teamBottom, 4, card_bm_defender_right)
-                    }
-                    R.id.card_bm_goalie -> {
-                        if (vm.isAtLeastOneDefenderOut(teamBottom)) {
-                            if (vm.attack(teamBottom, 5, card_bm_goalie)) {
-                                teamTopScore++
-                                vm.updateScores(top_team_score, bm_team_score)
-                            } else {
-                                vm.goalieSaved(teamBottom)
-                            }
+                        R.id.btn_debug -> {
+                            vm.removeCardFromDeck()
+                            vm.showPickedCard()
                         }
                     }
-                    R.id.btn_debug -> {
-                        vm.removeCardFromDeck()
-                        vm.showPickedCard()
+                } else {
+                    when (v.id) {
+                        R.id.card_bm_forward_left -> {
+                            attackPlayer(teamBottom, 0, card_bm_forward_left)
+                        }
+                        R.id.card_bm_center -> {
+                            attackPlayer(teamBottom, 1, card_bm_center)
+                        }
+                        R.id.card_bm_forward_right -> {
+                            attackPlayer(teamBottom, 2, card_bm_forward_right)
+                        }
+                        R.id.card_bm_defender_left -> {
+                            if (vm.areEnoughForwardsOut(teamBottom, 3))
+                                attackPlayer(teamBottom, 3, card_bm_defender_left)
+                        }
+                        R.id.card_bm_defender_right -> {
+                            if (vm.areEnoughForwardsOut(teamBottom, 4))
+                                attackPlayer(teamBottom, 4, card_bm_defender_right)
+                        }
+                        R.id.card_bm_goalie -> {
+                            if (vm.isAtLeastOneDefenderOut(teamBottom)) {
+                                if (vm.attack(teamBottom, 5, card_bm_goalie)) {
+                                    teamTopScore++
+                                    vm.updateScores(top_team_score, bm_team_score)
+                                    restoreFlipViewPosition()
+                                } else {
+                                    vm.goalieSaved(teamBottom)
+                                    restoreFlipViewPosition()
+                                }
+                            }
+                        }
+                        R.id.btn_debug -> {
+                            vm.removeCardFromDeck()
+                            vm.showPickedCard()
+                        }
                     }
                 }
-            }
         } else {
-            val spotIndex: Int
             if (whoseTurn == WhoseTurn.BOTTOM) {
                 spotIndex = when (v.id) {
                     R.id.card_bm_forward_left -> 0

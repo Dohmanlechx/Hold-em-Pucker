@@ -183,14 +183,17 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
             showPickedCard()
             return true
         } else if (GameLogic.attack(firstCardInDeck, victimTeam, spotIndex)) {
-            view.setImageResource(android.R.color.transparent)
-            view.tag = Integer.valueOf(android.R.color.transparent)
-            removeCardFromDeck()
-            showPickedCard(doNotToggleTurn = true)
             return true
         }
 
         return false
+    }
+
+    fun onAttackedAnimationEnd(view: AppCompatImageView) {
+        view.setImageResource(android.R.color.transparent)
+        view.tag = Integer.valueOf(android.R.color.transparent)
+        removeCardFromDeck()
+        showPickedCard(doNotToggleTurn = true)
     }
 
     fun goalieSaved(victimTeam: Array<Card?>) {
@@ -223,7 +226,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         return true
     }
 
-    fun playerAddedOnAnimationEnd(view: AppCompatImageView, team: Array<Card?>, spotIndex: Int) {
+    fun onPlayerAddedAnimationEnd(view: AppCompatImageView, team: Array<Card?>, spotIndex: Int) {
         view.setImageResource(resIdOfCard(firstCardInDeck))
         view.tag = null
         setPlayerInTeam(team, spotIndex)
