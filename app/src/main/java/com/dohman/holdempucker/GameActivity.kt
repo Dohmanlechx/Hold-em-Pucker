@@ -8,7 +8,9 @@ import android.os.Bundle
 import android.view.View
 import android.view.WindowManager
 import android.view.animation.AnticipateInterpolator
+import android.view.animation.BounceInterpolator
 import android.view.animation.LinearInterpolator
+import android.view.animation.OvershootInterpolator
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.core.animation.doOnEnd
 import androidx.interpolator.view.animation.LinearOutSlowInInterpolator
@@ -65,6 +67,7 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
                     override fun onAnimationStart(animation: Animator?) {
                         isAnimationRunning = true
                     }
+
                     override fun onAnimationCancel(animation: Animator?) {}
                     override fun onAnimationRepeat(animation: Animator?) {}
                     override fun onAnimationEnd(animation: Animator?) {
@@ -130,6 +133,10 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
                     duration = 600
                     start()
                     doOnEnd {
+                        ObjectAnimator.ofFloat(targetView, View.ALPHA, 0f, 1f).apply {
+                            duration = 200
+                            start()
+                        }
                         targetView.x = victimX
                         targetView.y = victimY
                         restoreFlipViewPosition()
@@ -142,8 +149,15 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun turnSwitch(team: String) {
-        val resId = if (team.toLowerCase() == "bottom") R.drawable.gradient_bottom else R.drawable.gradient_top
-        board_layout.setBackgroundResource(resId)
+//        val resId = if (team.toLowerCase() == "bottom") R.drawable.gradient_bottom else R.drawable.gradient_top
+//        board_layout.setBackgroundResource(resId)
+
+
+        ObjectAnimator.ofFloat(puck, View.TRANSLATION_Y, if (team.toLowerCase() == "bottom") 100f else -100f).apply {
+            duration = 300
+            interpolator = OvershootInterpolator(2.5f)
+            start()
+        }
     }
 
     private fun setOnClickListeners() {
@@ -245,79 +259,79 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
 //                }
 //            }
 //            attackPlayer(findViewById(v.id), if (whoseTurn == WhoseTurn.BOTTOM) teamTop else teamBottom, spotIndex)
-                if (whoseTurn == WhoseTurn.BOTTOM) {
-                    when (v.id) {
-                        R.id.card_top_forward_left -> {
-                            attackPlayer(teamTop, 0, card_top_forward_left)
-                        }
-                        R.id.card_top_center -> {
-                            attackPlayer(teamTop, 1, card_top_center)
-                        }
-                        R.id.card_top_forward_right -> {
-                            attackPlayer(teamTop, 2, card_top_forward_right)
-                        }
-                        R.id.card_top_defender_left -> {
-                            if (vm.areEnoughForwardsOut(teamTop, 3))
-                                attackPlayer(teamTop, 3, card_top_defender_left)
-                        }
-                        R.id.card_top_defender_right -> {
-                            if (vm.areEnoughForwardsOut(teamTop, 4))
-                                attackPlayer(teamTop, 4, card_top_defender_right)
-                        }
-                        R.id.card_top_goalie -> {
-                            if (vm.isAtLeastOneDefenderOut(teamTop)) {
-                                if (vm.attack(teamTop, 5, card_top_goalie)) {
-                                    teamBottomScore++
-                                    vm.updateScores(top_team_score, bm_team_score)
-                                    restoreFlipViewPosition()
-                                } else {
-                                    vm.goalieSaved(teamTop)
-                                    restoreFlipViewPosition()
-                                }
+            if (whoseTurn == WhoseTurn.BOTTOM) {
+                when (v.id) {
+                    R.id.card_top_forward_left -> {
+                        attackPlayer(teamTop, 0, card_top_forward_left)
+                    }
+                    R.id.card_top_center -> {
+                        attackPlayer(teamTop, 1, card_top_center)
+                    }
+                    R.id.card_top_forward_right -> {
+                        attackPlayer(teamTop, 2, card_top_forward_right)
+                    }
+                    R.id.card_top_defender_left -> {
+                        if (vm.areEnoughForwardsOut(teamTop, 3))
+                            attackPlayer(teamTop, 3, card_top_defender_left)
+                    }
+                    R.id.card_top_defender_right -> {
+                        if (vm.areEnoughForwardsOut(teamTop, 4))
+                            attackPlayer(teamTop, 4, card_top_defender_right)
+                    }
+                    R.id.card_top_goalie -> {
+                        if (vm.isAtLeastOneDefenderOut(teamTop)) {
+                            if (vm.attack(teamTop, 5, card_top_goalie)) {
+                                teamBottomScore++
+                                vm.updateScores(top_team_score, bm_team_score)
+                                restoreFlipViewPosition()
+                            } else {
+                                vm.goalieSaved(teamTop)
+                                restoreFlipViewPosition()
                             }
-                        }
-                        R.id.btn_debug -> {
-                            vm.removeCardFromDeck()
-                            vm.showPickedCard()
                         }
                     }
-                } else {
-                    when (v.id) {
-                        R.id.card_bm_forward_left -> {
-                            attackPlayer(teamBottom, 0, card_bm_forward_left)
-                        }
-                        R.id.card_bm_center -> {
-                            attackPlayer(teamBottom, 1, card_bm_center)
-                        }
-                        R.id.card_bm_forward_right -> {
-                            attackPlayer(teamBottom, 2, card_bm_forward_right)
-                        }
-                        R.id.card_bm_defender_left -> {
-                            if (vm.areEnoughForwardsOut(teamBottom, 3))
-                                attackPlayer(teamBottom, 3, card_bm_defender_left)
-                        }
-                        R.id.card_bm_defender_right -> {
-                            if (vm.areEnoughForwardsOut(teamBottom, 4))
-                                attackPlayer(teamBottom, 4, card_bm_defender_right)
-                        }
-                        R.id.card_bm_goalie -> {
-                            if (vm.isAtLeastOneDefenderOut(teamBottom)) {
-                                if (vm.attack(teamBottom, 5, card_bm_goalie)) {
-                                    teamTopScore++
-                                    vm.updateScores(top_team_score, bm_team_score)
-                                    restoreFlipViewPosition()
-                                } else {
-                                    vm.goalieSaved(teamBottom)
-                                    restoreFlipViewPosition()
-                                }
-                            }
-                        }
-                        R.id.btn_debug -> {
-                            vm.removeCardFromDeck()
-                            vm.showPickedCard()
-                        }
+                    R.id.btn_debug -> {
+                        vm.removeCardFromDeck()
+                        vm.showPickedCard()
                     }
                 }
+            } else {
+                when (v.id) {
+                    R.id.card_bm_forward_left -> {
+                        attackPlayer(teamBottom, 0, card_bm_forward_left)
+                    }
+                    R.id.card_bm_center -> {
+                        attackPlayer(teamBottom, 1, card_bm_center)
+                    }
+                    R.id.card_bm_forward_right -> {
+                        attackPlayer(teamBottom, 2, card_bm_forward_right)
+                    }
+                    R.id.card_bm_defender_left -> {
+                        if (vm.areEnoughForwardsOut(teamBottom, 3))
+                            attackPlayer(teamBottom, 3, card_bm_defender_left)
+                    }
+                    R.id.card_bm_defender_right -> {
+                        if (vm.areEnoughForwardsOut(teamBottom, 4))
+                            attackPlayer(teamBottom, 4, card_bm_defender_right)
+                    }
+                    R.id.card_bm_goalie -> {
+                        if (vm.isAtLeastOneDefenderOut(teamBottom)) {
+                            if (vm.attack(teamBottom, 5, card_bm_goalie)) {
+                                teamTopScore++
+                                vm.updateScores(top_team_score, bm_team_score)
+                                restoreFlipViewPosition()
+                            } else {
+                                vm.goalieSaved(teamBottom)
+                                restoreFlipViewPosition()
+                            }
+                        }
+                    }
+                    R.id.btn_debug -> {
+                        vm.removeCardFromDeck()
+                        vm.showPickedCard()
+                    }
+                }
+            }
         } else {
             if (whoseTurn == WhoseTurn.BOTTOM) {
                 spotIndex = when (v.id) {

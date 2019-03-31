@@ -5,7 +5,7 @@
 	android:id="@+id/board_layout"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	android:background="@color/board"
+	android:background="@drawable/background"
 	android:padding="8dp"
 	tools:context=".GameActivity">
 
@@ -16,15 +16,6 @@
 		android:text="Switch"
 		app:layout_constraintEnd_toEndOf="parent"
 		app:layout_constraintTop_toTopOf="parent" />
-
-	<!--<androidx.appcompat.widget.AppCompatTextView-->
-	<!--android:id="@+id/txt_whoseturn"-->
-	<!--android:layout_width="wrap_content"-->
-	<!--android:layout_height="wrap_content"-->
-	<!--app:layout_constraintBottom_toBottomOf="parent"-->
-	<!--app:layout_constraintStart_toEndOf="@id/card_bm_forward_right"-->
-	<!--app:layout_constraintTop_toTopOf="parent"-->
-	<!--tools:text="Bottom" />-->
 
 	<androidx.appcompat.widget.AppCompatTextView
 		android:id="@+id/cards_left"
@@ -52,6 +43,7 @@
 		android:layout_marginStart="16dp"
 		app:flipDuration="150"
 		app:flipFrom="right"
+		app:flipOnTouch="false"
 		app:flipType="horizontal"
 		app:layout_constraintBottom_toBottomOf="@id/guideline_horizontal"
 		app:layout_constraintStart_toStartOf="parent"
@@ -155,7 +147,7 @@
 		android:id="@+id/card_bm_defender_left"
 		android:layout_width="70dp"
 		android:layout_height="110dp"
-		android:layout_marginTop="10dp"
+		android:layout_marginTop="12dp"
 		android:layout_marginEnd="5dp"
 		android:background="@drawable/image_border"
 		android:scaleType="fitXY"
@@ -167,7 +159,7 @@
 		android:layout_width="70dp"
 		android:layout_height="110dp"
 		android:layout_marginStart="5dp"
-		android:layout_marginTop="10dp"
+		android:layout_marginTop="12dp"
 		android:background="@drawable/image_border"
 		android:scaleType="fitXY"
 		app:layout_constraintStart_toEndOf="@id/guideline_vertical"
@@ -178,7 +170,7 @@
 		android:layout_width="110dp"
 		android:layout_height="70dp"
 		android:layout_marginStart="5dp"
-		android:layout_marginTop="10dp"
+		android:layout_marginTop="12dp"
 		android:background="@drawable/image_border"
 		android:scaleType="fitXY"
 		app:layout_constraintEnd_toEndOf="@id/card_bm_defender_right"
@@ -224,7 +216,7 @@
 		android:layout_width="70dp"
 		android:layout_height="110dp"
 		android:layout_marginStart="5dp"
-		android:layout_marginBottom="10dp"
+		android:layout_marginBottom="12dp"
 		android:background="@drawable/image_border"
 		android:scaleType="fitXY"
 		app:layout_constraintBottom_toTopOf="@id/card_top_center"
@@ -235,7 +227,7 @@
 		android:layout_width="70dp"
 		android:layout_height="110dp"
 		android:layout_marginEnd="5dp"
-		android:layout_marginBottom="10dp"
+		android:layout_marginBottom="12dp"
 		android:background="@drawable/image_border"
 		android:scaleType="fitXY"
 		app:layout_constraintBottom_toTopOf="@id/card_top_center"
@@ -245,11 +237,21 @@
 		android:id="@+id/card_top_goalie"
 		android:layout_width="110dp"
 		android:layout_height="70dp"
-		android:layout_marginBottom="10dp"
+		android:layout_marginBottom="12dp"
 		android:background="@drawable/image_border"
 		android:scaleType="fitXY"
 		app:layout_constraintBottom_toTopOf="@id/card_top_defender_left"
 		app:layout_constraintEnd_toEndOf="@id/card_top_defender_left"
 		app:layout_constraintStart_toStartOf="@id/card_top_defender_right" />
+
+	<androidx.appcompat.widget.AppCompatImageView
+		android:id="@+id/puck"
+		android:layout_width="24dp"
+		android:layout_height="wrap_content"
+		android:adjustViewBounds="true"
+		android:src="@drawable/puck"
+		app:layout_constraintBottom_toTopOf="@id/guideline_horizontal"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintTop_toBottomOf="@id/guideline_horizontal" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
