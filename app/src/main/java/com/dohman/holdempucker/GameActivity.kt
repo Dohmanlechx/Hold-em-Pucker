@@ -115,8 +115,8 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
 
         flipViewSet.apply {
             playTogether(flipAniX, flipAniY)
-            interpolator = LinearInterpolator()
-            duration = 300
+            interpolator = LinearOutSlowInInterpolator()
+            duration = 500
             isAnimationRunning = true
             start()
             doOnEnd {
@@ -130,7 +130,7 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
                 outOfScreenSet.apply {
                     playTogether(flipOutAni, victimOutAni)
                     interpolator = AnticipateInterpolator(1.5f)
-                    duration = 600
+                    duration = 500
                     start()
                     doOnEnd {
                         ObjectAnimator.ofFloat(targetView, View.ALPHA, 0f, 1f).apply {
@@ -149,10 +149,6 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun turnSwitch(team: String) {
-//        val resId = if (team.toLowerCase() == "bottom") R.drawable.gradient_bottom else R.drawable.gradient_top
-//        board_layout.setBackgroundResource(resId)
-
-
         ObjectAnimator.ofFloat(puck, View.TRANSLATION_Y, if (team.toLowerCase() == "bottom") 100f else -100f).apply {
             duration = 300
             interpolator = OvershootInterpolator(2.5f)
