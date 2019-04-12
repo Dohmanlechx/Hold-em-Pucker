@@ -13,7 +13,7 @@ import com.dohman.holdempucker.util.GameLogic
 
 class GameViewModel(application: Application) : AndroidViewModel(application) {
     private var cardDeck = CardDeck().cardDeck
-    private var firstCardInDeck: Card = cardDeck.first()
+    var firstCardInDeck: Card = cardDeck.first()
 
     val halfTimeNotifier = MutableLiveData<Int>()
     val whoseTurnNotifier = MutableLiveData<String>()
@@ -21,10 +21,6 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     val cardsCountNotifier = MutableLiveData<Int>()
     val nfyTopGoalie = MutableLiveData<Boolean>()
     val nfyBtmGoalie = MutableLiveData<Boolean>()
-
-    init {
-        showPickedCard()
-    }
 
     // ----- Notify functions ----- //
     private fun notifyPickedCard() {
@@ -51,7 +47,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         }
 
         if (!isGoalieThereOrAdd(firstCardInDeck)) { // If returned false, goalie is added
-            //showPickedCard()
+            showPickedCard()
             return
         }
 
@@ -118,7 +114,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         return true
     }
 
-    private fun resIdOfCard(card: Card): Int {
+    fun resIdOfCard(card: Card): Int {
         return card.let {
             getApplication<Application>().resources.getIdentifier(
                 it.src, "drawable", getApplication<Application>().packageName
@@ -221,7 +217,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
 
     fun onGoalieAddedAnimationEnd(view: AppCompatImageView) {
         view.setImageResource(R.drawable.red_back)
-        view.tag = null
+        view.tag = Integer.valueOf(R.drawable.red_back)
     }
 
     fun onPlayerAddedAnimationEnd(view: AppCompatImageView, team: Array<Card?>, spotIndex: Int) {

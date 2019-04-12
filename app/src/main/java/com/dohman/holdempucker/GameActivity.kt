@@ -3,6 +3,7 @@ package com.dohman.holdempucker
 import android.animation.Animator
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
+import android.animation.TimeInterpolator
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
@@ -37,8 +38,8 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
         vm.whoseTurnNotifier.observe(this, Observer { turnSwitch(it) })
         vm.pickedCardNotifier.observe(this, Observer { flipNewCard(it) })
         vm.cardsCountNotifier.observe(this, Observer { cards_left.text = it.toString() })
-       // vm.nfyBtmGoalie.observe(this, Observer { if (it) addGoalie(bottom = true)/*card_bm_goalie.setImageResource(R.drawable.red_back)*/ })
-     //   vm.nfyTopGoalie.observe(this, Observer { if (it) addGoalie(bottom = false)/*card_top_goalie.setImageResource(R.drawable.red_back)*/ })
+        // vm.nfyBtmGoalie.observe(this, Observer { if (it) addGoalie(bottom = true)/*card_bm_goalie.setImageResource(R.drawable.red_back)*/ })
+        //   vm.nfyTopGoalie.observe(this, Observer { if (it) addGoalie(bottom = false)/*card_top_goalie.setImageResource(R.drawable.red_back)*/ })
 
         vm.updateScores(top_team_score, bm_team_score)
 
@@ -46,10 +47,14 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
             flip_view.bringToFront()
             flipViewOriginalX = if (ranTooSoon) flip_view.x - 60f else flip_view.x
             flipViewOriginalY = flip_view.y
-            addGoalie(true)
+            //addGoalie(bottom = true)
         }
 
-        btn_debug.setOnClickListener(this)
+        btn_debug.text = "Start!"
+        btn_debug.setOnClickListener {
+            addGoalie(bottom = true)
+        }
+
         setOnClickListeners()
     }
 
@@ -92,41 +97,36 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
     private fun addGoalie(bottom: Boolean) {
         val view = if (bottom) card_bm_goalie else card_top_goalie
 
-//        val middleX = view.x + view.width / 2
-//        val middleY = view.y + view.height / 2
-//
-//        val newX = (view.x - middleX) * Math.cos(rotation) - (view.y - middleY) * Math.sin(rotation) + middleX
-//        val newY = (view.x - middleX) * Math.sin(rotation) - (view.y - middleY) * Math.cos(rotation) + middleY
-
-
-
-
-            card_picked.setImageResource(R.drawable.red_back_vertical)
-            card_deck.setImageResource(R.drawable.red_back_vertical)
-
+        card_deck.setImageResource(R.drawable.red_back_vertical)
 
         val set = AnimatorSet()
-        val aniX = ObjectAnimator.ofFloat(flip_view, View.TRANSLATION_X, view.x - flipViewOriginalX + ((view.width / 2) - (flip_view.width / 2)))
-        val aniY = ObjectAnimator.ofFloat(flip_view, View.TRANSLATION_Y, view.y - flipViewOriginalY - (view.height / 4))
+        val aniX = ObjectAnimator.ofFloat(
+            flip_view,
+            View.TRANSLATION_X,
+            view.x - flipViewOriginalX + ((view.width / 2) - (flip_view.width / 2))
+        )
+        val aniY = ObjectAnimator.ofFloat(
+            flip_view,
+            View.TRANSLATION_Y,
+            view.y - flipViewOriginalY - (view.height / 4)
+        )
+        val aniRot = ObjectAnimator.ofFloat(flip_view, View.ROTATION, 90f)
 
-
-        set.playTogether(aniX, aniY)
+        set.playTogether(aniX, aniY, aniRot)
         set.interpolator = LinearOutSlowInInterpolator()
-        set.duration = 2500
+        set.duration = 500
         isAnimationRunning = true
         set.start()
 
         set.doOnEnd {
-            //restoreFlipViewPosition()
-
+            restoreFlipViewPosition()
             isAnimationRunning = false
-            ObjectAnimator.ofFloat(flip_view, View.ROTATION, 90f).apply {
-                duration = 1000
-                start()
-                doOnEnd {
-                    vm.onGoalieAddedAnimationEnd(view)
-                }
+            vm.onGoalieAddedAnimationEnd(view)
+            if (card_top_goalie.tag != Integer.valueOf(R.drawable.red_back)) addGoalie(bottom = false) else {
+                flipNewCard(vm.resIdOfCard(vm.firstCardInDeck))
+                vm.showPickedCard()
             }
+
         }
     }
 
@@ -214,7 +214,6 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
         card_bm_defender_right.setOnClickListener(this)
         card_bm_goalie.setOnClickListener(this)
 
-        btn_debug.setOnClickListener(this)
     }
 
     private fun gameOver() {
@@ -329,10 +328,6 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
                             }
                         }
                     }
-                    R.id.btn_debug -> {
-                        vm.removeCardFromDeck()
-                        vm.showPickedCard()
-                    }
                 }
             } else {
                 when (v.id) {
@@ -364,10 +359,6 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
                                 restoreFlipViewPosition()
                             }
                         }
-                    }
-                    R.id.btn_debug -> {
-                        vm.removeCardFromDeck()
-                        vm.showPickedCard()
                     }
                 }
             }
