@@ -51,7 +51,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         }
 
         if (!isGoalieThereOrAdd(firstCardInDeck)) { // If returned false, goalie is added
-            showPickedCard()
+            //showPickedCard()
             return
         }
 
@@ -189,13 +189,6 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         return false
     }
 
-    fun onAttackedAnimationEnd(view: AppCompatImageView) {
-        view.setImageResource(android.R.color.transparent)
-        view.tag = Integer.valueOf(android.R.color.transparent)
-        removeCardFromDeck()
-        showPickedCard(doNotToggleTurn = true)
-    }
-
     fun goalieSaved(victimTeam: Array<Card?>) {
         Toast.makeText(
             getApplication<Application>().applicationContext,
@@ -226,10 +219,22 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         return true
     }
 
+    fun onGoalieAddedAnimationEnd(view: AppCompatImageView) {
+        view.setImageResource(R.drawable.red_back)
+        view.tag = null
+    }
+
     fun onPlayerAddedAnimationEnd(view: AppCompatImageView, team: Array<Card?>, spotIndex: Int) {
         view.setImageResource(resIdOfCard(firstCardInDeck))
         view.tag = null
         setPlayerInTeam(team, spotIndex)
+    }
+
+    fun onAttackedAnimationEnd(view: AppCompatImageView) {
+        view.setImageResource(android.R.color.transparent)
+        view.tag = Integer.valueOf(android.R.color.transparent)
+        removeCardFromDeck()
+        showPickedCard(doNotToggleTurn = true)
     }
 
     companion object {

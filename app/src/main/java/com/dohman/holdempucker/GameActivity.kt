@@ -37,8 +37,8 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
         vm.whoseTurnNotifier.observe(this, Observer { turnSwitch(it) })
         vm.pickedCardNotifier.observe(this, Observer { flipNewCard(it) })
         vm.cardsCountNotifier.observe(this, Observer { cards_left.text = it.toString() })
-        vm.nfyBtmGoalie.observe(this, Observer { if (it) card_bm_goalie.setImageResource(R.drawable.red_back) })
-        vm.nfyTopGoalie.observe(this, Observer { if (it) card_top_goalie.setImageResource(R.drawable.red_back) })
+       // vm.nfyBtmGoalie.observe(this, Observer { if (it) addGoalie(bottom = true)/*card_bm_goalie.setImageResource(R.drawable.red_back)*/ })
+     //   vm.nfyTopGoalie.observe(this, Observer { if (it) addGoalie(bottom = false)/*card_top_goalie.setImageResource(R.drawable.red_back)*/ })
 
         vm.updateScores(top_team_score, bm_team_score)
 
@@ -46,6 +46,7 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
             flip_view.bringToFront()
             flipViewOriginalX = if (ranTooSoon) flip_view.x - 60f else flip_view.x
             flipViewOriginalY = flip_view.y
+            addGoalie(true)
         }
 
         btn_debug.setOnClickListener(this)
@@ -83,8 +84,50 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun restoreFlipViewPosition() {
+        flip_view.rotation = 0f
         flip_view.x = flipViewOriginalX
         flip_view.y = flipViewOriginalY
+    }
+
+    private fun addGoalie(bottom: Boolean) {
+        val view = if (bottom) card_bm_goalie else card_top_goalie
+
+//        val middleX = view.x + view.width / 2
+//        val middleY = view.y + view.height / 2
+//
+//        val newX = (view.x - middleX) * Math.cos(rotation) - (view.y - middleY) * Math.sin(rotation) + middleX
+//        val newY = (view.x - middleX) * Math.sin(rotation) - (view.y - middleY) * Math.cos(rotation) + middleY
+
+
+
+
+            card_picked.setImageResource(R.drawable.red_back_vertical)
+            card_deck.setImageResource(R.drawable.red_back_vertical)
+
+
+        val set = AnimatorSet()
+        val aniX = ObjectAnimator.ofFloat(flip_view, View.TRANSLATION_X, view.x - flipViewOriginalX + ((view.width / 2) - (flip_view.width / 2)))
+        val aniY = ObjectAnimator.ofFloat(flip_view, View.TRANSLATION_Y, view.y - flipViewOriginalY - (view.height / 4))
+
+
+        set.playTogether(aniX, aniY)
+        set.interpolator = LinearOutSlowInInterpolator()
+        set.duration = 2500
+        isAnimationRunning = true
+        set.start()
+
+        set.doOnEnd {
+            //restoreFlipViewPosition()
+
+            isAnimationRunning = false
+            ObjectAnimator.ofFloat(flip_view, View.ROTATION, 90f).apply {
+                duration = 1000
+                start()
+                doOnEnd {
+                    vm.onGoalieAddedAnimationEnd(view)
+                }
+            }
+        }
     }
 
     private fun animateAddPlayer(targetView: AppCompatImageView, team: Array<Card?>, spotIndex: Int) {
