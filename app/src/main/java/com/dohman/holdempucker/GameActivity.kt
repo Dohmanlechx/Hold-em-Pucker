@@ -1,16 +1,12 @@
 package com.dohman.holdempucker
 
-import android.animation.Animator
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
-import android.animation.TimeInterpolator
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.view.WindowManager
 import android.view.animation.AnticipateInterpolator
-import android.view.animation.BounceInterpolator
-import android.view.animation.LinearInterpolator
 import android.view.animation.OvershootInterpolator
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.core.animation.doOnEnd
@@ -18,13 +14,12 @@ import androidx.interpolator.view.animation.LinearOutSlowInInterpolator
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.dohman.holdempucker.cards.Card
+import com.dohman.holdempucker.util.AnimationUtil
 import kotlinx.android.synthetic.main.activity_game.*
 
 class GameActivity : AppCompatActivity(), View.OnClickListener {
     private lateinit var vm: GameViewModel
 
-    private var isAnimationRunning = false
-    private var ranTooSoon = false
     private var flipViewOriginalX: Float = 0f
     private var flipViewOriginalY: Float = 0f
 
@@ -34,7 +29,10 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
         setContentView(R.layout.activity_game)
         vm = ViewModelProviders.of(this).get(GameViewModel::class.java)
 
-        vm.halfTimeNotifier.observe(this, Observer { clearAllCards(it) })
+        vm.halfTimeNotifier.observe(this, Observer {
+            clearAllCards(it)
+            addGoalie(true)
+        })
         vm.whoseTurnNotifier.observe(this, Observer { turnSwitch(it) })
         vm.pickedCardNotifier.observe(this, Observer { flipNewCard(it) })
         vm.cardsCountNotifier.observe(this, Observer { cards_left.text = it.toString() })
@@ -45,14 +43,13 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
 
         flip_view.post {
             flip_view.bringToFront()
-            flipViewOriginalX = if (ranTooSoon) flip_view.x - 60f else flip_view.x
+            flipViewOriginalX = flip_view.x
             flipViewOriginalY = flip_view.y
-            //addGoalie(bottom = true)
         }
 
         btn_debug.text = "Start!"
         btn_debug.setOnClickListener {
-            addGoalie(bottom = true)
+            addGoalie(true)
         }
 
         setOnClickListeners()
@@ -67,25 +64,7 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
             card_deck.setImageResource(R.drawable.red_back_vertical)
         }
 
-        flip_view.let {
-            ObjectAnimator.ofFloat(it, View.TRANSLATION_X, 60f).apply {
-                addListener(object : Animator.AnimatorListener {
-                    override fun onAnimationStart(animation: Animator?) {
-                        isAnimationRunning = true
-                    }
-
-                    override fun onAnimationCancel(animation: Animator?) {}
-                    override fun onAnimationRepeat(animation: Animator?) {}
-                    override fun onAnimationEnd(animation: Animator?) {
-                        ranTooSoon = true
-                        flip_view.flipTheView()
-                        isAnimationRunning = false
-                    }
-                })
-                duration = 100
-                start()
-            }
-        }
+        AnimationUtil.flipView(flip_view)
     }
 
     private fun restoreFlipViewPosition() {
@@ -98,35 +77,26 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
         val view = if (bottom) card_bm_goalie else card_top_goalie
 
         card_deck.setImageResource(R.drawable.red_back_vertical)
+        card_picked.setImageResource(R.drawable.red_back_vertical)
 
-        val set = AnimatorSet()
-        val aniX = ObjectAnimator.ofFloat(
-            flip_view,
-            View.TRANSLATION_X,
-            view.x - flipViewOriginalX + ((view.width / 2) - (flip_view.width / 2))
+        val set = AnimationUtil.addGoalie(
+            flipView = flip_view,
+            goalieView = view,
+            flipViewOriginalX = flipViewOriginalX - 60f,
+            flipViewOriginalY = flipViewOriginalY
         )
-        val aniY = ObjectAnimator.ofFloat(
-            flip_view,
-            View.TRANSLATION_Y,
-            view.y - flipViewOriginalY - (view.height / 4)
-        )
-        val aniRot = ObjectAnimator.ofFloat(flip_view, View.ROTATION, 90f)
 
-        set.playTogether(aniX, aniY, aniRot)
-        set.interpolator = LinearOutSlowInInterpolator()
-        set.duration = 500
-        isAnimationRunning = true
-        set.start()
-
-        set.doOnEnd {
-            restoreFlipViewPosition()
-            isAnimationRunning = false
-            vm.onGoalieAddedAnimationEnd(view)
-            if (card_top_goalie.tag != Integer.valueOf(R.drawable.red_back)) addGoalie(bottom = false) else {
-                flipNewCard(vm.resIdOfCard(vm.firstCardInDeck))
-                vm.showPickedCard()
+        set.apply {
+            doOnEnd {
+                restoreFlipViewPosition()
+                isAnimationRunning = false
+                vm.onGoalieAddedAnimationEnd(view)
+                if (card_top_goalie.tag != Integer.valueOf(R.drawable.red_back)) addGoalie(bottom = false) else {
+                    flipNewCard(vm.resIdOfCard(vm.firstCardInDeck))
+                    vm.showPickedCard()
+                }
             }
-
+            start()
         }
     }
 
@@ -251,6 +221,7 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
             card_top_defender_left.setImageResource(android.R.color.transparent)
             card_top_defender_right.setImageResource(android.R.color.transparent)
             card_top_goalie.setImageResource(android.R.color.transparent)
+            card_top_goalie.tag = null
 
             card_bm_forward_left.setImageResource(android.R.color.transparent)
             card_bm_center.setImageResource(android.R.color.transparent)
@@ -258,6 +229,7 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
             card_bm_defender_left.setImageResource(android.R.color.transparent)
             card_bm_defender_right.setImageResource(android.R.color.transparent)
             card_bm_goalie.setImageResource(android.R.color.transparent)
+            card_bm_goalie.tag = null
         }
     }
 
@@ -389,6 +361,7 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
     companion object {
         const val TAG = "DBG: GameActivity.kt"
 
+        var isAnimationRunning = false
         var period = 1
         var isOngoingGame = false // Set to true when all cards are laid out
         var restoringPlayers = false // Set to true when a team need to lay out new cards to fulfill

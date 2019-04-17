@@ -132,7 +132,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         halfTimeNotifier.value = 1
         GameActivity.isOngoingGame = false
         GameActivity.areTeamsReadyToStartPeriod = false
-        showPickedCard(doNotToggleTurn = true)
+        //showPickedCard(doNotToggleTurn = true)
     }
 
     private fun areThereEnoughCards(team: Array<Card?>): Boolean {
