@@ -1,16 +1,11 @@
 package com.dohman.holdempucker
 
-import android.animation.AnimatorSet
-import android.animation.ObjectAnimator
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.view.WindowManager
-import android.view.animation.AnticipateInterpolator
-import android.view.animation.OvershootInterpolator
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.core.animation.doOnEnd
-import androidx.interpolator.view.animation.LinearOutSlowInInterpolator
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.dohman.holdempucker.cards.Card
@@ -33,7 +28,7 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
             clearAllCards(it)
             addGoalie(true)
         })
-        vm.whoseTurnNotifier.observe(this, Observer { turnSwitch(it) })
+        vm.whoseTurnNotifier.observe(this, Observer { AnimationUtil.togglePuck(puck, it)?.start() })
         vm.pickedCardNotifier.observe(this, Observer { flipNewCard(it) })
         vm.cardsCountNotifier.observe(this, Observer { cards_left.text = it.toString() })
         // vm.nfyBtmGoalie.observe(this, Observer { if (it) addGoalie(bottom = true)/*card_bm_goalie.setImageResource(R.drawable.red_back)*/ })
@@ -101,70 +96,50 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun animateAddPlayer(targetView: AppCompatImageView, team: Array<Card?>, spotIndex: Int) {
-        val set = AnimatorSet()
-        val aniX = ObjectAnimator.ofFloat(flip_view, View.TRANSLATION_X, targetView.x - flip_view.x + 60f)
-        val aniY = ObjectAnimator.ofFloat(flip_view, View.TRANSLATION_Y, targetView.y - flip_view.y)
+        val set = AnimationUtil.addPlayer(
+            flipView = flip_view,
+            targetView = targetView
+        )
 
-        set.playTogether(aniX, aniY)
-        set.interpolator = LinearOutSlowInInterpolator()
-        set.duration = 500
-        isAnimationRunning = true
-        set.start()
-
-        set.doOnEnd {
-            restoreFlipViewPosition()
-            vm.onPlayerAddedAnimationEnd(targetView, team, spotIndex)
-            isAnimationRunning = false
+        set.apply {
+            doOnEnd {
+                restoreFlipViewPosition()
+                vm.onPlayerAddedAnimationEnd(targetView, team, spotIndex)
+                isAnimationRunning = false
+            }
+            start()
         }
+
     }
 
     private fun animateAttack(targetView: AppCompatImageView) {
         val victimX = targetView.x
         val victimY = targetView.y
 
-        val flipViewSet = AnimatorSet()
-        val flipAniX = ObjectAnimator.ofFloat(flip_view, View.TRANSLATION_X, targetView.x - flip_view.x - 30f)
-        val flipAniY = ObjectAnimator.ofFloat(flip_view, View.TRANSLATION_Y, targetView.y - flip_view.y + 30f)
+        val flipViewSet = AnimationUtil.attack(flipView = flip_view, targetView = targetView, isAttacker = true)
 
         flipViewSet.apply {
-            playTogether(flipAniX, flipAniY)
-            interpolator = LinearOutSlowInInterpolator()
-            duration = 500
-            isAnimationRunning = true
-            start()
             doOnEnd {
                 targetView.bringToFront()
                 flip_view.bringToFront()
 
-                val outOfScreenSet = AnimatorSet()
-                val flipOutAni = ObjectAnimator.ofFloat(flip_view, View.TRANSLATION_X, 2000f)
-                val victimOutAni = ObjectAnimator.ofFloat(targetView, View.TRANSLATION_X, 2000f)
+                val outOfScreenSet =
+                    AnimationUtil.attack(flipView = flip_view, targetView = targetView, isAttacker = false)
 
                 outOfScreenSet.apply {
-                    playTogether(flipOutAni, victimOutAni)
-                    interpolator = AnticipateInterpolator(1.5f)
-                    duration = 500
-                    start()
                     doOnEnd {
-                        ObjectAnimator.ofFloat(targetView, View.ALPHA, 0f, 1f).apply {
-                            duration = 200
-                            start()
-                        }
+                        AnimationUtil.fadeIn(targetView)?.start()
                         targetView.x = victimX
                         targetView.y = victimY
                         restoreFlipViewPosition()
                         vm.onAttackedAnimationEnd(targetView)
                         isAnimationRunning = false
                     }
+
+                    start()
                 }
             }
-        }
-    }
 
-    private fun turnSwitch(team: String) {
-        ObjectAnimator.ofFloat(puck, View.TRANSLATION_Y, if (team.toLowerCase() == "bottom") 100f else -100f).apply {
-            duration = 300
-            interpolator = OvershootInterpolator(2.5f)
             start()
         }
     }
