@@ -31,6 +31,11 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
         vm.whoseTurnNotifier.observe(this, Observer { AnimationUtil.togglePuck(puck, it)?.start() })
         vm.pickedCardNotifier.observe(this, Observer { flipNewCard(it) })
         vm.cardsCountNotifier.observe(this, Observer { cards_left.text = it.toString() })
+        vm.badCardNotifier.observe(
+            this,
+            Observer {
+                flipNewCard(vm.resIdOfCard(vm.firstCardInDeck), isBadCard = true)
+            })
         // vm.nfyBtmGoalie.observe(this, Observer { if (it) addGoalie(bottom = true)/*card_bm_goalie.setImageResource(R.drawable.red_back)*/ })
         //   vm.nfyTopGoalie.observe(this, Observer { if (it) addGoalie(bottom = false)/*card_top_goalie.setImageResource(R.drawable.red_back)*/ })
 
@@ -50,7 +55,7 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
         setOnClickListeners()
     }
 
-    private fun flipNewCard(resId: Int) {
+    private fun flipNewCard(resId: Int, isBadCard: Boolean = false) {
         if (flip_view.isBackSide) {
             card_deck.setImageResource(resId)
             card_picked.setImageResource(R.drawable.red_back_vertical)
@@ -59,7 +64,17 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
             card_deck.setImageResource(R.drawable.red_back_vertical)
         }
 
-        AnimationUtil.flipView(flip_view)
+        AnimationUtil.flipView(flip_view, isBadCard) {
+            // If it is bad card, this runs
+            AnimationUtil.badCardOut(
+                flip_view,
+                { vm.firstCardInDeck },
+                { vm.notifyToggleTurn() },
+                { restoreFlipViewPosition() },
+                { vm.removeCardFromDeck() },
+                { vm.isThisTeamReady() },
+                { vm.triggerBadCard() })?.start()
+        }
     }
 
     private fun restoreFlipViewPosition() {
@@ -135,11 +150,9 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
                         vm.onAttackedAnimationEnd(targetView)
                         isAnimationRunning = false
                     }
-
                     start()
                 }
             }
-
             start()
         }
     }
@@ -209,12 +222,12 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun addPlayer(view: AppCompatImageView, team: Array<Card?>, spotIndex: Int) {
-        if (vm.addPlayer(view, team, spotIndex))
+        if (vm.canAddPlayerView(view, team, spotIndex))
             animateAddPlayer(view, team, spotIndex)
     }
 
     private fun attackPlayer(victimTeam: Array<Card?>, spotIndex: Int, victimView: AppCompatImageView) {
-        if (vm.attack(victimTeam, spotIndex, victimView))
+        if (vm.canAttack(victimTeam, spotIndex, victimView))
             animateAttack(victimView)
     }
 
@@ -265,7 +278,7 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
                     }
                     R.id.card_top_goalie -> {
                         if (vm.isAtLeastOneDefenderOut(teamTop)) {
-                            if (vm.attack(teamTop, 5, card_top_goalie)) {
+                            if (vm.canAttack(teamTop, 5, card_top_goalie)) {
                                 teamBottomScore++
                                 vm.updateScores(top_team_score, bm_team_score)
                                 restoreFlipViewPosition()
@@ -297,7 +310,7 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
                     }
                     R.id.card_bm_goalie -> {
                         if (vm.isAtLeastOneDefenderOut(teamBottom)) {
-                            if (vm.attack(teamBottom, 5, card_bm_goalie)) {
+                            if (vm.canAttack(teamBottom, 5, card_bm_goalie)) {
                                 teamTopScore++
                                 vm.updateScores(top_team_score, bm_team_score)
                                 restoreFlipViewPosition()
