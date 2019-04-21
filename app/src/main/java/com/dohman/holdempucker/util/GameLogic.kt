@@ -9,7 +9,7 @@ object GameLogic {
     fun isGoalieThere(goalieCard: Card): Boolean {
         val team =
             if (GameActivity.whoseTurn == GameActivity.WhoseTurn.BOTTOM) GameActivity.teamBottom else GameActivity.teamTop
-        //team.let { if (!it.all { element -> element == null }) return true else it[5] = goalieCard }
+
         team.let { if (it[5] != null) return true else it[5] = goalieCard }
 
         return false // But goalie is added now

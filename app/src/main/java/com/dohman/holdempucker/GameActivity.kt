@@ -1,29 +1,20 @@
 package com.dohman.holdempucker
 
-import android.animation.Animator
-import android.animation.AnimatorSet
-import android.animation.ObjectAnimator
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.view.WindowManager
-import android.view.animation.AnticipateInterpolator
-import android.view.animation.BounceInterpolator
-import android.view.animation.LinearInterpolator
-import android.view.animation.OvershootInterpolator
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.core.animation.doOnEnd
-import androidx.interpolator.view.animation.LinearOutSlowInInterpolator
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.dohman.holdempucker.cards.Card
+import com.dohman.holdempucker.util.AnimationUtil
 import kotlinx.android.synthetic.main.activity_game.*
 
 class GameActivity : AppCompatActivity(), View.OnClickListener {
     private lateinit var vm: GameViewModel
 
-    private var isAnimationRunning = false
-    private var ranTooSoon = false
     private var flipViewOriginalX: Float = 0f
     private var flipViewOriginalY: Float = 0f
 
@@ -33,26 +24,38 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
         setContentView(R.layout.activity_game)
         vm = ViewModelProviders.of(this).get(GameViewModel::class.java)
 
-        vm.halfTimeNotifier.observe(this, Observer { clearAllCards(it) })
-        vm.whoseTurnNotifier.observe(this, Observer { turnSwitch(it) })
+        vm.halfTimeNotifier.observe(this, Observer {
+            clearAllCards(it)
+            addGoalie(true)
+        })
+        vm.whoseTurnNotifier.observe(this, Observer { AnimationUtil.togglePuck(puck, it)?.start() })
         vm.pickedCardNotifier.observe(this, Observer { flipNewCard(it) })
         vm.cardsCountNotifier.observe(this, Observer { cards_left.text = it.toString() })
-        vm.nfyBtmGoalie.observe(this, Observer { if (it) card_bm_goalie.setImageResource(R.drawable.red_back) })
-        vm.nfyTopGoalie.observe(this, Observer { if (it) card_top_goalie.setImageResource(R.drawable.red_back) })
+        vm.badCardNotifier.observe(
+            this,
+            Observer {
+                flipNewCard(vm.resIdOfCard(vm.firstCardInDeck), isBadCard = true)
+            })
+        // vm.nfyBtmGoalie.observe(this, Observer { if (it) addGoalie(bottom = true)/*card_bm_goalie.setImageResource(R.drawable.red_back)*/ })
+        //   vm.nfyTopGoalie.observe(this, Observer { if (it) addGoalie(bottom = false)/*card_top_goalie.setImageResource(R.drawable.red_back)*/ })
 
         vm.updateScores(top_team_score, bm_team_score)
 
         flip_view.post {
             flip_view.bringToFront()
-            flipViewOriginalX = if (ranTooSoon) flip_view.x - 60f else flip_view.x
+            flipViewOriginalX = flip_view.x
             flipViewOriginalY = flip_view.y
         }
 
-        btn_debug.setOnClickListener(this)
+        btn_debug.text = "Start!"
+        btn_debug.setOnClickListener {
+            addGoalie(true)
+        }
+
         setOnClickListeners()
     }
 
-    private fun flipNewCard(resId: Int) {
+    private fun flipNewCard(resId: Int, isBadCard: Boolean = false) {
         if (flip_view.isBackSide) {
             card_deck.setImageResource(resId)
             card_picked.setImageResource(R.drawable.red_back_vertical)
@@ -61,97 +64,95 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
             card_deck.setImageResource(R.drawable.red_back_vertical)
         }
 
-        flip_view.let {
-            ObjectAnimator.ofFloat(it, View.TRANSLATION_X, 60f).apply {
-                addListener(object : Animator.AnimatorListener {
-                    override fun onAnimationStart(animation: Animator?) {
-                        isAnimationRunning = true
-                    }
-
-                    override fun onAnimationCancel(animation: Animator?) {}
-                    override fun onAnimationRepeat(animation: Animator?) {}
-                    override fun onAnimationEnd(animation: Animator?) {
-                        ranTooSoon = true
-                        flip_view.flipTheView()
-                        isAnimationRunning = false
-                    }
-                })
-                duration = 100
-                start()
-            }
+        AnimationUtil.flipView(flip_view, isBadCard) {
+            // If it is bad card, this runs
+            AnimationUtil.badCardOut(
+                flip_view,
+                { vm.firstCardInDeck },
+                { vm.notifyToggleTurn() },
+                { restoreFlipViewPosition() },
+                { vm.removeCardFromDeck() },
+                { vm.isThisTeamReady() },
+                { vm.triggerBadCard() })?.start()
         }
     }
 
     private fun restoreFlipViewPosition() {
+        flip_view.rotation = 0f
         flip_view.x = flipViewOriginalX
         flip_view.y = flipViewOriginalY
     }
 
-    private fun animateAddPlayer(targetView: AppCompatImageView, team: Array<Card?>, spotIndex: Int) {
-        val set = AnimatorSet()
-        val aniX = ObjectAnimator.ofFloat(flip_view, View.TRANSLATION_X, targetView.x - flip_view.x + 60f)
-        val aniY = ObjectAnimator.ofFloat(flip_view, View.TRANSLATION_Y, targetView.y - flip_view.y)
+    private fun addGoalie(bottom: Boolean) {
+        val view = if (bottom) card_bm_goalie else card_top_goalie
 
-        set.playTogether(aniX, aniY)
-        set.interpolator = LinearOutSlowInInterpolator()
-        set.duration = 500
-        isAnimationRunning = true
-        set.start()
+        card_deck.setImageResource(R.drawable.red_back_vertical)
+        card_picked.setImageResource(R.drawable.red_back_vertical)
 
-        set.doOnEnd {
-            restoreFlipViewPosition()
-            vm.onPlayerAddedAnimationEnd(targetView, team, spotIndex)
-            isAnimationRunning = false
+        val set = AnimationUtil.addGoalie(
+            flipView = flip_view,
+            goalieView = view,
+            flipViewOriginalX = flipViewOriginalX - 60f,
+            flipViewOriginalY = flipViewOriginalY
+        )
+
+        set.apply {
+            doOnEnd {
+                restoreFlipViewPosition()
+                isAnimationRunning = false
+                vm.onGoalieAddedAnimationEnd(view)
+                if (card_top_goalie.tag != Integer.valueOf(R.drawable.red_back)) addGoalie(bottom = false) else {
+                    flipNewCard(vm.resIdOfCard(vm.firstCardInDeck))
+                    vm.showPickedCard()
+                }
+            }
+            start()
         }
+    }
+
+    private fun animateAddPlayer(targetView: AppCompatImageView, team: Array<Card?>, spotIndex: Int) {
+        val set = AnimationUtil.addPlayer(
+            flipView = flip_view,
+            targetView = targetView
+        )
+
+        set.apply {
+            doOnEnd {
+                restoreFlipViewPosition()
+                vm.onPlayerAddedAnimationEnd(targetView, team, spotIndex)
+                isAnimationRunning = false
+            }
+            start()
+        }
+
     }
 
     private fun animateAttack(targetView: AppCompatImageView) {
         val victimX = targetView.x
         val victimY = targetView.y
 
-        val flipViewSet = AnimatorSet()
-        val flipAniX = ObjectAnimator.ofFloat(flip_view, View.TRANSLATION_X, targetView.x - flip_view.x - 30f)
-        val flipAniY = ObjectAnimator.ofFloat(flip_view, View.TRANSLATION_Y, targetView.y - flip_view.y + 30f)
+        val flipViewSet = AnimationUtil.attack(flipView = flip_view, targetView = targetView, isAttacker = true)
 
         flipViewSet.apply {
-            playTogether(flipAniX, flipAniY)
-            interpolator = LinearOutSlowInInterpolator()
-            duration = 500
-            isAnimationRunning = true
-            start()
             doOnEnd {
                 targetView.bringToFront()
                 flip_view.bringToFront()
 
-                val outOfScreenSet = AnimatorSet()
-                val flipOutAni = ObjectAnimator.ofFloat(flip_view, View.TRANSLATION_X, 2000f)
-                val victimOutAni = ObjectAnimator.ofFloat(targetView, View.TRANSLATION_X, 2000f)
+                val outOfScreenSet =
+                    AnimationUtil.attack(flipView = flip_view, targetView = targetView, isAttacker = false)
 
                 outOfScreenSet.apply {
-                    playTogether(flipOutAni, victimOutAni)
-                    interpolator = AnticipateInterpolator(1.5f)
-                    duration = 500
-                    start()
                     doOnEnd {
-                        ObjectAnimator.ofFloat(targetView, View.ALPHA, 0f, 1f).apply {
-                            duration = 200
-                            start()
-                        }
+                        AnimationUtil.fadeIn(targetView)?.start()
                         targetView.x = victimX
                         targetView.y = victimY
                         restoreFlipViewPosition()
                         vm.onAttackedAnimationEnd(targetView)
                         isAnimationRunning = false
                     }
+                    start()
                 }
             }
-        }
-    }
-
-    private fun turnSwitch(team: String) {
-        ObjectAnimator.ofFloat(puck, View.TRANSLATION_Y, if (team.toLowerCase() == "bottom") 100f else -100f).apply {
-            duration = 300
-            interpolator = OvershootInterpolator(2.5f)
             start()
         }
     }
@@ -171,7 +172,6 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
         card_bm_defender_right.setOnClickListener(this)
         card_bm_goalie.setOnClickListener(this)
 
-        btn_debug.setOnClickListener(this)
     }
 
     private fun gameOver() {
@@ -209,6 +209,7 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
             card_top_defender_left.setImageResource(android.R.color.transparent)
             card_top_defender_right.setImageResource(android.R.color.transparent)
             card_top_goalie.setImageResource(android.R.color.transparent)
+            card_top_goalie.tag = null
 
             card_bm_forward_left.setImageResource(android.R.color.transparent)
             card_bm_center.setImageResource(android.R.color.transparent)
@@ -216,16 +217,17 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
             card_bm_defender_left.setImageResource(android.R.color.transparent)
             card_bm_defender_right.setImageResource(android.R.color.transparent)
             card_bm_goalie.setImageResource(android.R.color.transparent)
+            card_bm_goalie.tag = null
         }
     }
 
     private fun addPlayer(view: AppCompatImageView, team: Array<Card?>, spotIndex: Int) {
-        if (vm.addPlayer(view, team, spotIndex))
+        if (vm.canAddPlayerView(view, team, spotIndex))
             animateAddPlayer(view, team, spotIndex)
     }
 
     private fun attackPlayer(victimTeam: Array<Card?>, spotIndex: Int, victimView: AppCompatImageView) {
-        if (vm.attack(victimTeam, spotIndex, victimView))
+        if (vm.canAttack(victimTeam, spotIndex, victimView))
             animateAttack(victimView)
     }
 
@@ -276,7 +278,7 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
                     }
                     R.id.card_top_goalie -> {
                         if (vm.isAtLeastOneDefenderOut(teamTop)) {
-                            if (vm.attack(teamTop, 5, card_top_goalie)) {
+                            if (vm.canAttack(teamTop, 5, card_top_goalie)) {
                                 teamBottomScore++
                                 vm.updateScores(top_team_score, bm_team_score)
                                 restoreFlipViewPosition()
@@ -285,10 +287,6 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
                                 restoreFlipViewPosition()
                             }
                         }
-                    }
-                    R.id.btn_debug -> {
-                        vm.removeCardFromDeck()
-                        vm.showPickedCard()
                     }
                 }
             } else {
@@ -312,7 +310,7 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
                     }
                     R.id.card_bm_goalie -> {
                         if (vm.isAtLeastOneDefenderOut(teamBottom)) {
-                            if (vm.attack(teamBottom, 5, card_bm_goalie)) {
+                            if (vm.canAttack(teamBottom, 5, card_bm_goalie)) {
                                 teamTopScore++
                                 vm.updateScores(top_team_score, bm_team_score)
                                 restoreFlipViewPosition()
@@ -321,10 +319,6 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
                                 restoreFlipViewPosition()
                             }
                         }
-                    }
-                    R.id.btn_debug -> {
-                        vm.removeCardFromDeck()
-                        vm.showPickedCard()
                     }
                 }
             }
@@ -355,6 +349,7 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
     companion object {
         const val TAG = "DBG: GameActivity.kt"
 
+        var isAnimationRunning = false
         var period = 1
         var isOngoingGame = false // Set to true when all cards are laid out
         var restoringPlayers = false // Set to true when a team need to lay out new cards to fulfill
