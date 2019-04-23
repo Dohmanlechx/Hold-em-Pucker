@@ -1,8 +1,9 @@
-package com.dohman.holdempucker
+package com.dohman.holdempucker.activities
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.WindowManager
+import com.dohman.holdempucker.R
 
 class MainActivity : AppCompatActivity() {
 

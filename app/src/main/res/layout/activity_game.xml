@@ -7,7 +7,7 @@
 	android:layout_height="match_parent"
 	android:background="@drawable/background"
 	android:padding="8dp"
-	tools:context=".GameActivity">
+	tools:context=".activities.GameActivity">
 
 	<androidx.appcompat.widget.AppCompatButton
 		android:id="@+id/btn_debug"
@@ -177,6 +177,36 @@
 		app:layout_constraintStart_toStartOf="@id/card_bm_defender_left"
 		app:layout_constraintTop_toBottomOf="@id/card_bm_defender_left" />
 
+	<com.wajahatkarim3.easyflipview.EasyFlipView
+		android:id="@+id/flip_btm_goalie"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_marginStart="5dp"
+		android:layout_marginTop="12dp"
+		app:flipDuration="300"
+		app:flipFrom="right"
+		app:flipOnTouch="false"
+		app:flipType="horizontal"
+		app:layout_constraintEnd_toEndOf="@id/card_bm_defender_right"
+		app:layout_constraintStart_toStartOf="@id/card_bm_defender_left"
+		app:layout_constraintTop_toBottomOf="@id/card_bm_defender_left">
+
+		<!-- BACK -->
+		<androidx.appcompat.widget.AppCompatImageView
+			android:id="@+id/flip_btm_goalie_back"
+			android:layout_width="110dp"
+			android:layout_height="70dp"
+			android:scaleType="fitXY" />
+
+		<!-- FRONT -->
+		<androidx.appcompat.widget.AppCompatImageView
+			android:id="@+id/flip_btm_goalie_front"
+			android:layout_width="110dp"
+			android:layout_height="70dp"
+			android:scaleType="fitXY" />
+
+	</com.wajahatkarim3.easyflipview.EasyFlipView>
+
 	<!-- TEAM TOP -->
 
 	<androidx.appcompat.widget.AppCompatImageView
@@ -243,6 +273,35 @@
 		app:layout_constraintBottom_toTopOf="@id/card_top_defender_left"
 		app:layout_constraintEnd_toEndOf="@id/card_top_defender_left"
 		app:layout_constraintStart_toStartOf="@id/card_top_defender_right" />
+
+	<com.wajahatkarim3.easyflipview.EasyFlipView
+		android:id="@+id/flip_top_goalie"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_marginBottom="12dp"
+		app:flipDuration="300"
+		app:flipFrom="right"
+		app:flipOnTouch="false"
+		app:flipType="horizontal"
+		app:layout_constraintBottom_toTopOf="@id/card_top_defender_left"
+		app:layout_constraintEnd_toEndOf="@id/card_top_defender_left"
+		app:layout_constraintStart_toStartOf="@id/card_top_defender_right">
+
+		<!-- BACK -->
+		<androidx.appcompat.widget.AppCompatImageView
+			android:id="@+id/flip_top_goalie_back"
+			android:layout_width="110dp"
+			android:layout_height="70dp"
+			android:scaleType="fitXY" />
+
+		<!-- FRONT -->
+		<androidx.appcompat.widget.AppCompatImageView
+			android:id="@+id/flip_top_goalie_front"
+			android:layout_width="110dp"
+			android:layout_height="70dp"
+			android:scaleType="fitXY" />
+
+	</com.wajahatkarim3.easyflipview.EasyFlipView>
 
 	<androidx.appcompat.widget.AppCompatImageView
 		android:id="@+id/puck"

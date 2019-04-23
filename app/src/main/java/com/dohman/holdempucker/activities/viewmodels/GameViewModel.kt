@@ -1,4 +1,4 @@
-package com.dohman.holdempucker
+package com.dohman.holdempucker.activities.viewmodels
 
 import android.app.Application
 import android.os.Handler
@@ -7,9 +7,13 @@ import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
+import com.dohman.holdempucker.R
+import com.dohman.holdempucker.activities.GameActivity
 import com.dohman.holdempucker.cards.Card
 import com.dohman.holdempucker.cards.CardDeck
+import com.dohman.holdempucker.util.AnimationUtil
 import com.dohman.holdempucker.util.GameLogic
+import com.wajahatkarim3.easyflipview.EasyFlipView
 
 class GameViewModel(application: Application) : AndroidViewModel(application) {
     private var cardDeck = CardDeck().cardDeck
@@ -109,10 +113,10 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
 
     }
 
-    fun resIdOfCard(card: Card): Int {
+    fun resIdOfCard(card: Card?): Int {
         return card.let {
             getApplication<Application>().resources.getIdentifier(
-                it.src, "drawable", getApplication<Application>().packageName
+                it?.src, "drawable", getApplication<Application>().packageName
             )
         }
     }
@@ -190,22 +194,25 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         return true
     }
 
-    fun canAttack(victimTeam: Array<Card?>, spotIndex: Int, view: AppCompatImageView): Boolean {
-        if (view.tag == Integer.valueOf(android.R.color.transparent)) return false
+    fun canAttack(victimTeam: Array<Card?>, spotIndex: Int, victimView: AppCompatImageView, flipView: EasyFlipView? = null): Boolean {
+        if (victimView.tag == Integer.valueOf(android.R.color.transparent)) return false
 
-        val goalieRank = victimTeam[5]?.rank
+        val goalieCard = victimTeam[5]
         if (GameLogic.attack(firstCardInDeck, victimTeam, spotIndex) && spotIndex == 5) {
             // Goalie is attacked and it is Goal!
             Toast.makeText(
                 getApplication<Application>().applicationContext,
-                "Goal against goalie (Rank: $goalieRank)! Added new goalie.",
+                "Goal against goalie (Rank: ${goalieCard?.rank})! Added new goalie.",
                 Toast.LENGTH_LONG
             ).show()
-            notifyToggleTurn()
-            GameActivity.isOngoingGame = false
-            GameActivity.restoringPlayers = true
-            removeCardFromDeck()
-            showPickedCard()
+
+            // FIXME: Ha dom i Util eller Activityn
+//            notifyToggleTurn()
+//            GameActivity.isOngoingGame = false
+//            GameActivity.restoringPlayers = true
+//            removeCardFromDeck()
+//            showPickedCard()
+
             return true
         } else if (GameLogic.attack(firstCardInDeck, victimTeam, spotIndex)) {
             return true

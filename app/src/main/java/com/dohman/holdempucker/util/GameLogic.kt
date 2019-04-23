@@ -1,6 +1,6 @@
 package com.dohman.holdempucker.util
 
-import com.dohman.holdempucker.GameActivity
+import com.dohman.holdempucker.activities.GameActivity
 import com.dohman.holdempucker.cards.Card
 import com.dohman.holdempucker.util.GameLogic.Cases.Companion.cases
 
