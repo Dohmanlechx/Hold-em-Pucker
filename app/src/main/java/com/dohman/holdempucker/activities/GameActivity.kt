@@ -12,6 +12,16 @@ import com.dohman.holdempucker.activities.viewmodels.GameViewModel
 import com.dohman.holdempucker.R
 import com.dohman.holdempucker.cards.Card
 import com.dohman.holdempucker.util.AnimationUtil
+import com.dohman.holdempucker.util.Constants
+import com.dohman.holdempucker.util.Constants.Companion.isAnimationRunning
+import com.dohman.holdempucker.util.Constants.Companion.isOngoingGame
+import com.dohman.holdempucker.util.Constants.Companion.period
+import com.dohman.holdempucker.util.Constants.Companion.teamBottom
+import com.dohman.holdempucker.util.Constants.Companion.teamBottomScore
+import com.dohman.holdempucker.util.Constants.Companion.teamTop
+import com.dohman.holdempucker.util.Constants.Companion.teamTopScore
+import com.dohman.holdempucker.util.Constants.Companion.whoseTeamStartedLastPeriod
+import com.dohman.holdempucker.util.Constants.Companion.whoseTurn
 import kotlinx.android.synthetic.main.activity_game.*
 
 class GameActivity : AppCompatActivity(), View.OnClickListener {
@@ -19,6 +29,10 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
 
     private var flipViewOriginalX: Float = 0f
     private var flipViewOriginalY: Float = 0f
+    private var flipViewBtmOriginalX: Float = 0f
+    private var flipViewBtmOriginalY: Float = 0f
+    private var flipViewTopOriginalX: Float = 0f
+    private var flipViewTopOriginalY: Float = 0f
 
     private var tempGoalieCard: Card? = null
 
@@ -51,6 +65,16 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
             flipViewOriginalY = flip_view.y
         }
 
+        flip_btm_goalie.post {
+            flipViewBtmOriginalX = flip_btm_goalie.x
+            flipViewBtmOriginalY = flip_btm_goalie.y
+        }
+
+        flip_top_goalie.post {
+            flipViewTopOriginalX = flip_top_goalie.x
+            flipViewTopOriginalY = flip_top_goalie.y
+        }
+
         btn_debug.text = "Start!"
         btn_debug.setOnClickListener {
             addGoalie(true)
@@ -63,6 +87,13 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
         flip_view.rotation = 0f
         flip_view.x = flipViewOriginalX
         flip_view.y = flipViewOriginalY
+        flip_btm_goalie.x = flipViewBtmOriginalX
+        flip_btm_goalie.y = flipViewBtmOriginalY
+        flip_top_goalie.x = flipViewTopOriginalX
+        flip_top_goalie.y = flipViewTopOriginalY
+
+        if (flip_btm_goalie.isBackSide) flip_btm_goalie.flipTheView(false)
+        if (flip_top_goalie.isBackSide) flip_top_goalie.flipTheView(false)
     }
 
     /*
@@ -135,12 +166,12 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
         val victimX = targetView.x
         val victimY = targetView.y
 
-        AnimationUtil.attack(flipView = flip_view, targetView = targetView, isAttacker = true).apply {
+        AnimationUtil.attack(flipView = flip_view, targetView = targetView, isAttacking = true).apply {
             doOnEnd {
                 targetView.bringToFront()
                 flip_view.bringToFront()
 
-                AnimationUtil.attack(flipView = flip_view, targetView = targetView, isAttacker = false).apply {
+                AnimationUtil.attack(flipView = flip_view, targetView = targetView, isAttacking = false).apply {
                     doOnEnd {
                         AnimationUtil.fadeIn(targetView)?.start()
                         targetView.x = victimX
@@ -167,26 +198,51 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
 
     private fun attackPlayer(victimTeam: Array<Card?>, spotIndex: Int, victimView: AppCompatImageView) {
         if (spotIndex == 5) {
+            // Attacking goalie
             if (vm.canAttack(victimTeam, spotIndex, victimView)) {
-                if (whoseTurn == GameActivity.WhoseTurn.BOTTOM) {
+                if (whoseTurn == Constants.WhoseTurn.BOTTOM) {
                     flip_top_goalie_front.setImageResource(R.drawable.red_back)
                     flip_top_goalie_back.setImageResource(vm.resIdOfCard(tempGoalieCard))
+
+                    flip_top_goalie.visibility = View.VISIBLE
 
                     victimView.setImageResource(android.R.color.transparent)
                     victimView.tag = Integer.valueOf(android.R.color.transparent)
 
-                    AnimationUtil.scoredAtGoalie(flip_view, flip_top_goalie).start()
+                    AnimationUtil.scoredAtGoalie(
+                        flip_view,
+                        flip_top_goalie,
+                        { vm.notifyToggleTurn() },
+                        { vm.removeCardFromDeck() },
+                        { vm.showPickedCard() },
+                        { restoreFlipViewPosition() },
+                        { addGoalie(bottom = false) },
+                        { vm.updateScores(top_team_score, bm_team_score) }
+                    ).start()
+
                 } else {
                     flip_btm_goalie_front.setImageResource(R.drawable.red_back)
                     flip_btm_goalie_back.setImageResource(vm.resIdOfCard(tempGoalieCard))
 
+                    flip_btm_goalie.visibility = View.VISIBLE
+
                     victimView.setImageResource(android.R.color.transparent)
                     victimView.tag = Integer.valueOf(android.R.color.transparent)
 
-                    AnimationUtil.scoredAtGoalie(flip_view, flip_btm_goalie).start()
+                    AnimationUtil.scoredAtGoalie(
+                        flip_view,
+                        flip_btm_goalie,
+                        { vm.notifyToggleTurn() },
+                        { vm.removeCardFromDeck() },
+                        { vm.showPickedCard() },
+                        { restoreFlipViewPosition() },
+                        { addGoalie(bottom = true) },
+                        { vm.updateScores(top_team_score, bm_team_score) }
+                    ).start()
                 }
             }
         } else {
+            // Attacking another player
             if (vm.canAttack(victimTeam, spotIndex, victimView))
                 animateAttack(victimView)
         }
@@ -219,7 +275,8 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
         } else {
             btn_debug.text = "Period: $period"
 
-            whoseTurn = if (whoseTeamStartedLastPeriod == WhoseTurn.BOTTOM) WhoseTurn.TOP else WhoseTurn.BOTTOM
+            whoseTurn =
+                if (whoseTeamStartedLastPeriod == Constants.WhoseTurn.BOTTOM) Constants.WhoseTurn.TOP else Constants.WhoseTurn.BOTTOM
 
             card_top_forward_left.setImageResource(android.R.color.transparent)
             card_top_center.setImageResource(android.R.color.transparent)
@@ -286,7 +343,7 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
 //                }
 //            }
 //            attackPlayer(findViewById(v.id), if (whoseTurn == WhoseTurn.BOTTOM) teamTop else teamBottom, spotIndex)
-            if (whoseTurn == WhoseTurn.BOTTOM) {
+            if (whoseTurn == Constants.WhoseTurn.BOTTOM) {
                 when (v.id) {
                     R.id.card_top_forward_left -> {
                         attackPlayer(teamTop, 0, card_top_forward_left)
@@ -310,10 +367,6 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
                             tempGoalieCard = teamTop[5]
                             if (vm.canAttack(teamTop, 5, card_top_goalie)) {
                                 attackPlayer(teamTop, 5, card_top_goalie)
-                                // FIXME
-//                                teamBottomScore++
-//                                vm.updateScores(top_team_score, bm_team_score)
-//                                restoreFlipViewPosition()
                             } else {
                                 vm.goalieSaved(teamTop)
                                 restoreFlipViewPosition()
@@ -344,10 +397,7 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
                         if (vm.isAtLeastOneDefenderOut(teamBottom)) {
                             tempGoalieCard = teamBottom[5]
                             if (vm.canAttack(teamBottom, 5, card_bm_goalie)) {
-                                // FIXME
-//                                teamTopScore++
-//                                vm.updateScores(top_team_score, bm_team_score)
-//                                restoreFlipViewPosition()
+                                attackPlayer(teamBottom, 5, card_bm_goalie)
                             } else {
                                 vm.goalieSaved(teamBottom)
                                 restoreFlipViewPosition()
@@ -357,7 +407,7 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
                 }
             }
         } else {
-            if (whoseTurn == WhoseTurn.BOTTOM) {
+            if (whoseTurn == Constants.WhoseTurn.BOTTOM) {
                 spotIndex = when (v.id) {
                     R.id.card_bm_forward_left -> 0
                     R.id.card_bm_center -> 1
@@ -376,37 +426,11 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
                     else -> return
                 }
             }
-            addPlayer(findViewById(v.id), if (whoseTurn == WhoseTurn.BOTTOM) teamBottom else teamTop, spotIndex)
-        }
-    }
-
-    companion object {
-        const val TAG = "DBG: GameActivity.kt"
-
-        var isAnimationRunning = false
-        var period = 1
-        var isOngoingGame = false // Set to true when all cards are laid out
-        var restoringPlayers = false // Set to true when a team need to lay out new cards to fulfill
-        var areTeamsReadyToStartPeriod = false // Set to true as soon as both teams are full in the very beginning
-        var whoseTurn = WhoseTurn.TOP
-        var whoseTeamStartedLastPeriod = WhoseTurn.BOTTOM
-        var teamTopScore: Int = 0
-        var teamBottomScore: Int = 0
-        val teamTop = arrayOfNulls<Card>(6)
-        val teamBottom = arrayOfNulls<Card>(6)
-
-        /*  Index 0 = Left forward | 1 = Center | 2 = Right forward
-                        3 = Left defender | 4 = Right defender
-                                    5 = Goalie                          */
-    }
-
-    enum class WhoseTurn {
-        BOTTOM, TOP;
-
-        companion object {
-            fun toggleTurn() {
-                whoseTurn = if (whoseTurn == BOTTOM) TOP else BOTTOM
-            }
+            addPlayer(
+                findViewById(v.id),
+                if (whoseTurn == Constants.WhoseTurn.BOTTOM) teamBottom else teamTop,
+                spotIndex
+            )
         }
     }
 }

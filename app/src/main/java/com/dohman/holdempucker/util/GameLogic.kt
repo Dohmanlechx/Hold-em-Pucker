@@ -1,14 +1,16 @@
 package com.dohman.holdempucker.util
 
-import com.dohman.holdempucker.activities.GameActivity
 import com.dohman.holdempucker.cards.Card
-import com.dohman.holdempucker.util.GameLogic.Cases.Companion.cases
+import com.dohman.holdempucker.util.Constants.Companion.cases
+import com.dohman.holdempucker.util.Constants.Companion.teamBottom
+import com.dohman.holdempucker.util.Constants.Companion.teamTop
+import com.dohman.holdempucker.util.Constants.Companion.whoseTurn
 
 object GameLogic {
 
     fun isGoalieThere(goalieCard: Card): Boolean {
         val team =
-            if (GameActivity.whoseTurn == GameActivity.WhoseTurn.BOTTOM) GameActivity.teamBottom else GameActivity.teamTop
+            if (whoseTurn == Constants.WhoseTurn.BOTTOM) teamBottom else teamTop
 
         team.let { if (it[5] != null) return true else it[5] = goalieCard }
 
@@ -51,9 +53,9 @@ object GameLogic {
         return false
     }
 
-    fun isTherePossibleMove(whoseTurn: Enum<GameActivity.WhoseTurn>, currentCard: Card): Boolean {
+    fun isTherePossibleMove(whoseTurn: Enum<Constants.WhoseTurn>, currentCard: Card): Boolean {
         val victimTeam =
-            if (whoseTurn == GameActivity.WhoseTurn.BOTTOM) GameActivity.teamTop else GameActivity.teamBottom
+            if (whoseTurn == Constants.WhoseTurn.BOTTOM) teamTop else teamBottom
 
         val currentCase = arrayListOf<Int>()
         victimTeam.forEachIndexed { index, card ->
@@ -103,27 +105,5 @@ object GameLogic {
         }
 
         return false
-    }
-
-    class Cases {
-        companion object {
-            val cases = mutableListOf<List<Int>>().apply {
-                add(0, listOf(0, 1, 2, 3, 4, 5)) // ( 0, 1, 2)
-                add(1, listOf(1, 2, 3, 4, 5)) // (1, 2, 3)
-                add(2, listOf(0, 2, 3, 4, 5)) // (0, 2)
-                add(3, listOf(0, 1, 3, 4, 5)) // (0, 1)
-                add(4, listOf(0, 3, 4, 5)) // (0, 4)
-                add(5, listOf(1, 3, 4, 5)) // (1)
-                add(6, listOf(2, 3, 4, 5)) // (2, 3)
-                add(7, listOf(3, 4, 5)) // (3, 4)
-                // Below cases are not being checked, but needed so the attacker
-                // can continue playing his turn.
-                add(8, listOf(3, 5))
-                add(9, listOf(4, 5))
-                add(10, listOf(0, 3, 5))
-                add(11, listOf(2, 4, 5))
-                add(12, listOf(5))
-            }
-        }
     }
 }

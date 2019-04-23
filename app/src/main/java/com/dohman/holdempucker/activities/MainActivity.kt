@@ -13,8 +13,4 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
     }
-
-    companion object {
-        const val TAG = "DBG: MainActivity.kt"
-    }
 }

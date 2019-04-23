@@ -196,7 +196,8 @@
 			android:id="@+id/flip_btm_goalie_back"
 			android:layout_width="110dp"
 			android:layout_height="70dp"
-			android:scaleType="fitXY" />
+			android:rotation="90"
+			android:scaleType="center" />
 
 		<!-- FRONT -->
 		<androidx.appcompat.widget.AppCompatImageView
@@ -292,7 +293,8 @@
 			android:id="@+id/flip_top_goalie_back"
 			android:layout_width="110dp"
 			android:layout_height="70dp"
-			android:scaleType="fitXY" />
+			android:rotation="90"
+			android:scaleType="center" />
 
 		<!-- FRONT -->
 		<androidx.appcompat.widget.AppCompatImageView

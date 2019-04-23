@@ -8,12 +8,18 @@ import androidx.appcompat.widget.AppCompatTextView
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import com.dohman.holdempucker.R
-import com.dohman.holdempucker.activities.GameActivity
 import com.dohman.holdempucker.cards.Card
 import com.dohman.holdempucker.cards.CardDeck
-import com.dohman.holdempucker.util.AnimationUtil
+import com.dohman.holdempucker.util.Constants
+import com.dohman.holdempucker.util.Constants.Companion.areTeamsReadyToStartPeriod
+import com.dohman.holdempucker.util.Constants.Companion.isOngoingGame
+import com.dohman.holdempucker.util.Constants.Companion.restoringPlayers
+import com.dohman.holdempucker.util.Constants.Companion.teamBottom
+import com.dohman.holdempucker.util.Constants.Companion.teamBottomScore
+import com.dohman.holdempucker.util.Constants.Companion.teamTop
+import com.dohman.holdempucker.util.Constants.Companion.teamTopScore
+import com.dohman.holdempucker.util.Constants.Companion.whoseTurn
 import com.dohman.holdempucker.util.GameLogic
-import com.wajahatkarim3.easyflipview.EasyFlipView
 
 class GameViewModel(application: Application) : AndroidViewModel(application) {
     private var cardDeck = CardDeck().cardDeck
@@ -27,8 +33,6 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     val nfyTopGoalie = MutableLiveData<Boolean>()
     val nfyBtmGoalie = MutableLiveData<Boolean>()
 
-//    private var isBadCard = false
-
     /*
     * Notify functions
     * */
@@ -38,15 +42,15 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     private fun notifyGoalie() {
-        when (GameActivity.whoseTurn) {
-            GameActivity.WhoseTurn.BOTTOM -> nfyBtmGoalie.value = true
-            GameActivity.WhoseTurn.TOP -> nfyTopGoalie.value = true
+        when (whoseTurn) {
+            Constants.WhoseTurn.BOTTOM -> nfyBtmGoalie.value = true
+            Constants.WhoseTurn.TOP -> nfyTopGoalie.value = true
         }
     }
 
     fun notifyToggleTurn() {
-        GameActivity.WhoseTurn.toggleTurn()
-        whoseTurnNotifier.value = GameActivity.whoseTurn.name
+        Constants.WhoseTurn.toggleTurn()
+        whoseTurnNotifier.value = whoseTurn.name
     }
 
     /*
@@ -83,14 +87,14 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     * Game management functions
     * */
 
-    fun showPickedCard(doNotToggleTurn: Boolean = false) { // FIXME set private
-        if ((!doNotToggleTurn && !GameActivity.restoringPlayers) || !GameActivity.areTeamsReadyToStartPeriod) notifyToggleTurn()
+    fun showPickedCard(doNotToggleTurn: Boolean = false) {
+        if ((!doNotToggleTurn && !restoringPlayers) || !areTeamsReadyToStartPeriod) notifyToggleTurn()
 
-        if (!GameActivity.areTeamsReadyToStartPeriod) {
+        if (!areTeamsReadyToStartPeriod) {
             areTeamsReady()
         } else {
-            if (isThisTeamReady() && !GameActivity.isOngoingGame) {
-                GameActivity.isOngoingGame = true
+            if (isThisTeamReady() && !isOngoingGame) {
+                isOngoingGame = true
             }
         }
 
@@ -99,7 +103,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
             return
         }
 
-        if (GameActivity.isOngoingGame && !GameLogic.isTherePossibleMove(GameActivity.whoseTurn, firstCardInDeck)) triggerBadCard()
+        if (isOngoingGame && !GameLogic.isTherePossibleMove(whoseTurn, firstCardInDeck)) triggerBadCard()
     }
 
     fun triggerBadCard() {
@@ -125,17 +129,17 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         cardDeck = CardDeck().cardDeck
         firstCardInDeck = cardDeck.first()
         for (index in 0..5) {
-            GameActivity.teamBottom[index] = null
-            GameActivity.teamTop[index] = null
+            teamBottom[index] = null
+            teamTop[index] = null
         }
         halfTimeNotifier.value = 1
-        GameActivity.isOngoingGame = false
-        GameActivity.areTeamsReadyToStartPeriod = false
+        isOngoingGame = false
+        areTeamsReadyToStartPeriod = false
     }
 
     fun updateScores(topTeam: AppCompatTextView, bottomTeam: AppCompatTextView) {
-        topTeam.text = GameActivity.teamTopScore.toString()
-        bottomTeam.text = GameActivity.teamBottomScore.toString()
+        topTeam.text = teamTopScore.toString()
+        bottomTeam.text = teamBottomScore.toString()
     }
 
     /*
@@ -158,21 +162,21 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     private fun areTeamsReady(): Boolean {
-        GameActivity.teamBottom.forEach { if (it == null) return false }
-        GameActivity.teamTop.forEach { if (it == null) return false }
+        teamBottom.forEach { if (it == null) return false }
+        teamTop.forEach { if (it == null) return false }
 
-        GameActivity.isOngoingGame = true
-        GameActivity.areTeamsReadyToStartPeriod = true
+        isOngoingGame = true
+        areTeamsReadyToStartPeriod = true
         return true
     }
 
     fun isThisTeamReady(): Boolean {
         val teamToCheck =
-            if (GameActivity.whoseTurn == GameActivity.WhoseTurn.BOTTOM) GameActivity.teamBottom else GameActivity.teamTop
+            if (whoseTurn == Constants.WhoseTurn.BOTTOM) teamBottom else teamTop
 
         teamToCheck.forEach { if (it == null) return false }
 
-        GameActivity.restoringPlayers = false
+        restoringPlayers = false
         return true
     }
 
@@ -190,11 +194,15 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
 
     fun canAddPlayerView(view: AppCompatImageView, team: Array<Card?>, spotIndex: Int): Boolean {
         if (cardDeck.size <= 8 && !areThereEnoughCards(team)) return false
-        if ((view.tag == Integer.valueOf(android.R.color.transparent) && GameActivity.isOngoingGame) || team[spotIndex] != null) return false
+        if ((view.tag == Integer.valueOf(android.R.color.transparent) && isOngoingGame) || team[spotIndex] != null) return false
         return true
     }
 
-    fun canAttack(victimTeam: Array<Card?>, spotIndex: Int, victimView: AppCompatImageView, flipView: EasyFlipView? = null): Boolean {
+    fun canAttack(
+        victimTeam: Array<Card?>,
+        spotIndex: Int,
+        victimView: AppCompatImageView
+    ): Boolean {
         if (victimView.tag == Integer.valueOf(android.R.color.transparent)) return false
 
         val goalieCard = victimTeam[5]
@@ -206,14 +214,8 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
                 Toast.LENGTH_LONG
             ).show()
 
-            // FIXME: Ha dom i Util eller Activityn
-//            notifyToggleTurn()
-//            GameActivity.isOngoingGame = false
-//            GameActivity.restoringPlayers = true
-//            removeCardFromDeck()
-//            showPickedCard()
-
             return true
+
         } else if (GameLogic.attack(firstCardInDeck, victimTeam, spotIndex)) {
             return true
         }
@@ -230,8 +232,8 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         Handler().postDelayed({
             notifyToggleTurn()
             victimTeam[5] = null
-            GameActivity.isOngoingGame = false
-            GameActivity.restoringPlayers = true
+            isOngoingGame = false
+            restoringPlayers = true
             removeCardFromDeck()
             showPickedCard()
         }, 2000)
@@ -256,11 +258,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         view.setImageResource(android.R.color.transparent)
         view.tag = Integer.valueOf(android.R.color.transparent)
         removeCardFromDeck()
-            showPickedCard(doNotToggleTurn = true)
+        showPickedCard(doNotToggleTurn = true)
 
-    }
-
-    companion object {
-        const val TAG = "DBG: GameViewModel.kt"
     }
 }
