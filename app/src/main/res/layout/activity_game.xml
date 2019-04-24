@@ -196,8 +196,7 @@
 			android:id="@+id/flip_btm_goalie_back"
 			android:layout_width="110dp"
 			android:layout_height="70dp"
-			android:rotation="90"
-			android:scaleType="center" />
+			android:scaleType="fitXY" />
 
 		<!-- FRONT -->
 		<androidx.appcompat.widget.AppCompatImageView
@@ -239,6 +238,7 @@
 		android:layout_marginEnd="10dp"
 		android:background="@drawable/image_border"
 		android:scaleType="fitXY"
+		android:src="@drawable/c4"
 		app:layout_constraintBottom_toBottomOf="@id/card_top_center"
 		app:layout_constraintEnd_toStartOf="@id/card_top_center" />
 
@@ -293,8 +293,7 @@
 			android:id="@+id/flip_top_goalie_back"
 			android:layout_width="110dp"
 			android:layout_height="70dp"
-			android:rotation="90"
-			android:scaleType="center" />
+			android:scaleType="fitXY" />
 
 		<!-- FRONT -->
 		<androidx.appcompat.widget.AppCompatImageView

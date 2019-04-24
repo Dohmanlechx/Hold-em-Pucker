@@ -1,6 +1,9 @@
 package com.dohman.holdempucker.activities.viewmodels
 
 import android.app.Application
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.Matrix
 import android.os.Handler
 import android.widget.Toast
 import androidx.appcompat.widget.AppCompatImageView
@@ -123,6 +126,20 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
                 it?.src, "drawable", getApplication<Application>().packageName
             )
         }
+    }
+
+    fun getRotatedBitmap(card: Card?): Bitmap {
+        val matrix = Matrix()
+        matrix.postRotate(90f)
+
+        val scaledBitmap = Bitmap.createScaledBitmap(
+            BitmapFactory.decodeResource(getApplication<Application>().resources, resIdOfCard(card)),
+            691,
+            1056,
+            true
+        )
+
+        return Bitmap.createBitmap(scaledBitmap, 0, 0, scaledBitmap.width, scaledBitmap.height, matrix, true)
     }
 
     private fun halfTime() {

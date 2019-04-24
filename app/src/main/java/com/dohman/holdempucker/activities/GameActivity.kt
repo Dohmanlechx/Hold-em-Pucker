@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.view.WindowManager
+import android.widget.ImageView
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.core.animation.doOnEnd
 import androidx.lifecycle.Observer
@@ -202,7 +203,7 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
             if (vm.canAttack(victimTeam, spotIndex, victimView)) {
                 if (whoseTurn == Constants.WhoseTurn.BOTTOM) {
                     flip_top_goalie_front.setImageResource(R.drawable.red_back)
-                    flip_top_goalie_back.setImageResource(vm.resIdOfCard(tempGoalieCard))
+                    flip_top_goalie_back.setImageBitmap(vm.getRotatedBitmap(tempGoalieCard))
 
                     flip_top_goalie.visibility = View.VISIBLE
 
@@ -222,7 +223,7 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
 
                 } else {
                     flip_btm_goalie_front.setImageResource(R.drawable.red_back)
-                    flip_btm_goalie_back.setImageResource(vm.resIdOfCard(tempGoalieCard))
+                    flip_btm_goalie_back.setImageBitmap(vm.getRotatedBitmap(tempGoalieCard))
 
                     flip_btm_goalie.visibility = View.VISIBLE
 
