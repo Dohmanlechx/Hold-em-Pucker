@@ -228,11 +228,11 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         val goalieCard = victimTeam[5]
         if (GameLogic.attack(firstCardInDeck, victimTeam, spotIndex) && spotIndex == 5) {
             // Goalie is attacked and it is Goal!
-            Toast.makeText(
-                getApplication<Application>().applicationContext,
-                "Goal against goalie (Rank: ${goalieCard?.rank})! Added new goalie.",
-                Toast.LENGTH_LONG
-            ).show()
+//            Toast.makeText(
+//                getApplication<Application>().applicationContext,
+//                "Goal against goalie (Rank: ${goalieCard?.rank})! Added new goalie.",
+//                Toast.LENGTH_LONG
+//            ).show()
 
             return true
 

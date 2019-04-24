@@ -1,5 +1,6 @@
 package com.dohman.holdempucker.util
 
+import androidx.appcompat.widget.AppCompatImageView
 import com.dohman.holdempucker.cards.Card
 
 class Constants {
@@ -33,6 +34,10 @@ class Constants {
         // Whose turn
         var whoseTurn = WhoseTurn.TOP
         var whoseTeamStartedLastPeriod = WhoseTurn.BOTTOM
+
+        // Views
+        val teamBottomViews = mutableListOf<AppCompatImageView>()
+        val teamTopViews = mutableListOf<AppCompatImageView>()
 
         // Cases
         val cases = mutableListOf<List<Int>>().apply {

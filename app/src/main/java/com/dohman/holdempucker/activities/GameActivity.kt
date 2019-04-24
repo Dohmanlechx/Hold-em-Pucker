@@ -4,7 +4,6 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.view.WindowManager
-import android.widget.ImageView
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.core.animation.doOnEnd
 import androidx.lifecycle.Observer
@@ -14,6 +13,7 @@ import com.dohman.holdempucker.R
 import com.dohman.holdempucker.cards.Card
 import com.dohman.holdempucker.util.AnimationUtil
 import com.dohman.holdempucker.util.Constants
+import com.dohman.holdempucker.util.Constants.Companion.teamBottomViews
 import com.dohman.holdempucker.util.Constants.Companion.isAnimationRunning
 import com.dohman.holdempucker.util.Constants.Companion.isOngoingGame
 import com.dohman.holdempucker.util.Constants.Companion.period
@@ -21,6 +21,7 @@ import com.dohman.holdempucker.util.Constants.Companion.teamBottom
 import com.dohman.holdempucker.util.Constants.Companion.teamBottomScore
 import com.dohman.holdempucker.util.Constants.Companion.teamTop
 import com.dohman.holdempucker.util.Constants.Companion.teamTopScore
+import com.dohman.holdempucker.util.Constants.Companion.teamTopViews
 import com.dohman.holdempucker.util.Constants.Companion.whoseTeamStartedLastPeriod
 import com.dohman.holdempucker.util.Constants.Companion.whoseTurn
 import kotlinx.android.synthetic.main.activity_game.*
@@ -82,6 +83,7 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
         }
 
         setOnClickListeners()
+        storeAllViews()
     }
 
     private fun restoreFlipViewPosition() {
@@ -95,6 +97,26 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
 
         if (flip_btm_goalie.isBackSide) flip_btm_goalie.flipTheView(false)
         if (flip_top_goalie.isBackSide) flip_top_goalie.flipTheView(false)
+    }
+
+    private fun storeAllViews() {
+        teamBottomViews.apply {
+            add(card_bm_forward_left)
+            add(card_bm_center)
+            add(card_bm_forward_right)
+            add(card_bm_defender_left)
+            add(card_bm_defender_right)
+            add(card_bm_goalie)
+        }
+
+        teamTopViews.apply {
+            add(card_top_forward_left)
+            add(card_top_center)
+            add(card_top_forward_right)
+            add(card_top_defender_left)
+            add(card_top_defender_right)
+            add(card_top_goalie)
+        }
     }
 
     /*
