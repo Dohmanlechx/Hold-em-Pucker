@@ -7,8 +7,8 @@ import android.util.Log
 import android.view.View
 import android.view.animation.AnticipateInterpolator
 import android.view.animation.OvershootInterpolator
-import android.view.animation.ScaleAnimation
 import androidx.appcompat.widget.AppCompatImageView
+import androidx.core.animation.doOnCancel
 import androidx.core.animation.doOnEnd
 import androidx.core.animation.doOnStart
 import androidx.interpolator.view.animation.LinearOutSlowInInterpolator
@@ -26,6 +26,8 @@ import com.dohman.holdempucker.util.Constants.Companion.whoseTurn
 import com.wajahatkarim3.easyflipview.EasyFlipView
 
 object AnimationUtil {
+
+    private val listOfOngoingAnimations = mutableListOf<ObjectAnimator>()
 
     fun flipView(v: EasyFlipView, isBadCard: Boolean, fIsBadCard: () -> Unit) {
         ObjectAnimator.ofFloat(v, View.TRANSLATION_X, 60f).apply {
@@ -47,18 +49,33 @@ object AnimationUtil {
 
         val teamToPulse = if (whoseTurn == Constants.WhoseTurn.BOTTOM) teamTopViews else teamBottomViews
 
-        possibleMovesIndexes.forEach {
-            ObjectAnimator.ofPropertyValuesHolder(
-                teamToPulse[it],
+        possibleMovesIndexes.forEach { view ->
+            val pulseAnimation = ObjectAnimator.ofPropertyValuesHolder(
+                teamToPulse[view],
                 PropertyValuesHolder.ofFloat(View.SCALE_X, 1.05f),
                 PropertyValuesHolder.ofFloat(View.SCALE_Y, 1.05f)
             ).apply {
                 duration = 310
                 repeatCount = ObjectAnimator.INFINITE
                 repeatMode = ObjectAnimator.REVERSE
+
+                doOnCancel {
+                    teamToPulse[view].apply {
+                        scaleX = 1f
+                        scaleY = 1f
+                    }
+                }
+
                 start()
             }
+
+            listOfOngoingAnimations.add(pulseAnimation)
         }
+    }
+
+    fun stopAllPulsingCardAnimations() {
+        listOfOngoingAnimations.forEach { it.cancel() }
+        listOfOngoingAnimations.clear()
     }
 
     fun addGoalie(
@@ -125,6 +142,10 @@ object AnimationUtil {
         }
     }
 
+    fun goalieSaved() {
+        // FIXME glöm ej stopAllPulsing
+    }
+
     fun scoredAtGoalie(
         flipView: EasyFlipView,
         targetView: EasyFlipView,
@@ -135,15 +156,19 @@ object AnimationUtil {
         fAddNewGoalie: () -> Unit,
         fUpdateScores: () -> Unit
     ): AnimatorSet {
+        stopAllPulsingCardAnimations()
+
         // Attacker
         val flipAniX = ObjectAnimator.ofFloat(flipView, View.TRANSLATION_X, targetView.x - flipView.x - 150f)
-        val flipAniY = ObjectAnimator.ofFloat(flipView, View.TRANSLATION_Y, targetView.y - flipView.y)
+        val flipAniY =
+            if (whoseTurn == Constants.WhoseTurn.BOTTOM) ObjectAnimator.ofFloat(flipView, View.TRANSLATION_Y, targetView.y - flipView.y)
+            else ObjectAnimator.ofFloat(flipView, View.TRANSLATION_Y, targetView.y - flipView.y - (targetView.height / 2))
 
         return AnimatorSet().apply {
             isAnimationRunning = true
             playTogether(flipAniX, flipAniY)
             interpolator = LinearOutSlowInInterpolator()
-            duration = 500
+            duration = 1000
 
             doOnEnd {
                 // Victim goalie
@@ -177,9 +202,9 @@ object AnimationUtil {
                                 else teamTopScore++
 
                                 fNotifyToggleTurn.invoke()
+                                fRestoreFlipViews.invoke()
                                 fRemoveCardFromDeck.invoke()
                                 fShowPickedCard.invoke()
-                                fRestoreFlipViews.invoke()
                                 fAddNewGoalie.invoke()
                                 fUpdateScores.invoke()
                             }

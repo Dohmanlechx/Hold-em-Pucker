@@ -220,6 +220,7 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun attackPlayer(victimTeam: Array<Card?>, spotIndex: Int, victimView: AppCompatImageView) {
+        AnimationUtil.stopAllPulsingCardAnimations()
         if (spotIndex == 5) {
             // Attacking goalie
             if (vm.canAttack(victimTeam, spotIndex, victimView)) {
