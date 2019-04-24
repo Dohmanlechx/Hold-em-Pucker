@@ -2,6 +2,7 @@ package com.dohman.holdempucker.util
 
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
+import android.util.Log
 import android.view.View
 import android.view.animation.Animation
 import android.view.animation.AnticipateInterpolator
@@ -12,8 +13,10 @@ import androidx.core.animation.doOnEnd
 import androidx.core.animation.doOnStart
 import androidx.interpolator.view.animation.LinearOutSlowInInterpolator
 import com.dohman.holdempucker.cards.Card
+import com.dohman.holdempucker.util.Constants.Companion.TAG_GAMEACTIVITY
 import com.dohman.holdempucker.util.Constants.Companion.isAnimationRunning
 import com.dohman.holdempucker.util.Constants.Companion.isOngoingGame
+import com.dohman.holdempucker.util.Constants.Companion.possibleMovesIndexes
 import com.dohman.holdempucker.util.Constants.Companion.restoringPlayers
 import com.dohman.holdempucker.util.Constants.Companion.teamBottomScore
 import com.dohman.holdempucker.util.Constants.Companion.teamTopScore
@@ -28,13 +31,17 @@ object AnimationUtil {
                 isAnimationRunning = true
             }
             doOnEnd {
-                isAnimationRunning = false
                 v.flipTheView()
+                isAnimationRunning = false
                 if (isBadCard) fIsBadCard.invoke()
             }
             duration = 100
             start()
         }
+    }
+
+    fun startPulsingCardsAnimation() {
+        Log.d(TAG_GAMEACTIVITY, possibleMovesIndexes.toString())
     }
 
     fun addGoalie(
@@ -201,7 +208,14 @@ object AnimationUtil {
                         whoseTurn,
                         fGetFirstCardInDeck.invoke()
                     )
-                ) fTriggerBadCard.invoke()
+                )
+                    fTriggerBadCard.invoke()
+                else if (isOngoingGame && GameLogic.isTherePossibleMove(
+                        whoseTurn,
+                        fGetFirstCardInDeck.invoke()
+                    )
+                )
+                    startPulsingCardsAnimation()
             }
         }
     }

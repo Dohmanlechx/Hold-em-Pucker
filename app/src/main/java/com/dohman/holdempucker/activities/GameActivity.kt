@@ -98,7 +98,7 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     /*
-    * Animation initializers
+    * Animation initializer
     * */
 
     private fun flipNewCard(resId: Int, isBadCard: Boolean = false) {

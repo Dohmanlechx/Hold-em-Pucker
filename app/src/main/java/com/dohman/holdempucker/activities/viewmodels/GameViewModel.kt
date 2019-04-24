@@ -13,6 +13,7 @@ import androidx.lifecycle.MutableLiveData
 import com.dohman.holdempucker.R
 import com.dohman.holdempucker.cards.Card
 import com.dohman.holdempucker.cards.CardDeck
+import com.dohman.holdempucker.util.AnimationUtil
 import com.dohman.holdempucker.util.Constants
 import com.dohman.holdempucker.util.Constants.Companion.areTeamsReadyToStartPeriod
 import com.dohman.holdempucker.util.Constants.Companion.isOngoingGame
@@ -107,6 +108,8 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         }
 
         if (isOngoingGame && !GameLogic.isTherePossibleMove(whoseTurn, firstCardInDeck)) triggerBadCard()
+        else if (isOngoingGame && GameLogic.isTherePossibleMove(whoseTurn, firstCardInDeck)) AnimationUtil.startPulsingCardsAnimation()
+
     }
 
     fun triggerBadCard() {

@@ -2,6 +2,7 @@ package com.dohman.holdempucker.util
 
 import com.dohman.holdempucker.cards.Card
 import com.dohman.holdempucker.util.Constants.Companion.cases
+import com.dohman.holdempucker.util.Constants.Companion.possibleMovesIndexes
 import com.dohman.holdempucker.util.Constants.Companion.teamBottom
 import com.dohman.holdempucker.util.Constants.Companion.teamTop
 import com.dohman.holdempucker.util.Constants.Companion.whoseTurn
@@ -63,47 +64,112 @@ object GameLogic {
             if (card != null) currentCase.add(index)
         }
 
+        var result = false
+        possibleMovesIndexes.clear()
+
         cases.forEachIndexed { index, case ->
             if (case == currentCase) {
                 when (index) {
                     0 -> { // x xx xxx
-                        for (i in 0..2) if (currentCard.rank!! >= victimTeam[i]?.rank!!) return true
+                        for (i in 0..2) if (currentCard.rank!! >= victimTeam[i]?.rank!!) {
+                            possibleMovesIndexes.add(i)
+                            result = true
+                        }
+                        //for (i in 0..2) if (currentCard.rank!! >= victimTeam[i]?.rank!!) return true
                     }
 
                     1 -> { // x xx xx-
-                        for (i in 1..2) if (currentCard.rank!! >= victimTeam[i]?.rank!!) return true
+                        for (i in 1..2) if (currentCard.rank!! >= victimTeam[i]?.rank!!) {
+                            possibleMovesIndexes.add(i)
+                            result = true
+                        }
+//                        for (i in 1..2) if (currentCard.rank!! >= victimTeam[i]?.rank!!) return true
                     }
 
                     2 -> { // x xx x-x
-                        for (i in 0..2 step 2) if (currentCard.rank!! >= victimTeam[i]?.rank!!) return true
+                        for (i in 0..2 step 2) if (currentCard.rank!! >= victimTeam[i]?.rank!!) {
+                            possibleMovesIndexes.add(i)
+                            result = true
+                        }
+//                        for (i in 0..2 step 2) if (currentCard.rank!! >= victimTeam[i]?.rank!!) return true
                     }
 
                     3 -> { // x xx -xx
-                        for (i in 0..1) if (currentCard.rank!! >= victimTeam[i]?.rank!!) return true
+                        for (i in 0..1) if (currentCard.rank!! >= victimTeam[i]?.rank!!) {
+                            possibleMovesIndexes.add(i)
+                            result = true
+                        }
+//                        for (i in 0..1) if (currentCard.rank!! >= victimTeam[i]?.rank!!) return true
                     }
 
                     4 -> { // x xx --x
-                        for (i in 0..4 step 4) if (currentCard.rank!! >= victimTeam[i]?.rank!!) return true
+                        for (i in 0..4 step 4) if (currentCard.rank!! >= victimTeam[i]?.rank!!) {
+                            possibleMovesIndexes.add(i)
+                            result = true
+                        }
+//                        for (i in 0..4 step 4) if (currentCard.rank!! >= victimTeam[i]?.rank!!) return true
                     }
 
                     5 -> { // x xx -x-
-                        if (currentCard.rank!! >= victimTeam[1]?.rank!!) return true
+                        if (currentCard.rank!! >= victimTeam[1]?.rank!!) {
+                            possibleMovesIndexes.add(1)
+                            result = true
+                        }
+//                        if (currentCard.rank!! >= victimTeam[1]?.rank!!) return true
                     }
 
                     6 -> { // x xx x--
-                        for (i in 2..3) if (currentCard.rank!! >= victimTeam[i]?.rank!!) return true
+                        for (i in 2..3) if (currentCard.rank!! >= victimTeam[i]?.rank!!) {
+                            possibleMovesIndexes.add(i)
+                            result = true
+                        }
+//                        for (i in 2..3) if (currentCard.rank!! >= victimTeam[i]?.rank!!) return true
                     }
 
                     7 -> { // x xx ---
-                        for (i in 3..4) if (currentCard.rank!! >= victimTeam[i]?.rank!!) return true
+                        for (i in 3..4) if (currentCard.rank!! >= victimTeam[i]?.rank!!) {
+                            possibleMovesIndexes.add(i)
+                            result = true
+                        }
+//                        for (i in 3..4) if (currentCard.rank!! >= victimTeam[i]?.rank!!) return true
                     }
-                    else -> { // An alone defender
+                    8 -> { // x -x ---
+                        possibleMovesIndexes.add(5)
+
+                        if (currentCard.rank!! >= victimTeam[3]?.rank!!) possibleMovesIndexes.add(3)
+
+                        result = true
+                    }
+                    9 -> { // x x- ---
+                        possibleMovesIndexes.add(5)
+
+                        if (currentCard.rank!! >= victimTeam[4]?.rank!!) possibleMovesIndexes.add(4)
+
+                        result = true
+                    }
+                    10 -> { // x -x --x
+                        possibleMovesIndexes.add(5)
+
+                        if (currentCard.rank!! >= victimTeam[0]?.rank!!) possibleMovesIndexes.add(0)
+
+                        result = true
+                    }
+                    11 -> { // x x- x--
+                        possibleMovesIndexes.add(5)
+
+                        if (currentCard.rank!! >= victimTeam[2]?.rank!!) possibleMovesIndexes.add(2)
+
+                        result = true
+                    }
+                    else -> {
+                        // Only goalie is left
+                        possibleMovesIndexes.add(5)
                         return true
                     }
                 }
             }
         }
 
-        return false
+        return result
     }
 }
