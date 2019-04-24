@@ -9,12 +9,125 @@
 	android:padding="8dp"
 	tools:context=".activities.GameActivity">
 
+	<!-- BACKGROUND PLACEHOLDERS -->
+
+	<androidx.appcompat.widget.AppCompatImageView
+			android:layout_width="70dp"
+			android:layout_height="110dp"
+			android:layout_marginTop="8dp"
+			android:background="@drawable/image_border"
+			app:layout_constraintEnd_toEndOf="parent"
+			app:layout_constraintStart_toEndOf="@id/flip_view"
+			app:layout_constraintTop_toBottomOf="@id/guideline_horizontal" />
+
+	<androidx.appcompat.widget.AppCompatImageView
+			android:layout_width="70dp"
+			android:layout_height="110dp"
+			android:layout_marginEnd="10dp"
+			android:background="@drawable/image_border"
+			app:layout_constraintEnd_toStartOf="@id/card_bm_center"
+			app:layout_constraintTop_toTopOf="@id/card_bm_center" />
+
+	<androidx.appcompat.widget.AppCompatImageView
+			android:layout_width="70dp"
+			android:layout_height="110dp"
+			android:layout_marginStart="10dp"
+			android:layout_marginEnd="10dp"
+			android:background="@drawable/image_border"
+			app:layout_constraintStart_toEndOf="@id/card_bm_center"
+			app:layout_constraintTop_toTopOf="@id/card_bm_center" />
+
+	<androidx.appcompat.widget.AppCompatImageView
+			android:layout_width="70dp"
+			android:layout_height="110dp"
+			android:layout_marginTop="12dp"
+			android:layout_marginEnd="5dp"
+			android:background="@drawable/image_border"
+			app:layout_constraintEnd_toEndOf="@id/guideline_vertical"
+			app:layout_constraintTop_toBottomOf="@id/card_bm_center" />
+
+	<androidx.appcompat.widget.AppCompatImageView
+			android:layout_width="70dp"
+			android:layout_height="110dp"
+			android:layout_marginStart="5dp"
+			android:layout_marginTop="12dp"
+			android:background="@drawable/image_border"
+			app:layout_constraintStart_toEndOf="@id/guideline_vertical"
+			app:layout_constraintTop_toBottomOf="@id/card_bm_center" />
+
+	<androidx.appcompat.widget.AppCompatImageView
+			android:layout_width="110dp"
+			android:layout_height="70dp"
+			android:layout_marginStart="5dp"
+			android:layout_marginTop="12dp"
+			android:background="@drawable/image_border"
+			app:layout_constraintEnd_toEndOf="@id/card_bm_defender_right"
+			app:layout_constraintStart_toStartOf="@id/card_bm_defender_left"
+			app:layout_constraintTop_toBottomOf="@id/card_bm_defender_left" />
+
+	<!-- TEAM TOP -->
+
+	<androidx.appcompat.widget.AppCompatImageView
+			android:layout_width="70dp"
+			android:layout_height="110dp"
+			android:layout_marginBottom="8dp"
+			android:background="@drawable/image_border"
+			app:layout_constraintBottom_toBottomOf="@id/guideline_horizontal"
+			app:layout_constraintEnd_toEndOf="parent"
+			app:layout_constraintStart_toEndOf="@id/flip_view"
+			app:layout_constraintVertical_bias="0.38" />
+
+	<androidx.appcompat.widget.AppCompatImageView
+			android:layout_width="70dp"
+			android:layout_height="110dp"
+			android:layout_marginStart="10dp"
+			android:background="@drawable/image_border"
+			app:layout_constraintBottom_toBottomOf="@id/card_top_center"
+			app:layout_constraintStart_toEndOf="@id/card_top_center" />
+
+	<androidx.appcompat.widget.AppCompatImageView
+			android:layout_width="70dp"
+			android:layout_height="110dp"
+			android:layout_marginEnd="10dp"
+			android:background="@drawable/image_border"
+			app:layout_constraintBottom_toBottomOf="@id/card_top_center"
+			app:layout_constraintEnd_toStartOf="@id/card_top_center" />
+
+	<androidx.appcompat.widget.AppCompatImageView
+			android:layout_width="70dp"
+			android:layout_height="110dp"
+			android:layout_marginStart="5dp"
+			android:layout_marginBottom="12dp"
+			android:background="@drawable/image_border"
+			app:layout_constraintBottom_toTopOf="@id/card_top_center"
+			app:layout_constraintStart_toEndOf="@id/guideline_vertical" />
+
+	<androidx.appcompat.widget.AppCompatImageView
+			android:layout_width="70dp"
+			android:layout_height="110dp"
+			android:layout_marginEnd="5dp"
+			android:layout_marginBottom="12dp"
+			android:background="@drawable/image_border"
+			app:layout_constraintBottom_toTopOf="@id/card_top_center"
+			app:layout_constraintEnd_toStartOf="@id/guideline_vertical" />
+
+	<androidx.appcompat.widget.AppCompatImageView
+			android:layout_width="110dp"
+			android:layout_height="70dp"
+			android:layout_marginBottom="12dp"
+			android:background="@drawable/image_border"
+			app:layout_constraintBottom_toTopOf="@id/card_top_defender_left"
+			app:layout_constraintEnd_toEndOf="@id/card_top_defender_left"
+			app:layout_constraintStart_toStartOf="@id/card_top_defender_right" />
+
+	<!-- END OF PLACEHOLDERS -->
+
 	<androidx.appcompat.widget.AppCompatButton
 		android:id="@+id/btn_debug"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:text="Switch"
-		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintStart_toStartOf="parent"
 		app:layout_constraintTop_toTopOf="parent" />
 
 	<androidx.appcompat.widget.AppCompatTextView
@@ -93,7 +206,7 @@
 		android:fontFamily="@font/hockey_score_font"
 		android:textColor="@color/black"
 		android:textSize="52sp"
-		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintEnd_toEndOf="parent"
 		app:layout_constraintTop_toTopOf="parent"
 		tools:text="0" />
 
@@ -106,7 +219,7 @@
 		android:textColor="@color/black"
 		android:textSize="52sp"
 		app:layout_constraintBottom_toBottomOf="parent"
-		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintEnd_toEndOf="parent"
 		tools:text="1" />
 
 	<!-- TEAM BOTTOM -->
@@ -116,7 +229,6 @@
 		android:layout_width="70dp"
 		android:layout_height="110dp"
 		android:layout_marginTop="8dp"
-		android:background="@drawable/image_border"
 		android:scaleType="fitXY"
 		app:layout_constraintEnd_toEndOf="parent"
 		app:layout_constraintStart_toEndOf="@id/flip_view"
@@ -127,7 +239,6 @@
 		android:layout_width="70dp"
 		android:layout_height="110dp"
 		android:layout_marginEnd="10dp"
-		android:background="@drawable/image_border"
 		android:scaleType="fitXY"
 		app:layout_constraintEnd_toStartOf="@id/card_bm_center"
 		app:layout_constraintTop_toTopOf="@id/card_bm_center" />
@@ -138,7 +249,6 @@
 		android:layout_height="110dp"
 		android:layout_marginStart="10dp"
 		android:layout_marginEnd="10dp"
-		android:background="@drawable/image_border"
 		android:scaleType="fitXY"
 		app:layout_constraintStart_toEndOf="@id/card_bm_center"
 		app:layout_constraintTop_toTopOf="@id/card_bm_center" />
@@ -149,7 +259,6 @@
 		android:layout_height="110dp"
 		android:layout_marginTop="12dp"
 		android:layout_marginEnd="5dp"
-		android:background="@drawable/image_border"
 		android:scaleType="fitXY"
 		app:layout_constraintEnd_toEndOf="@id/guideline_vertical"
 		app:layout_constraintTop_toBottomOf="@id/card_bm_center" />
@@ -160,7 +269,6 @@
 		android:layout_height="110dp"
 		android:layout_marginStart="5dp"
 		android:layout_marginTop="12dp"
-		android:background="@drawable/image_border"
 		android:scaleType="fitXY"
 		app:layout_constraintStart_toEndOf="@id/guideline_vertical"
 		app:layout_constraintTop_toBottomOf="@id/card_bm_center" />
@@ -171,7 +279,6 @@
 		android:layout_height="70dp"
 		android:layout_marginStart="5dp"
 		android:layout_marginTop="12dp"
-		android:background="@drawable/image_border"
 		android:scaleType="fitXY"
 		app:layout_constraintEnd_toEndOf="@id/card_bm_defender_right"
 		app:layout_constraintStart_toStartOf="@id/card_bm_defender_left"
@@ -214,7 +321,6 @@
 		android:layout_width="70dp"
 		android:layout_height="110dp"
 		android:layout_marginBottom="8dp"
-		android:background="@drawable/image_border"
 		android:scaleType="fitXY"
 		app:layout_constraintBottom_toBottomOf="@id/guideline_horizontal"
 		app:layout_constraintEnd_toEndOf="parent"
@@ -226,7 +332,6 @@
 		android:layout_width="70dp"
 		android:layout_height="110dp"
 		android:layout_marginStart="10dp"
-		android:background="@drawable/image_border"
 		android:scaleType="fitXY"
 		app:layout_constraintBottom_toBottomOf="@id/card_top_center"
 		app:layout_constraintStart_toEndOf="@id/card_top_center" />
@@ -236,7 +341,6 @@
 		android:layout_width="70dp"
 		android:layout_height="110dp"
 		android:layout_marginEnd="10dp"
-		android:background="@drawable/image_border"
 		android:scaleType="fitXY"
 		app:layout_constraintBottom_toBottomOf="@id/card_top_center"
 		app:layout_constraintEnd_toStartOf="@id/card_top_center" />
@@ -247,7 +351,6 @@
 		android:layout_height="110dp"
 		android:layout_marginStart="5dp"
 		android:layout_marginBottom="12dp"
-		android:background="@drawable/image_border"
 		android:scaleType="fitXY"
 		app:layout_constraintBottom_toTopOf="@id/card_top_center"
 		app:layout_constraintStart_toEndOf="@id/guideline_vertical" />
@@ -258,7 +361,6 @@
 		android:layout_height="110dp"
 		android:layout_marginEnd="5dp"
 		android:layout_marginBottom="12dp"
-		android:background="@drawable/image_border"
 		android:scaleType="fitXY"
 		app:layout_constraintBottom_toTopOf="@id/card_top_center"
 		app:layout_constraintEnd_toStartOf="@id/guideline_vertical" />
@@ -268,7 +370,6 @@
 		android:layout_width="110dp"
 		android:layout_height="70dp"
 		android:layout_marginBottom="12dp"
-		android:background="@drawable/image_border"
 		android:scaleType="fitXY"
 		app:layout_constraintBottom_toTopOf="@id/card_top_defender_left"
 		app:layout_constraintEnd_toEndOf="@id/card_top_defender_left"

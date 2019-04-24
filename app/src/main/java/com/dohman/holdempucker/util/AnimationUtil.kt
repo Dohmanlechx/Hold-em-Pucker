@@ -151,7 +151,6 @@ object AnimationUtil {
         targetView: EasyFlipView,
         fNotifyToggleTurn: () -> Unit,
         fRemoveCardFromDeck: () -> Unit,
-        fShowPickedCard: () -> Unit,
         fRestoreFlipViews: () -> Unit,
         fAddNewGoalie: () -> Unit,
         fUpdateScores: () -> Unit
@@ -201,12 +200,11 @@ object AnimationUtil {
                                 if (whoseTurn == Constants.WhoseTurn.BOTTOM) teamBottomScore++
                                 else teamTopScore++
 
+                                fUpdateScores.invoke()
                                 fNotifyToggleTurn.invoke()
                                 fRestoreFlipViews.invoke()
                                 fRemoveCardFromDeck.invoke()
-                                fShowPickedCard.invoke()
                                 fAddNewGoalie.invoke()
-                                fUpdateScores.invoke()
                             }
                         }
                     }
@@ -255,12 +253,6 @@ object AnimationUtil {
                 )
                     startPulsingCardsAnimation()
             }
-        }
-    }
-
-    fun fadeIn(targetView: AppCompatImageView): ObjectAnimator? {
-        return ObjectAnimator.ofFloat(targetView, View.ALPHA, 0f, 1f).apply {
-            duration = 200
         }
     }
 

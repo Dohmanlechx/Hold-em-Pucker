@@ -162,8 +162,8 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
                 isAnimationRunning = false
                 vm.onGoalieAddedAnimationEnd(view)
                 if (card_top_goalie.tag != Integer.valueOf(R.drawable.red_back)) addGoalie(bottom = false) else {
-                    flipNewCard(vm.resIdOfCard(vm.firstCardInDeck))
-                    vm.showPickedCard()
+                    //flipNewCard(vm.resIdOfCard(vm.firstCardInDeck))
+                    //vm.showPickedCard() // FIXME!!! Funkar det bättre utan dessa?
                 }
             }
             start()
@@ -196,7 +196,6 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
 
                 AnimationUtil.attack(flipView = flip_view, targetView = targetView, isAttacking = false).apply {
                     doOnEnd {
-                        AnimationUtil.fadeIn(targetView)?.start()
                         targetView.x = victimX
                         targetView.y = victimY
                         restoreFlipViewPosition()
@@ -238,7 +237,6 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
                         flip_top_goalie,
                         { vm.notifyToggleTurn() },
                         { vm.removeCardFromDeck() },
-                        { vm.showPickedCard() },
                         { restoreFlipViewPosition() },
                         { addGoalie(bottom = false) },
                         { vm.updateScores(top_team_score, bm_team_score) }
@@ -258,7 +256,6 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
                         flip_btm_goalie,
                         { vm.notifyToggleTurn() },
                         { vm.removeCardFromDeck() },
-                        { vm.showPickedCard() },
                         { restoreFlipViewPosition() },
                         { addGoalie(bottom = true) },
                         { vm.updateScores(top_team_score, bm_team_score) }
