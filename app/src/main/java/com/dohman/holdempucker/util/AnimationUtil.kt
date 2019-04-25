@@ -31,8 +31,8 @@ object AnimationUtil {
     private val listOfOngoingAnimations = mutableListOf<ObjectAnimator>()
 
     fun flipView(v: EasyFlipView, cardsLeftText: AppCompatTextView, isBadCard: Boolean, fIsBadCard: () -> Unit) {
-        cardsLeftText.scaleX = 1.3f
-        cardsLeftText.scaleY = 1.3f
+        cardsLeftText.scaleX = 1.4f
+        cardsLeftText.scaleY = 1.4f
 
         ObjectAnimator.ofFloat(v, View.TRANSLATION_X, 60f).apply {
             doOnStart {

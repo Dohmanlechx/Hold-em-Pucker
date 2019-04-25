@@ -75,7 +75,6 @@ object GameLogic {
                             possibleMovesIndexes.add(i)
                             result = true
                         }
-                        //for (i in 0..2) if (currentCard.rank!! >= victimTeam[i]?.rank!!) return true
                     }
 
                     1 -> { // x xx xx-
@@ -83,7 +82,6 @@ object GameLogic {
                             possibleMovesIndexes.add(i)
                             result = true
                         }
-//                        for (i in 1..2) if (currentCard.rank!! >= victimTeam[i]?.rank!!) return true
                     }
 
                     2 -> { // x xx x-x
@@ -91,7 +89,6 @@ object GameLogic {
                             possibleMovesIndexes.add(i)
                             result = true
                         }
-//                        for (i in 0..2 step 2) if (currentCard.rank!! >= victimTeam[i]?.rank!!) return true
                     }
 
                     3 -> { // x xx -xx
@@ -99,7 +96,6 @@ object GameLogic {
                             possibleMovesIndexes.add(i)
                             result = true
                         }
-//                        for (i in 0..1) if (currentCard.rank!! >= victimTeam[i]?.rank!!) return true
                     }
 
                     4 -> { // x xx --x
@@ -107,7 +103,6 @@ object GameLogic {
                             possibleMovesIndexes.add(i)
                             result = true
                         }
-//                        for (i in 0..4 step 4) if (currentCard.rank!! >= victimTeam[i]?.rank!!) return true
                     }
 
                     5 -> { // x xx -x-
@@ -115,7 +110,6 @@ object GameLogic {
                             possibleMovesIndexes.add(1)
                             result = true
                         }
-//                        if (currentCard.rank!! >= victimTeam[1]?.rank!!) return true
                     }
 
                     6 -> { // x xx x--
@@ -123,7 +117,6 @@ object GameLogic {
                             possibleMovesIndexes.add(i)
                             result = true
                         }
-//                        for (i in 2..3) if (currentCard.rank!! >= victimTeam[i]?.rank!!) return true
                     }
 
                     7 -> { // x xx ---
@@ -131,7 +124,6 @@ object GameLogic {
                             possibleMovesIndexes.add(i)
                             result = true
                         }
-//                        for (i in 3..4) if (currentCard.rank!! >= victimTeam[i]?.rank!!) return true
                     }
                     8 -> { // x -x ---
                         possibleMovesIndexes.add(5)
