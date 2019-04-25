@@ -145,7 +145,9 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
         }
     }
 
-    private fun addGoalie(bottom: Boolean) {
+    private fun addGoalie(bottom: Boolean, doNotFlip: Boolean = false) {
+        // ONLY adding view. No real goalie card is assigning to that team by this function.
+
         val view = if (bottom) card_bm_goalie else card_top_goalie
 
         card_deck.setImageResource(R.drawable.red_back_vertical)
@@ -162,8 +164,8 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
                 isAnimationRunning = false
                 vm.onGoalieAddedAnimationEnd(view)
                 if (card_top_goalie.tag != Integer.valueOf(R.drawable.red_back)) addGoalie(bottom = false) else {
-                    //flipNewCard(vm.resIdOfCard(vm.firstCardInDeck))
-                    //vm.showPickedCard() // FIXME!!! Funkar det bättre utan dessa?
+                    if (!doNotFlip) flipNewCard(vm.resIdOfCard(vm.firstCardInDeck))
+                    vm.showPickedCard() // FIXME!!! Funkar det bättre utan dessa?
                 }
             }
             start()
@@ -238,7 +240,7 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
                         { vm.notifyToggleTurn() },
                         { vm.removeCardFromDeck() },
                         { restoreFlipViewPosition() },
-                        { addGoalie(bottom = false) },
+                        { addGoalie(bottom = false, doNotFlip = true) },
                         { vm.updateScores(top_team_score, bm_team_score) }
                     ).start()
 
@@ -257,7 +259,7 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
                         { vm.notifyToggleTurn() },
                         { vm.removeCardFromDeck() },
                         { restoreFlipViewPosition() },
-                        { addGoalie(bottom = true) },
+                        { addGoalie(bottom = true, doNotFlip = true) },
                         { vm.updateScores(top_team_score, bm_team_score) }
                     ).start()
                 }

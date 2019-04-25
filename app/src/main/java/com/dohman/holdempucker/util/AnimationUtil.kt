@@ -203,8 +203,8 @@ object AnimationUtil {
                                 fUpdateScores.invoke()
                                 fNotifyToggleTurn.invoke()
                                 fRestoreFlipViews.invoke()
-                                fRemoveCardFromDeck.invoke()
                                 fAddNewGoalie.invoke()
+                                fRemoveCardFromDeck.invoke()
                             }
                         }
                     }
