@@ -389,7 +389,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="12dp"
             app:flipDuration="600"
-            app:flipFrom="right"
+            app:flipFrom="bottom"
             app:flipOnTouch="false"
             app:flipType="vertical"
             app:layout_constraintBottom_toTopOf="@id/card_top_defender_left"

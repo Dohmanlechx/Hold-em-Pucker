@@ -4,7 +4,6 @@ import android.app.Application
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
-import android.os.Handler
 import android.widget.Toast
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
@@ -225,38 +224,14 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     ): Boolean {
         if (victimView.tag == Integer.valueOf(android.R.color.transparent)) return false
 
-        val goalieCard = victimTeam[5]
         if (GameLogic.attack(firstCardInDeck, victimTeam, spotIndex) && spotIndex == 5) {
-            // Goalie is attacked and it is Goal!
-//            Toast.makeText(
-//                getApplication<Application>().applicationContext,
-//                "Goal against goalie (Rank: ${goalieCard?.rank})! Added new goalie.",
-//                Toast.LENGTH_LONG
-//            ).show()
-
+            // Goal at goalie
             return true
-
         } else if (GameLogic.attack(firstCardInDeck, victimTeam, spotIndex)) {
             return true
         }
 
         return false
-    }
-
-    fun goalieSaved(victimTeam: Array<Card?>) {
-        Toast.makeText(
-            getApplication<Application>().applicationContext,
-            "Not goal. Goalie (Rank: ${victimTeam[5]?.rank}) too strong. Added new goalie.",
-            Toast.LENGTH_LONG
-        ).show()
-        Handler().postDelayed({
-            notifyToggleTurn()
-            victimTeam[5] = null
-            isOngoingGame = false
-            restoringPlayers = true
-            removeCardFromDeck()
-            showPickedCard()
-        }, 2000)
     }
 
     /*

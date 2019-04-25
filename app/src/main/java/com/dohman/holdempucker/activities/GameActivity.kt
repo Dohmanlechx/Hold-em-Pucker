@@ -94,9 +94,6 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
         flip_btm_goalie.y = flipViewBtmOriginalY
         flip_top_goalie.x = flipViewTopOriginalX
         flip_top_goalie.y = flipViewTopOriginalY
-
-        if (flip_btm_goalie.isBackSide) flip_btm_goalie.flipTheView(false)
-        if (flip_top_goalie.isBackSide) flip_top_goalie.flipTheView(false)
     }
 
     private fun storeAllViews() {
@@ -145,7 +142,7 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
         }
     }
 
-    private fun addGoalie(bottom: Boolean, doNotFlip: Boolean = false) {
+    private fun addGoalie(bottom: Boolean, doNotFlip: Boolean = false, doRemoveCardFromDeck: Boolean = false) {
         // ONLY adding view. No real goalie card is assigning to that team by this function.
 
         val view = if (bottom) card_bm_goalie else card_top_goalie
@@ -165,7 +162,8 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
                 vm.onGoalieAddedAnimationEnd(view)
                 if (card_top_goalie.tag != Integer.valueOf(R.drawable.red_back)) addGoalie(bottom = false) else {
                     if (!doNotFlip) flipNewCard(vm.resIdOfCard(vm.firstCardInDeck))
-                    vm.showPickedCard() // FIXME!!! Funkar det bättre utan dessa?
+                    if (doRemoveCardFromDeck) vm.removeCardFromDeck()
+                    vm.showPickedCard()
                 }
             }
             start()
@@ -226,8 +224,13 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
             // Attacking goalie
             if (vm.canAttack(victimTeam, spotIndex, victimView)) {
                 if (whoseTurn == Constants.WhoseTurn.BOTTOM) {
-                    flip_top_goalie_front.setImageResource(R.drawable.red_back)
-                    flip_top_goalie_back.setImageBitmap(vm.getRotatedBitmap(tempGoalieCard))
+                    if (flip_top_goalie.isBackSide) {
+                        flip_top_goalie_back.setImageResource(R.drawable.red_back)
+                        flip_top_goalie_front.setImageBitmap(vm.getRotatedBitmap(tempGoalieCard))
+                    } else {
+                        flip_top_goalie_front.setImageResource(R.drawable.red_back)
+                        flip_top_goalie_back.setImageBitmap(vm.getRotatedBitmap(tempGoalieCard))
+                    }
 
                     flip_top_goalie.visibility = View.VISIBLE
 
@@ -238,15 +241,20 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
                         flip_view,
                         flip_top_goalie,
                         { vm.notifyToggleTurn() },
-                        { vm.removeCardFromDeck() },
+    /*                    { vm.removeCardFromDeck() },*/
                         { restoreFlipViewPosition() },
-                        { addGoalie(bottom = false, doNotFlip = true) },
+                        { addGoalie(bottom = false, doNotFlip = true, doRemoveCardFromDeck = true) },
                         { vm.updateScores(top_team_score, bm_team_score) }
                     ).start()
 
                 } else {
-                    flip_btm_goalie_front.setImageResource(R.drawable.red_back)
-                    flip_btm_goalie_back.setImageBitmap(vm.getRotatedBitmap(tempGoalieCard))
+                    if (flip_btm_goalie.isBackSide) {
+                        flip_btm_goalie_back.setImageResource(R.drawable.red_back)
+                        flip_btm_goalie_front.setImageBitmap(vm.getRotatedBitmap(tempGoalieCard))
+                    } else {
+                        flip_btm_goalie_front.setImageResource(R.drawable.red_back)
+                        flip_btm_goalie_back.setImageBitmap(vm.getRotatedBitmap(tempGoalieCard))
+                    }
 
                     flip_btm_goalie.visibility = View.VISIBLE
 
@@ -257,9 +265,9 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
                         flip_view,
                         flip_btm_goalie,
                         { vm.notifyToggleTurn() },
-                        { vm.removeCardFromDeck() },
+                    /*    { vm.removeCardFromDeck() },*/
                         { restoreFlipViewPosition() },
-                        { addGoalie(bottom = true, doNotFlip = true) },
+                        { addGoalie(bottom = true, doNotFlip = true, doRemoveCardFromDeck = true) },
                         { vm.updateScores(top_team_score, bm_team_score) }
                     ).start()
                 }
@@ -268,6 +276,59 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
             // Attacking another player
             if (vm.canAttack(victimTeam, spotIndex, victimView))
                 animateAttack(victimView)
+        }
+    }
+
+    private fun prepareGoalieSaved(victimView: AppCompatImageView) {
+        AnimationUtil.stopAllPulsingCardAnimations()
+
+        if (whoseTurn == Constants.WhoseTurn.BOTTOM) {
+            if (flip_top_goalie.isBackSide) {
+                flip_top_goalie_back.setImageResource(R.drawable.red_back)
+                flip_top_goalie_front.setImageBitmap(vm.getRotatedBitmap(tempGoalieCard))
+            } else {
+                flip_top_goalie_front.setImageResource(R.drawable.red_back)
+                flip_top_goalie_back.setImageBitmap(vm.getRotatedBitmap(tempGoalieCard))
+            }
+
+            flip_top_goalie.visibility = View.VISIBLE
+
+            victimView.setImageResource(android.R.color.transparent)
+            victimView.tag = Integer.valueOf(android.R.color.transparent)
+
+            AnimationUtil.goalieSaved(
+                flip_view,
+                flip_top_goalie,
+                teamTop,
+                { vm.notifyToggleTurn() },
+                { vm.removeCardFromDeck() },
+                { restoreFlipViewPosition() },
+                { addGoalie(bottom = false, doNotFlip = true) }
+            ).start()
+
+        } else {
+            if (flip_btm_goalie.isBackSide) {
+                flip_btm_goalie_back.setImageResource(R.drawable.red_back)
+                flip_btm_goalie_front.setImageBitmap(vm.getRotatedBitmap(tempGoalieCard))
+            } else {
+                flip_btm_goalie_front.setImageResource(R.drawable.red_back)
+                flip_btm_goalie_back.setImageBitmap(vm.getRotatedBitmap(tempGoalieCard))
+            }
+
+            flip_btm_goalie.visibility = View.VISIBLE
+
+            victimView.setImageResource(android.R.color.transparent)
+            victimView.tag = Integer.valueOf(android.R.color.transparent)
+
+            AnimationUtil.goalieSaved(
+                flip_view,
+                flip_btm_goalie,
+                teamBottom,
+                { vm.notifyToggleTurn() },
+                { vm.removeCardFromDeck() },
+                { restoreFlipViewPosition() },
+                { addGoalie(bottom = true, doNotFlip = true) }
+            ).start()
         }
     }
 
@@ -388,12 +449,8 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
                     R.id.card_top_goalie -> {
                         if (vm.isAtLeastOneDefenderOut(teamTop)) {
                             tempGoalieCard = teamTop[5]
-                            if (vm.canAttack(teamTop, 5, card_top_goalie)) {
-                                attackPlayer(teamTop, 5, card_top_goalie)
-                            } else {
-                                vm.goalieSaved(teamTop)
-                                restoreFlipViewPosition()
-                            }
+                            if (vm.canAttack(teamTop, 5, card_top_goalie)) attackPlayer(teamTop, 5, card_top_goalie)
+                            else prepareGoalieSaved(card_top_goalie)
                         }
                     }
                 }
@@ -419,12 +476,8 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
                     R.id.card_bm_goalie -> {
                         if (vm.isAtLeastOneDefenderOut(teamBottom)) {
                             tempGoalieCard = teamBottom[5]
-                            if (vm.canAttack(teamBottom, 5, card_bm_goalie)) {
-                                attackPlayer(teamBottom, 5, card_bm_goalie)
-                            } else {
-                                vm.goalieSaved(teamBottom)
-                                restoreFlipViewPosition()
-                            }
+                            if (vm.canAttack(teamBottom, 5, card_bm_goalie)) attackPlayer(teamBottom, 5, card_bm_goalie)
+                            else prepareGoalieSaved(card_bm_goalie)
                         }
                     }
                 }
