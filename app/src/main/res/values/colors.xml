@@ -1,22 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#008577</color>
-    <color name="colorPrimaryDark">#00574B</color>
-    <color name="colorAccent">#D81B60</color>
+    <color name="colorPrimary">#000000</color>
+    <color name="colorPrimaryDark">#000000</color>
+    <color name="colorAccent">#000000</color>
 
     <!--GAME ACTIVITY-->
     <color name="board">#1ACA1D</color>
     <color name="black">#000</color>
-    <color name="card_border">#40000000</color>
+    <color name="card_border">#66000000</color>
     <color name="card_background_btm">#1A4CAF50</color>
     <color name="card_background_top">#19673AB7</color>
     <color name="victim">#0D3D0D</color>
     <color name="white">#FFFFFF</color>
+    <color name="red">#CA1C01</color>
     <color name="ice_white">#EBE4E4</color>
     <color name="ice_red">#66FF0000</color>
     <color name="ice_blue">#662020DB</color>
     <color name="transparent">#00FFFFFF</color>
 
-    <color name="card_bordersave">#809C9C9C</color>
-    <color name="card_backgroundsave">#259C9C9C</color>
 </resources>

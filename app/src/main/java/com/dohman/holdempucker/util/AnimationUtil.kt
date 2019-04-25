@@ -8,6 +8,7 @@ import android.view.View
 import android.view.animation.AnticipateInterpolator
 import android.view.animation.OvershootInterpolator
 import androidx.appcompat.widget.AppCompatImageView
+import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.animation.doOnCancel
 import androidx.core.animation.doOnEnd
 import androidx.core.animation.doOnStart
@@ -29,10 +30,21 @@ object AnimationUtil {
 
     private val listOfOngoingAnimations = mutableListOf<ObjectAnimator>()
 
-    fun flipView(v: EasyFlipView, isBadCard: Boolean, fIsBadCard: () -> Unit) {
+    fun flipView(v: EasyFlipView, cardsLeftText: AppCompatTextView, isBadCard: Boolean, fIsBadCard: () -> Unit) {
+        cardsLeftText.scaleX = 1.3f
+        cardsLeftText.scaleY = 1.3f
+
         ObjectAnimator.ofFloat(v, View.TRANSLATION_X, 60f).apply {
             doOnStart {
                 isAnimationRunning = true
+                ObjectAnimator.ofPropertyValuesHolder(
+                    cardsLeftText,
+                    PropertyValuesHolder.ofFloat(View.SCALE_X, 1f),
+                    PropertyValuesHolder.ofFloat(View.SCALE_Y, 1f)
+                ).apply {
+                    duration = 300
+                    start()
+                }
             }
             doOnEnd {
                 v.flipTheView()
@@ -160,8 +172,16 @@ object AnimationUtil {
         // Attacker
         val flipAniX = ObjectAnimator.ofFloat(flipView, View.TRANSLATION_X, targetView.x - flipView.x - 150f)
         val flipAniY =
-            if (whoseTurn == Constants.WhoseTurn.BOTTOM) ObjectAnimator.ofFloat(flipView, View.TRANSLATION_Y, targetView.y - flipView.y)
-            else ObjectAnimator.ofFloat(flipView, View.TRANSLATION_Y, targetView.y - flipView.y - (targetView.height / 2))
+            if (whoseTurn == Constants.WhoseTurn.BOTTOM) ObjectAnimator.ofFloat(
+                flipView,
+                View.TRANSLATION_Y,
+                targetView.y - flipView.y
+            )
+            else ObjectAnimator.ofFloat(
+                flipView,
+                View.TRANSLATION_Y,
+                targetView.y - flipView.y - (targetView.height / 2)
+            )
 
         return AnimatorSet().apply {
             isAnimationRunning = true

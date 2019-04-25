@@ -132,7 +132,7 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
             card_deck.setImageResource(R.drawable.red_back_vertical)
         }
 
-        AnimationUtil.flipView(flip_view, isBadCard) {
+        AnimationUtil.flipView(flip_view, cards_left, isBadCard) {
             // If it is bad card, this runs
             AnimationUtil.badCardOut(
                 flip_view,
