@@ -4,6 +4,7 @@ import android.app.Application
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
@@ -23,6 +24,7 @@ import com.dohman.holdempucker.util.Constants.Companion.teamTop
 import com.dohman.holdempucker.util.Constants.Companion.teamTopScore
 import com.dohman.holdempucker.util.Constants.Companion.whoseTurn
 import com.dohman.holdempucker.util.GameLogic
+import com.wajahatkarim3.easyflipview.EasyFlipView
 
 class GameViewModel(application: Application) : AndroidViewModel(application) {
     private var cardDeck = CardDeck().cardDeck
@@ -78,6 +80,53 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     /*
+    * Image/view functions
+    * */
+
+    fun setImagesOnFlipView(
+        flipView: EasyFlipView,
+        front: AppCompatImageView,
+        back: AppCompatImageView,
+        resId: Int?,
+        bitmap: Bitmap?,
+        isVertical: Boolean
+    ) {
+        val cover = if (isVertical) R.drawable.red_back_vertical else R.drawable.red_back
+
+        if (flipView.isBackSide) {
+            back.setImageResource(cover)
+            if (isVertical) resId?.let { front.setImageResource(it) } else bitmap?.let { front.setImageBitmap(it) }
+        } else {
+            front.setImageResource(cover)
+            if (isVertical) resId?.let { back.setImageResource(it) } else bitmap?.let { back.setImageBitmap(it) }
+        }
+
+        flipView.visibility = View.VISIBLE
+    }
+
+    fun resIdOfCard(card: Card?): Int {
+        return card.let {
+            getApplication<Application>().resources.getIdentifier(
+                it?.src, "drawable", getApplication<Application>().packageName
+            )
+        }
+    }
+
+    fun getRotatedBitmap(card: Card?): Bitmap {
+        val matrix = Matrix()
+        matrix.postRotate(90f)
+
+        val scaledBitmap = Bitmap.createScaledBitmap(
+            BitmapFactory.decodeResource(getApplication<Application>().resources, resIdOfCard(card)),
+            691,
+            1056,
+            true
+        )
+
+        return Bitmap.createBitmap(scaledBitmap, 0, 0, scaledBitmap.width, scaledBitmap.height, matrix, true)
+    }
+
+    /*
     * Game management functions
     * */
 
@@ -103,36 +152,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun triggerBadCard() {
-        Toast.makeText(
-            getApplication<Application>().applicationContext,
-            "No possible move. Card (Rank ${firstCardInDeck.rank}) discarded, Switching turn...",
-            Toast.LENGTH_LONG
-        ).show()// FIXME
-
         badCardNotifier.value = true
-
-    }
-
-    fun resIdOfCard(card: Card?): Int {
-        return card.let {
-            getApplication<Application>().resources.getIdentifier(
-                it?.src, "drawable", getApplication<Application>().packageName
-            )
-        }
-    }
-
-    fun getRotatedBitmap(card: Card?): Bitmap {
-        val matrix = Matrix()
-        matrix.postRotate(90f)
-
-        val scaledBitmap = Bitmap.createScaledBitmap(
-            BitmapFactory.decodeResource(getApplication<Application>().resources, resIdOfCard(card)),
-            691,
-            1056,
-            true
-        )
-
-        return Bitmap.createBitmap(scaledBitmap, 0, 0, scaledBitmap.width, scaledBitmap.height, matrix, true)
     }
 
     private fun halfTime() {
@@ -239,8 +259,8 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun onAttackedAnimationEnd(view: AppCompatImageView) {
-        view.setImageResource(android.R.color.transparent)
-        view.tag = Integer.valueOf(android.R.color.transparent)
+//        view.setImageResource(android.R.color.transparent)
+//        view.tag = Integer.valueOf(android.R.color.transparent)
         removeCardFromDeck()
         showPickedCard(doNotToggleTurn = true)
 

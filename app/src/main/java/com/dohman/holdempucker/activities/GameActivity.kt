@@ -122,33 +122,12 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
         }
     }
 
-    private fun setImagesOnFlipView(
-        flipView: EasyFlipView,
-        front: AppCompatImageView,
-        back: AppCompatImageView,
-        resId: Int?,
-        bitmap: Bitmap?,
-        isVertical: Boolean
-    ) {
-        val cover = if (isVertical) R.drawable.red_back_vertical else R.drawable.red_back
-
-        if (flipView.isBackSide) {
-            back.setImageResource(cover)
-            if (isVertical) resId?.let { front.setImageResource(it) } else bitmap?.let { front.setImageBitmap(it) }
-        } else {
-            front.setImageResource(cover)
-            if (isVertical) resId?.let { back.setImageResource(it) } else bitmap?.let { back.setImageBitmap(it) }
-        }
-
-        flipView.visibility = View.VISIBLE
-    }
-
     /*
     * Animation initializer
     * */
 
     private fun flipNewCard(resId: Int, isBadCard: Boolean = false) {
-        setImagesOnFlipView(flip_view, card_deck, card_picked, resId, null, isVertical = true)
+        vm.setImagesOnFlipView(flip_view, card_deck, card_picked, resId, null, isVertical = true)
 
         AnimationUtil.flipPlayingCard(flip_view, cards_left, isBadCard, {
             // If it is bad card, this runs
@@ -166,6 +145,7 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
 
     private fun addGoalieView(bottom: Boolean, doNotFlip: Boolean = false, doRemoveCardFromDeck: Boolean = false) {
         // ONLY adding view. No real goalie card is assigning to that team by this function.
+        removeAllOnClickListeners()
 
         val view = if (bottom) card_bm_goalie else card_top_goalie
 
@@ -235,12 +215,14 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun attackPlayer(victimTeam: Array<Card?>, spotIndex: Int, victimView: AppCompatImageView) {
+        removeAllOnClickListeners()
+
         AnimationUtil.stopAllPulsingCardAnimations()
         if (spotIndex == 5) {
             // Attacking goalie
             if (vm.canAttack(victimTeam, spotIndex, victimView)) {
                 if (whoseTurn == Constants.WhoseTurn.BOTTOM) {
-                    setImagesOnFlipView(
+                    vm.setImagesOnFlipView(
                         flip_top_goalie,
                         flip_top_goalie_front,
                         flip_top_goalie_back,
@@ -262,7 +244,7 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
                     ).start()
 
                 } else {
-                    setImagesOnFlipView(
+                    vm.setImagesOnFlipView(
                         flip_btm_goalie,
                         flip_btm_goalie_front,
                         flip_btm_goalie_back,
@@ -292,10 +274,12 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun prepareGoalieSaved(victimView: AppCompatImageView) {
+        removeAllOnClickListeners()
+
         AnimationUtil.stopAllPulsingCardAnimations()
 
         if (whoseTurn == Constants.WhoseTurn.BOTTOM) {
-            setImagesOnFlipView(
+            vm.setImagesOnFlipView(
                 flip_top_goalie,
                 flip_top_goalie_front,
                 flip_top_goalie_back,
@@ -317,7 +301,7 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
             ).start()
 
         } else {
-            setImagesOnFlipView(
+            vm.setImagesOnFlipView(
                 flip_btm_goalie,
                 flip_btm_goalie_front,
                 flip_btm_goalie_back,
@@ -356,20 +340,10 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
             whoseTurn =
                 if (whoseTeamStartedLastPeriod == Constants.WhoseTurn.BOTTOM) Constants.WhoseTurn.TOP else Constants.WhoseTurn.BOTTOM
 
-            card_top_forward_left.setImageResource(android.R.color.transparent)
-            card_top_center.setImageResource(android.R.color.transparent)
-            card_top_forward_right.setImageResource(android.R.color.transparent)
-            card_top_defender_left.setImageResource(android.R.color.transparent)
-            card_top_defender_right.setImageResource(android.R.color.transparent)
-            card_top_goalie.setImageResource(android.R.color.transparent)
-            card_top_goalie.tag = null
+            teamBottomViews.forEach { it.setImageResource(android.R.color.transparent) }
+            teamTopViews.forEach { it.setImageResource(android.R.color.transparent) }
 
-            card_bm_forward_left.setImageResource(android.R.color.transparent)
-            card_bm_center.setImageResource(android.R.color.transparent)
-            card_bm_forward_right.setImageResource(android.R.color.transparent)
-            card_bm_defender_left.setImageResource(android.R.color.transparent)
-            card_bm_defender_right.setImageResource(android.R.color.transparent)
-            card_bm_goalie.setImageResource(android.R.color.transparent)
+            card_top_goalie.tag = null
             card_bm_goalie.tag = null
         }
     }
@@ -379,45 +353,22 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
     * */
 
     private fun setOnClickListeners() {
-        card_top_forward_left.setOnClickListener(this)
-        card_top_center.setOnClickListener(this)
-        card_top_forward_right.setOnClickListener(this)
-        card_top_defender_left.setOnClickListener(this)
-        card_top_defender_right.setOnClickListener(this)
-        card_top_goalie.setOnClickListener(this)
-
-        card_bm_forward_left.setOnClickListener(this)
-        card_bm_center.setOnClickListener(this)
-        card_bm_forward_right.setOnClickListener(this)
-        card_bm_defender_left.setOnClickListener(this)
-        card_bm_defender_right.setOnClickListener(this)
-        card_bm_goalie.setOnClickListener(this)
-
+        teamBottomViews.forEach { it.setOnClickListener(this) }
+        teamTopViews.forEach { it.setOnClickListener(this) }
     }
 
     private fun removeAllOnClickListeners() {
-        card_top_forward_left.setOnClickListener(null)
-        card_top_center.setOnClickListener(null)
-        card_top_forward_right.setOnClickListener(null)
-        card_top_defender_left.setOnClickListener(null)
-        card_top_defender_right.setOnClickListener(null)
-        card_top_goalie.setOnClickListener(null)
-
-        card_bm_forward_left.setOnClickListener(null)
-        card_bm_center.setOnClickListener(null)
-        card_bm_forward_right.setOnClickListener(null)
-        card_bm_defender_left.setOnClickListener(null)
-        card_bm_defender_right.setOnClickListener(null)
-        card_bm_goalie.setOnClickListener(null)
+        teamBottomViews.forEach { it.setOnClickListener(null) }
+        teamTopViews.forEach { it.setOnClickListener(null) }
 
         btn_debug.setOnClickListener(null)
     }
 
     override fun onClick(v: View) {
         val spotIndex: Int
-        if (isAnimationRunning) return
         Log.d(TAG_GAMEACTIVITY, "onclick: $isAnimationRunning")
         if (isOngoingGame) {
+            if (isAnimationRunning || v.tag == Integer.valueOf(android.R.color.transparent)) return //FIXME testa
             if (whoseTurn == Constants.WhoseTurn.BOTTOM) {
                 when (v.id) {
                     R.id.card_top_forward_left -> {
