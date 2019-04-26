@@ -33,8 +33,6 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     val pickedCardNotifier = MutableLiveData<Int>()
     val cardsCountNotifier = MutableLiveData<Int>()
     val badCardNotifier = MutableLiveData<Boolean>()
-    val nfyTopGoalie = MutableLiveData<Boolean>()
-    val nfyBtmGoalie = MutableLiveData<Boolean>()
 
     /*
     * Notify functions
@@ -42,13 +40,6 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
 
     private fun notifyPickedCard() {
         pickedCardNotifier.value = resIdOfCard(firstCardInDeck)
-    }
-
-    private fun notifyGoalie() {
-        when (whoseTurn) {
-            Constants.WhoseTurn.BOTTOM -> nfyBtmGoalie.value = true
-            Constants.WhoseTurn.TOP -> nfyTopGoalie.value = true
-        }
     }
 
     fun notifyToggleTurn() {
@@ -166,11 +157,9 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     * */
 
     private fun isGoalieThereOrAdd(goalieCard: Card): Boolean {
-        if (GameLogic.isGoalieThere(goalieCard)) return true
+        if (GameLogic.isGoalieThereOrAdd(goalieCard)) return true
 
-        notifyGoalie()
         removeCardFromDeck()
-
         return false // But goalie is added now
     }
 
@@ -200,11 +189,11 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun areEnoughForwardsOut(victimTeam: Array<Card?>, defenderPos: Int): Boolean {
-        return GameLogic.areEnoughForwardsOut(victimTeam, defenderPos)
+        return GameLogic.areEnoughForwardsDead(victimTeam, defenderPos)
     }
 
     fun isAtLeastOneDefenderOut(victimTeam: Array<Card?>): Boolean {
-        return GameLogic.isAtLeastOneDefenderOut(victimTeam)
+        return GameLogic.isAtLeastOneDefenderDead(victimTeam)
     }
 
     /*
@@ -224,10 +213,10 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     ): Boolean {
         if (victimView.tag == Integer.valueOf(android.R.color.transparent)) return false
 
-        if (GameLogic.attack(firstCardInDeck, victimTeam, spotIndex) && spotIndex == 5) {
+        if (GameLogic.isAttacked(firstCardInDeck, victimTeam, spotIndex) && spotIndex == 5) {
             // Goal at goalie
             return true
-        } else if (GameLogic.attack(firstCardInDeck, victimTeam, spotIndex)) {
+        } else if (GameLogic.isAttacked(firstCardInDeck, victimTeam, spotIndex)) {
             return true
         }
 

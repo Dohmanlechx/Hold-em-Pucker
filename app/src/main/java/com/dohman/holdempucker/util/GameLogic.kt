@@ -9,7 +9,7 @@ import com.dohman.holdempucker.util.Constants.Companion.whoseTurn
 
 object GameLogic {
 
-    fun isGoalieThere(goalieCard: Card): Boolean {
+    fun isGoalieThereOrAdd(goalieCard: Card): Boolean {
         val team =
             if (whoseTurn == Constants.WhoseTurn.BOTTOM) teamBottom else teamTop
 
@@ -18,7 +18,7 @@ object GameLogic {
         return false // But goalie is added now
     }
 
-    fun attack(currentCard: Card, victimTeam: Array<Card?>, spotIndex: Int): Boolean {
+    fun isAttacked(currentCard: Card, victimTeam: Array<Card?>, spotIndex: Int): Boolean {
         victimTeam.let {
             if (currentCard.rank ?: 0 >= it[spotIndex]?.rank ?: 0) {
                 it[spotIndex] = null
@@ -29,7 +29,7 @@ object GameLogic {
         return false
     }
 
-    fun areEnoughForwardsOut(victimTeam: Array<Card?>, defenderPos: Int): Boolean {
+    fun areEnoughForwardsDead(victimTeam: Array<Card?>, defenderPos: Int): Boolean {
         when (defenderPos) {
             3 -> {
                 for (i in 0..1) {
@@ -46,7 +46,7 @@ object GameLogic {
         return true
     }
 
-    fun isAtLeastOneDefenderOut(victimTeam: Array<Card?>): Boolean {
+    fun isAtLeastOneDefenderDead(victimTeam: Array<Card?>): Boolean {
         for (i in 3..4) {
             if (victimTeam[i] == null) return true
         }
@@ -67,8 +67,8 @@ object GameLogic {
         var result = false
         possibleMovesIndexes.clear()
 
-        cases.forEachIndexed { index, case ->
-            if (case == currentCase) {
+        cases.forEachIndexed { index, caseElement ->
+            if (caseElement == currentCase) {
                 when (index) {
                     0 -> { // x xx xxx
                         for (i in 0..2) if (currentCard.rank!! >= victimTeam[i]?.rank!!) {

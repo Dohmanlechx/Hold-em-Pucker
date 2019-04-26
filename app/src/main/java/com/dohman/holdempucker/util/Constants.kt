@@ -29,7 +29,7 @@ class Constants {
         var period = 1
         var teamTopScore = 0
         var teamBottomScore = 0
-        var possibleMovesIndexes = mutableListOf<Int>()
+        var possibleMovesIndexes = mutableListOf<Int>() // For the pulse animations
 
         // Whose turn
         var whoseTurn = WhoseTurn.TOP
