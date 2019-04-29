@@ -165,6 +165,7 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
                     if (!doNotFlip) flipNewCard(vm.resIdOfCard(vm.firstCardInDeck))
                     if (doRemoveCardFromDeck) vm.removeCardFromDeck()
                     vm.showPickedCard()
+                    cards_left.visibility = View.VISIBLE
                 }
                 isAnimationRunning = false
             }
@@ -191,6 +192,7 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
 
     private fun animateAttack(targetView: AppCompatImageView) {
         removeAllOnClickListeners()
+        AnimationUtil.stopAllPulsingCardAnimations()
 
         val victimX = targetView.x
         val victimY = targetView.y
@@ -331,6 +333,8 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
     * */
 
     private fun clearAllCards(nextPeriod: Int) {
+        cards_left.visibility = View.GONE
+
         period += nextPeriod
 
         if (period > 3 && (teamBottomScore != teamTopScore)) {
