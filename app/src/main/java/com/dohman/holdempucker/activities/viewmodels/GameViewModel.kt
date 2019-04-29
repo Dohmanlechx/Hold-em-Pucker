@@ -30,6 +30,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     private var cardDeck = CardDeck().cardDeck
     var firstCardInDeck: Card = cardDeck.first()
 
+    val messageNotifier = MutableLiveData<String>()
     val halfTimeNotifier = MutableLiveData<Int>()
     val whoseTurnNotifier = MutableLiveData<String>()
     val pickedCardNotifier = MutableLiveData<Int>()
@@ -149,6 +150,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         if (isOngoingGame && !GameLogic.isTherePossibleMove(whoseTurn, firstCardInDeck)) triggerBadCard()
         else if (isOngoingGame && GameLogic.isTherePossibleMove(whoseTurn, firstCardInDeck)) AnimationUtil.startPulsingCardsAnimation()
 
+        messageNotifier.value = "New card shown"
     }
 
     fun triggerBadCard() {

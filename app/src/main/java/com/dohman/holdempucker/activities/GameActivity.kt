@@ -1,6 +1,5 @@
 package com.dohman.holdempucker.activities
 
-import android.graphics.Bitmap
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -10,9 +9,11 @@ import androidx.appcompat.widget.AppCompatImageView
 import androidx.core.animation.doOnEnd
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.dohman.holdempucker.activities.viewmodels.GameViewModel
 import com.dohman.holdempucker.R
 import com.dohman.holdempucker.cards.Card
+import com.dohman.holdempucker.ui.MessageTextItem
 import com.dohman.holdempucker.util.AnimationUtil
 import com.dohman.holdempucker.util.Constants
 import com.dohman.holdempucker.util.Constants.Companion.TAG_GAMEACTIVITY
@@ -27,11 +28,16 @@ import com.dohman.holdempucker.util.Constants.Companion.teamTopScore
 import com.dohman.holdempucker.util.Constants.Companion.teamTopViews
 import com.dohman.holdempucker.util.Constants.Companion.whoseTeamStartedLastPeriod
 import com.dohman.holdempucker.util.Constants.Companion.whoseTurn
-import com.wajahatkarim3.easyflipview.EasyFlipView
+import com.mikepenz.fastadapter.FastAdapter
+import com.mikepenz.fastadapter.adapters.ItemAdapter
+import com.mikepenz.fastadapter.items.AbstractItem
 import kotlinx.android.synthetic.main.activity_game.*
 
 class GameActivity : AppCompatActivity(), View.OnClickListener {
     private lateinit var vm: GameViewModel
+
+    private val itemAdapter = ItemAdapter<AbstractItem<*, *>>()
+    private val fastAdapter = FastAdapter.with<AbstractItem<*, *>, ItemAdapter<AbstractItem<*, *>>>(itemAdapter)
 
     private var flipViewOriginalX: Float = 0f
     private var flipViewOriginalY: Float = 0f
@@ -48,6 +54,7 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
         setContentView(R.layout.activity_game)
         vm = ViewModelProviders.of(this).get(GameViewModel::class.java)
 
+        vm.messageNotifier.observe(this, Observer { updateMessageBox(it) })
         vm.halfTimeNotifier.observe(this, Observer {
             clearAllCards(it)
             addGoalieView(true)
@@ -84,6 +91,7 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
             addGoalieView(true)
         }
 
+        setupMessageRecycler()
         setOnClickListeners()
         storeAllViews()
     }
@@ -120,6 +128,23 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
             add(card_top_defender_right)
             add(card_top_goalie)
         }
+    }
+
+    private fun setupMessageRecycler() {
+        itemAdapter.clear()
+
+        v_recycler.itemAnimator = null
+        v_recycler.layoutManager = LinearLayoutManager(applicationContext)
+        v_recycler.adapter = fastAdapter
+        v_recycler.isNestedScrollingEnabled = true
+    }
+
+    private fun updateMessageBox(message: String) {
+        itemAdapter.add(MessageTextItem(
+            if (whoseTurn == Constants.WhoseTurn.BOTTOM) "Bottom" else "Top",
+            message))
+
+        v_recycler.adapter?.itemCount?.minus(1)?.let { v_recycler.smoothScrollToPosition(it) }
     }
 
     /*
