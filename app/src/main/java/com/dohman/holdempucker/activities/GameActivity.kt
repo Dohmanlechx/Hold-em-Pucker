@@ -139,17 +139,12 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
         v_recycler.adapter = fastAdapter
         v_recycler.isNestedScrollingEnabled = true
 
-        updateMessageBox("Press anywhere to start the game!", disableTeamHeader = true)
+        updateMessageBox("Press anywhere to start the game!", isFirstMessage = true)
     }
 
-    private fun updateMessageBox(message: String, disableTeamHeader: Boolean = false) {
-        val teamTxt = when {
-            disableTeamHeader -> null
-            whoseTurn == Constants.WhoseTurn.BOTTOM -> "Bottom"
-            else -> "Top"
-        }
-
-        itemAdapter.add(MessageTextItem(teamTxt, message))
+    private fun updateMessageBox(message: String, isFirstMessage: Boolean = false) {
+        if (!isFirstMessage) itemAdapter.add(MessageTextItem(message, whoseTurn == Constants.WhoseTurn.TOP))
+        else itemAdapter.add(MessageTextItem(message, isFirstMessage = true))
 
         v_recycler.adapter?.itemCount?.minus(1)?.let { v_recycler.smoothScrollToPosition(it) }
     }

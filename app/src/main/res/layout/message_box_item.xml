@@ -3,35 +3,26 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/constraint_layout"
-    android:layout_width="match_parent"
-    android:layout_height="100dp">
-
-    <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/txt_team"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:fontFamily="monospace"
-        android:textColor="@color/md_green_900"
-        android:textSize="18sp"
-        android:visibility="gone"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="Top"
-        tools:visibility="visible" />
+    android:paddingTop="10dp"
+    android:paddingBottom="10dp"
+    android:layout_width="130dp"
+    android:layout_height="130dp">
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/txt_message"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_margin="16dp"
+        android:layout_height="0dp"
+        android:fontFamily="@font/press_start_2p"
         android:gravity="center"
+        android:padding="16dp"
+        android:textAlignment="center"
+        android:textColor="@color/white"
+        android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/txt_team"
-        app:layout_constraintVertical_bias="0.4"
-        tools:text="just scored!" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:background="@color/black"
+        tools:text="Press anywhere to start the game" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

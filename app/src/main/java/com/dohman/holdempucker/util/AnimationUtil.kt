@@ -247,7 +247,7 @@ object AnimationUtil {
                 AnimatorSet().apply {
                     playSequentially(jumpAni, bounceAni)
 
-                    doOnStart { fNotifyMessage.invoke("... and the goalie SAVED!") }
+                    doOnStart { fNotifyMessage.invoke("and the goalie\nSAVED!") }
                     doOnEnd {
                         // Both
                         val attackerOutAni = objAnimator(flipView, View.TRANSLATION_X, 2000f)
@@ -317,7 +317,7 @@ object AnimationUtil {
                     startDelay = 1000
                     duration = 500
 
-                    doOnStart { fNotifyMessage.invoke("... and it's GOAL!") }
+                    doOnStart { fNotifyMessage.invoke("and it's\nGOAL!") }
                     doOnEnd {
                         // Both
                         val attackerOutAni = objAnimator(flipView, View.TRANSLATION_X, 2000f)
