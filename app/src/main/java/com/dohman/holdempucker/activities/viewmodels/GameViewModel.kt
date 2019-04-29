@@ -259,8 +259,8 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun onAttackedAnimationEnd(view: AppCompatImageView) {
-//        view.setImageResource(android.R.color.transparent)
-//        view.tag = Integer.valueOf(android.R.color.transparent)
+        view.setImageResource(android.R.color.transparent)
+        view.tag = Integer.valueOf(android.R.color.transparent)
         removeCardFromDeck()
         showPickedCard(doNotToggleTurn = true)
 
