@@ -5,7 +5,6 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
 import android.view.View
-import android.widget.Toast
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.lifecycle.AndroidViewModel
@@ -50,6 +49,10 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         whoseTurnNotifier.value = whoseTurn.name
     }
 
+    fun notifyMessage(message: String) {
+        messageNotifier.value = message
+    }
+
     /*
     * Card deck functions
     * */
@@ -69,11 +72,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         val amountOfNulls = team.filter { it == null }.size
         if ((amountOfNulls + 4) > cardDeck.size) { // 4 is the minimum amount to score an goal
             halfTime()
-            Toast.makeText(
-                getApplication<Application>().applicationContext,
-                "Not enough cards. New period started.",
-                Toast.LENGTH_LONG
-            ).show()
+            notifyMessage("Not enough cards. New period started.")
             return false
         }
 
@@ -149,8 +148,6 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
 
         if (isOngoingGame && !GameLogic.isTherePossibleMove(whoseTurn, firstCardInDeck)) triggerBadCard()
         else if (isOngoingGame && GameLogic.isTherePossibleMove(whoseTurn, firstCardInDeck)) AnimationUtil.startPulsingCardsAnimation()
-
-        messageNotifier.value = "New card shown"
     }
 
     fun triggerBadCard() {

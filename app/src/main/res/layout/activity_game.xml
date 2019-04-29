@@ -1,440 +1,454 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:id="@+id/board_layout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@drawable/background"
-        android:padding="8dp"
-        tools:context=".activities.GameActivity">
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/board_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/background"
+    tools:context=".activities.GameActivity">
 
     <!-- BACKGROUND PLACEHOLDERS -->
 
     <androidx.appcompat.widget.AppCompatImageView
-            android:layout_width="70dp"
-            android:layout_height="110dp"
-            android:layout_marginTop="8dp"
-            android:background="@drawable/card_background_btm"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/flip_view"
-            app:layout_constraintTop_toBottomOf="@id/guideline_horizontal"/>
+        android:layout_width="70dp"
+        android:layout_height="110dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/card_background_btm"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/flip_view"
+        app:layout_constraintTop_toBottomOf="@id/guideline_horizontal" />
 
     <androidx.appcompat.widget.AppCompatImageView
-            android:layout_width="70dp"
-            android:layout_height="110dp"
-            android:layout_marginEnd="10dp"
-            android:background="@drawable/card_background_btm"
-            app:layout_constraintEnd_toStartOf="@id/card_bm_center"
-            app:layout_constraintTop_toTopOf="@id/card_bm_center"/>
+        android:layout_width="70dp"
+        android:layout_height="110dp"
+        android:layout_marginEnd="10dp"
+        android:background="@drawable/card_background_btm"
+        app:layout_constraintEnd_toStartOf="@id/card_bm_center"
+        app:layout_constraintTop_toTopOf="@id/card_bm_center" />
 
     <androidx.appcompat.widget.AppCompatImageView
-            android:layout_width="70dp"
-            android:layout_height="110dp"
-            android:layout_marginStart="10dp"
-            android:layout_marginEnd="10dp"
-            android:background="@drawable/card_background_btm"
-            app:layout_constraintStart_toEndOf="@id/card_bm_center"
-            app:layout_constraintTop_toTopOf="@id/card_bm_center"/>
+        android:layout_width="70dp"
+        android:layout_height="110dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        android:background="@drawable/card_background_btm"
+        app:layout_constraintStart_toEndOf="@id/card_bm_center"
+        app:layout_constraintTop_toTopOf="@id/card_bm_center" />
 
     <androidx.appcompat.widget.AppCompatImageView
-            android:layout_width="70dp"
-            android:layout_height="110dp"
-            android:layout_marginTop="12dp"
-            android:layout_marginEnd="5dp"
-            android:background="@drawable/card_background_btm"
-            app:layout_constraintEnd_toEndOf="@id/guideline_vertical"
-            app:layout_constraintTop_toBottomOf="@id/card_bm_center"/>
+        android:layout_width="70dp"
+        android:layout_height="110dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="5dp"
+        android:background="@drawable/card_background_btm"
+        app:layout_constraintEnd_toEndOf="@id/guideline_vertical"
+        app:layout_constraintTop_toBottomOf="@id/card_bm_center" />
 
     <androidx.appcompat.widget.AppCompatImageView
-            android:layout_width="70dp"
-            android:layout_height="110dp"
-            android:layout_marginStart="5dp"
-            android:layout_marginTop="12dp"
-            android:background="@drawable/card_background_btm"
-            app:layout_constraintStart_toEndOf="@id/guideline_vertical"
-            app:layout_constraintTop_toBottomOf="@id/card_bm_center"/>
+        android:layout_width="70dp"
+        android:layout_height="110dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/card_background_btm"
+        app:layout_constraintStart_toEndOf="@id/guideline_vertical"
+        app:layout_constraintTop_toBottomOf="@id/card_bm_center" />
 
     <androidx.appcompat.widget.AppCompatImageView
-            android:layout_width="110dp"
-            android:layout_height="70dp"
-            android:layout_marginStart="5dp"
-            android:layout_marginTop="12dp"
-            android:background="@drawable/card_background_btm"
-            app:layout_constraintEnd_toEndOf="@id/card_bm_defender_right"
-            app:layout_constraintStart_toStartOf="@id/card_bm_defender_left"
-            app:layout_constraintTop_toBottomOf="@id/card_bm_defender_left"/>
+        android:layout_width="110dp"
+        android:layout_height="70dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/card_background_btm"
+        app:layout_constraintEnd_toEndOf="@id/card_bm_defender_right"
+        app:layout_constraintStart_toStartOf="@id/card_bm_defender_left"
+        app:layout_constraintTop_toBottomOf="@id/card_bm_defender_left" />
 
     <!-- TEAM TOP -->
 
     <androidx.appcompat.widget.AppCompatImageView
-            android:layout_width="70dp"
-            android:layout_height="110dp"
-            android:layout_marginBottom="8dp"
-            android:background="@drawable/card_background_top"
-            app:layout_constraintBottom_toBottomOf="@id/guideline_horizontal"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/flip_view"
-            app:layout_constraintVertical_bias="0.38"/>
+        android:layout_width="70dp"
+        android:layout_height="110dp"
+        android:layout_marginBottom="8dp"
+        android:background="@drawable/card_background_top"
+        app:layout_constraintBottom_toBottomOf="@id/guideline_horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/flip_view"
+        app:layout_constraintVertical_bias="0.38" />
 
     <androidx.appcompat.widget.AppCompatImageView
-            android:layout_width="70dp"
-            android:layout_height="110dp"
-            android:layout_marginStart="10dp"
-            android:background="@drawable/card_background_top"
-            app:layout_constraintBottom_toBottomOf="@id/card_top_center"
-            app:layout_constraintStart_toEndOf="@id/card_top_center"/>
+        android:layout_width="70dp"
+        android:layout_height="110dp"
+        android:layout_marginStart="10dp"
+        android:background="@drawable/card_background_top"
+        app:layout_constraintBottom_toBottomOf="@id/card_top_center"
+        app:layout_constraintStart_toEndOf="@id/card_top_center" />
 
     <androidx.appcompat.widget.AppCompatImageView
-            android:layout_width="70dp"
-            android:layout_height="110dp"
-            android:layout_marginEnd="10dp"
-            android:background="@drawable/card_background_top"
-            app:layout_constraintBottom_toBottomOf="@id/card_top_center"
-            app:layout_constraintEnd_toStartOf="@id/card_top_center"/>
+        android:layout_width="70dp"
+        android:layout_height="110dp"
+        android:layout_marginEnd="10dp"
+        android:background="@drawable/card_background_top"
+        app:layout_constraintBottom_toBottomOf="@id/card_top_center"
+        app:layout_constraintEnd_toStartOf="@id/card_top_center" />
 
     <androidx.appcompat.widget.AppCompatImageView
-            android:layout_width="70dp"
-            android:layout_height="110dp"
-            android:layout_marginStart="5dp"
-            android:layout_marginBottom="12dp"
-            android:background="@drawable/card_background_top"
-            app:layout_constraintBottom_toTopOf="@id/card_top_center"
-            app:layout_constraintStart_toEndOf="@id/guideline_vertical"/>
+        android:layout_width="70dp"
+        android:layout_height="110dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginBottom="12dp"
+        android:background="@drawable/card_background_top"
+        app:layout_constraintBottom_toTopOf="@id/card_top_center"
+        app:layout_constraintStart_toEndOf="@id/guideline_vertical" />
 
     <androidx.appcompat.widget.AppCompatImageView
-            android:layout_width="70dp"
-            android:layout_height="110dp"
-            android:layout_marginEnd="5dp"
-            android:layout_marginBottom="12dp"
-            android:background="@drawable/card_background_top"
-            app:layout_constraintBottom_toTopOf="@id/card_top_center"
-            app:layout_constraintEnd_toStartOf="@id/guideline_vertical"/>
+        android:layout_width="70dp"
+        android:layout_height="110dp"
+        android:layout_marginEnd="5dp"
+        android:layout_marginBottom="12dp"
+        android:background="@drawable/card_background_top"
+        app:layout_constraintBottom_toTopOf="@id/card_top_center"
+        app:layout_constraintEnd_toStartOf="@id/guideline_vertical" />
 
     <androidx.appcompat.widget.AppCompatImageView
-            android:layout_width="110dp"
-            android:layout_height="70dp"
-            android:layout_marginBottom="12dp"
-            android:background="@drawable/card_background_top"
-            app:layout_constraintBottom_toTopOf="@id/card_top_defender_left"
-            app:layout_constraintEnd_toEndOf="@id/card_top_defender_left"
-            app:layout_constraintStart_toStartOf="@id/card_top_defender_right"/>
+        android:layout_width="110dp"
+        android:layout_height="70dp"
+        android:layout_marginBottom="12dp"
+        android:background="@drawable/card_background_top"
+        app:layout_constraintBottom_toTopOf="@id/card_top_defender_left"
+        app:layout_constraintEnd_toEndOf="@id/card_top_defender_left"
+        app:layout_constraintStart_toStartOf="@id/card_top_defender_right" />
 
     <!-- END OF PLACEHOLDERS -->
 
-    <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/btn_debug"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Switch"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"/>
-
     <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/cards_left"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="4dp"
-            android:textAlignment="center"
-            android:textColor="@color/red"
-            android:gravity="center"
-            android:textSize="22sp"
-            app:layout_constraintBottom_toTopOf="@id/flip_view"
-            app:layout_constraintEnd_toEndOf="@id/card_background"
-            app:layout_constraintStart_toStartOf="@id/card_background"
-            tools:text="52"
-            android:fontFamily="@font/faster_one"/>
+        android:id="@+id/cards_left"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="4dp"
+        android:fontFamily="@font/faster_one"
+        android:gravity="center"
+        android:textAlignment="center"
+        android:textColor="@color/red"
+        android:textSize="22sp"
+        app:layout_constraintBottom_toTopOf="@id/flip_view"
+        app:layout_constraintEnd_toEndOf="@id/card_background"
+        app:layout_constraintStart_toStartOf="@id/card_background"
+        tools:text="52" />
 
     <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/card_background"
-            android:layout_width="70dp"
-            android:layout_height="110dp"
-            android:layout_marginStart="16dp"
-            android:scaleType="fitXY"
-            android:src="@drawable/red_back_vertical"
-            app:layout_constraintBottom_toBottomOf="@id/guideline_horizontal"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@id/guideline_horizontal"/>
+        android:id="@+id/card_background"
+        android:layout_width="70dp"
+        android:layout_height="110dp"
+        android:layout_marginStart="16dp"
+        android:scaleType="fitXY"
+        android:src="@drawable/red_back_vertical"
+        app:layout_constraintBottom_toBottomOf="@id/guideline_horizontal"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/guideline_horizontal" />
 
     <com.wajahatkarim3.easyflipview.EasyFlipView
-            android:id="@+id/flip_view"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            app:flipDuration="150"
-            app:flipFrom="right"
-            app:flipOnTouch="false"
-            app:flipType="horizontal"
-            app:layout_constraintBottom_toBottomOf="@id/guideline_horizontal"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@id/guideline_horizontal">
+        android:id="@+id/flip_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        app:flipDuration="150"
+        app:flipFrom="right"
+        app:flipOnTouch="false"
+        app:flipType="horizontal"
+        app:layout_constraintBottom_toBottomOf="@id/guideline_horizontal"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/guideline_horizontal">
 
         <!-- BACK -->
         <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/card_picked"
-                android:layout_width="70dp"
-                android:layout_height="110dp"
-                android:scaleType="fitXY"/>
+            android:id="@+id/card_picked"
+            android:layout_width="70dp"
+            android:layout_height="110dp"
+            android:scaleType="fitXY" />
 
         <!-- FRONT -->
         <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/card_deck"
-                android:layout_width="70dp"
-                android:layout_height="110dp"
-                android:scaleType="fitXY"/>
+            android:id="@+id/card_deck"
+            android:layout_width="70dp"
+            android:layout_height="110dp"
+            android:scaleType="fitXY" />
 
     </com.wajahatkarim3.easyflipview.EasyFlipView>
 
     <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guideline_vertical"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:visibility="visible"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintGuide_begin="240dp"
-            app:layout_constraintStart_toStartOf="parent"/>
+        android:id="@+id/guideline_vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintGuide_begin="240dp"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guideline_horizontal"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:visibility="visible"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintGuide_percent="0.5"
-            app:layout_constraintStart_toStartOf="parent"/>
+        android:id="@+id/guideline_horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintGuide_percent="0.5"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/top_team_score"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="20dp"
-            android:fontFamily="@font/hockey_score_font"
-            android:textColor="@color/black"
-            android:textSize="52sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:text="0"/>
+        android:id="@+id/top_team_score"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp"
+        android:fontFamily="@font/hockey_score_font"
+        android:textColor="@color/black"
+        android:textSize="52sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="0" />
 
     <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/bm_team_score"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="20dp"
-            android:fontFamily="@font/hockey_score_font"
-            android:textColor="@color/black"
-            android:textSize="52sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            tools:text="1"/>
+        android:id="@+id/bm_team_score"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp"
+        android:fontFamily="@font/hockey_score_font"
+        android:textColor="@color/black"
+        android:textSize="52sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:text="1" />
 
     <!-- TEAM BOTTOM -->
 
     <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/card_bm_center"
-            android:layout_width="70dp"
-            android:layout_height="110dp"
-            android:layout_marginTop="8dp"
-            android:scaleType="fitXY"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/flip_view"
-            app:layout_constraintTop_toBottomOf="@id/guideline_horizontal"/>
+        android:id="@+id/card_bm_center"
+        android:layout_width="70dp"
+        android:layout_height="110dp"
+        android:layout_marginTop="8dp"
+        android:scaleType="fitXY"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/flip_view"
+        app:layout_constraintTop_toBottomOf="@id/guideline_horizontal" />
 
     <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/card_bm_forward_left"
-            android:layout_width="70dp"
-            android:layout_height="110dp"
-            android:layout_marginEnd="10dp"
-            android:scaleType="fitXY"
-            app:layout_constraintEnd_toStartOf="@id/card_bm_center"
-            app:layout_constraintTop_toTopOf="@id/card_bm_center"/>
+        android:id="@+id/card_bm_forward_left"
+        android:layout_width="70dp"
+        android:layout_height="110dp"
+        android:layout_marginEnd="10dp"
+        android:scaleType="fitXY"
+        app:layout_constraintEnd_toStartOf="@id/card_bm_center"
+        app:layout_constraintTop_toTopOf="@id/card_bm_center" />
 
     <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/card_bm_forward_right"
-            android:layout_width="70dp"
-            android:layout_height="110dp"
-            android:layout_marginStart="10dp"
-            android:layout_marginEnd="10dp"
-            android:scaleType="fitXY"
-            app:layout_constraintStart_toEndOf="@id/card_bm_center"
-            app:layout_constraintTop_toTopOf="@id/card_bm_center"/>
+        android:id="@+id/card_bm_forward_right"
+        android:layout_width="70dp"
+        android:layout_height="110dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        android:scaleType="fitXY"
+        app:layout_constraintStart_toEndOf="@id/card_bm_center"
+        app:layout_constraintTop_toTopOf="@id/card_bm_center" />
 
     <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/card_bm_defender_left"
-            android:layout_width="70dp"
-            android:layout_height="110dp"
-            android:layout_marginTop="12dp"
-            android:layout_marginEnd="5dp"
-            android:scaleType="fitXY"
-            app:layout_constraintEnd_toEndOf="@id/guideline_vertical"
-            app:layout_constraintTop_toBottomOf="@id/card_bm_center"/>
+        android:id="@+id/card_bm_defender_left"
+        android:layout_width="70dp"
+        android:layout_height="110dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="5dp"
+        android:scaleType="fitXY"
+        app:layout_constraintEnd_toEndOf="@id/guideline_vertical"
+        app:layout_constraintTop_toBottomOf="@id/card_bm_center" />
 
     <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/card_bm_defender_right"
-            android:layout_width="70dp"
-            android:layout_height="110dp"
-            android:layout_marginStart="5dp"
-            android:layout_marginTop="12dp"
-            android:scaleType="fitXY"
-            app:layout_constraintStart_toEndOf="@id/guideline_vertical"
-            app:layout_constraintTop_toBottomOf="@id/card_bm_center"/>
+        android:id="@+id/card_bm_defender_right"
+        android:layout_width="70dp"
+        android:layout_height="110dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="12dp"
+        android:scaleType="fitXY"
+        app:layout_constraintStart_toEndOf="@id/guideline_vertical"
+        app:layout_constraintTop_toBottomOf="@id/card_bm_center" />
 
     <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/card_bm_goalie"
-            android:layout_width="110dp"
-            android:layout_height="70dp"
-            android:layout_marginStart="5dp"
-            android:layout_marginTop="12dp"
-            android:scaleType="fitXY"
-            app:layout_constraintEnd_toEndOf="@id/card_bm_defender_right"
-            app:layout_constraintStart_toStartOf="@id/card_bm_defender_left"
-            app:layout_constraintTop_toBottomOf="@id/card_bm_defender_left"/>
+        android:id="@+id/card_bm_goalie"
+        android:layout_width="110dp"
+        android:layout_height="70dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="12dp"
+        android:scaleType="fitXY"
+        app:layout_constraintEnd_toEndOf="@id/card_bm_defender_right"
+        app:layout_constraintStart_toStartOf="@id/card_bm_defender_left"
+        app:layout_constraintTop_toBottomOf="@id/card_bm_defender_left" />
 
     <com.wajahatkarim3.easyflipview.EasyFlipView
-            android:id="@+id/flip_btm_goalie"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="5dp"
-            android:layout_marginTop="12dp"
-            app:flipDuration="300"
-            app:flipFrom="back"
-            app:flipOnTouch="false"
-            app:flipType="vertical"
-            app:layout_constraintEnd_toEndOf="@id/card_bm_defender_right"
-            app:layout_constraintStart_toStartOf="@id/card_bm_defender_left"
-            app:layout_constraintTop_toBottomOf="@id/card_bm_defender_left">
+        android:id="@+id/flip_btm_goalie"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="12dp"
+        app:flipDuration="300"
+        app:flipFrom="back"
+        app:flipOnTouch="false"
+        app:flipType="vertical"
+        app:layout_constraintEnd_toEndOf="@id/card_bm_defender_right"
+        app:layout_constraintStart_toStartOf="@id/card_bm_defender_left"
+        app:layout_constraintTop_toBottomOf="@id/card_bm_defender_left">
 
         <!-- BACK -->
         <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/flip_btm_goalie_back"
-                android:layout_width="110dp"
-                android:layout_height="70dp"
-                android:scaleType="fitXY"/>
+            android:id="@+id/flip_btm_goalie_back"
+            android:layout_width="110dp"
+            android:layout_height="70dp"
+            android:scaleType="fitXY" />
 
         <!-- FRONT -->
         <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/flip_btm_goalie_front"
-                android:layout_width="110dp"
-                android:layout_height="70dp"
-                android:scaleType="fitXY"/>
+            android:id="@+id/flip_btm_goalie_front"
+            android:layout_width="110dp"
+            android:layout_height="70dp"
+            android:scaleType="fitXY" />
 
     </com.wajahatkarim3.easyflipview.EasyFlipView>
 
     <!-- TEAM TOP -->
 
     <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/card_top_center"
-            android:layout_width="70dp"
-            android:layout_height="110dp"
-            android:layout_marginBottom="8dp"
-            android:scaleType="fitXY"
-            app:layout_constraintBottom_toBottomOf="@id/guideline_horizontal"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/flip_view"
-            app:layout_constraintVertical_bias="0.38"/>
+        android:id="@+id/card_top_center"
+        android:layout_width="70dp"
+        android:layout_height="110dp"
+        android:layout_marginBottom="8dp"
+        android:scaleType="fitXY"
+        app:layout_constraintBottom_toBottomOf="@id/guideline_horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/flip_view"
+        app:layout_constraintVertical_bias="0.38" />
 
     <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/card_top_forward_left"
-            android:layout_width="70dp"
-            android:layout_height="110dp"
-            android:layout_marginStart="10dp"
-            android:scaleType="fitXY"
-            app:layout_constraintBottom_toBottomOf="@id/card_top_center"
-            app:layout_constraintStart_toEndOf="@id/card_top_center"/>
+        android:id="@+id/card_top_forward_left"
+        android:layout_width="70dp"
+        android:layout_height="110dp"
+        android:layout_marginStart="10dp"
+        android:scaleType="fitXY"
+        app:layout_constraintBottom_toBottomOf="@id/card_top_center"
+        app:layout_constraintStart_toEndOf="@id/card_top_center" />
 
     <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/card_top_forward_right"
-            android:layout_width="70dp"
-            android:layout_height="110dp"
-            android:layout_marginEnd="10dp"
-            android:scaleType="fitXY"
-            app:layout_constraintBottom_toBottomOf="@id/card_top_center"
-            app:layout_constraintEnd_toStartOf="@id/card_top_center"/>
+        android:id="@+id/card_top_forward_right"
+        android:layout_width="70dp"
+        android:layout_height="110dp"
+        android:layout_marginEnd="10dp"
+        android:scaleType="fitXY"
+        app:layout_constraintBottom_toBottomOf="@id/card_top_center"
+        app:layout_constraintEnd_toStartOf="@id/card_top_center" />
 
     <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/card_top_defender_left"
-            android:layout_width="70dp"
-            android:layout_height="110dp"
-            android:layout_marginStart="5dp"
-            android:layout_marginBottom="12dp"
-            android:scaleType="fitXY"
-            app:layout_constraintBottom_toTopOf="@id/card_top_center"
-            app:layout_constraintStart_toEndOf="@id/guideline_vertical"/>
+        android:id="@+id/card_top_defender_left"
+        android:layout_width="70dp"
+        android:layout_height="110dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginBottom="12dp"
+        android:scaleType="fitXY"
+        app:layout_constraintBottom_toTopOf="@id/card_top_center"
+        app:layout_constraintStart_toEndOf="@id/guideline_vertical" />
 
     <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/card_top_defender_right"
-            android:layout_width="70dp"
-            android:layout_height="110dp"
-            android:layout_marginEnd="5dp"
-            android:layout_marginBottom="12dp"
-            android:scaleType="fitXY"
-            app:layout_constraintBottom_toTopOf="@id/card_top_center"
-            app:layout_constraintEnd_toStartOf="@id/guideline_vertical"/>
+        android:id="@+id/card_top_defender_right"
+        android:layout_width="70dp"
+        android:layout_height="110dp"
+        android:layout_marginEnd="5dp"
+        android:layout_marginBottom="12dp"
+        android:scaleType="fitXY"
+        app:layout_constraintBottom_toTopOf="@id/card_top_center"
+        app:layout_constraintEnd_toStartOf="@id/guideline_vertical" />
 
     <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/card_top_goalie"
-            android:layout_width="110dp"
-            android:layout_height="70dp"
-            android:layout_marginBottom="12dp"
-            android:scaleType="fitXY"
-            app:layout_constraintBottom_toTopOf="@id/card_top_defender_left"
-            app:layout_constraintEnd_toEndOf="@id/card_top_defender_left"
-            app:layout_constraintStart_toStartOf="@id/card_top_defender_right"/>
+        android:id="@+id/card_top_goalie"
+        android:layout_width="110dp"
+        android:layout_height="70dp"
+        android:layout_marginBottom="12dp"
+        android:scaleType="fitXY"
+        app:layout_constraintBottom_toTopOf="@id/card_top_defender_left"
+        app:layout_constraintEnd_toEndOf="@id/card_top_defender_left"
+        app:layout_constraintStart_toStartOf="@id/card_top_defender_right" />
 
     <com.wajahatkarim3.easyflipview.EasyFlipView
-            android:id="@+id/flip_top_goalie"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="12dp"
-            app:flipDuration="300"
-            app:flipFrom="front"
-            app:flipOnTouch="false"
-            app:flipType="vertical"
-            app:layout_constraintBottom_toTopOf="@id/card_top_defender_left"
-            app:layout_constraintEnd_toEndOf="@id/card_top_defender_left"
-            app:layout_constraintStart_toStartOf="@id/card_top_defender_right">
+        android:id="@+id/flip_top_goalie"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="12dp"
+        app:flipDuration="300"
+        app:flipFrom="front"
+        app:flipOnTouch="false"
+        app:flipType="vertical"
+        app:layout_constraintBottom_toTopOf="@id/card_top_defender_left"
+        app:layout_constraintEnd_toEndOf="@id/card_top_defender_left"
+        app:layout_constraintStart_toStartOf="@id/card_top_defender_right">
 
         <!-- BACK -->
         <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/flip_top_goalie_back"
-                android:layout_width="110dp"
-                android:layout_height="70dp"
-                android:scaleType="fitXY"/>
+            android:id="@+id/flip_top_goalie_back"
+            android:layout_width="110dp"
+            android:layout_height="70dp"
+            android:scaleType="fitXY" />
 
         <!-- FRONT -->
         <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/flip_top_goalie_front"
-                android:layout_width="110dp"
-                android:layout_height="70dp"
-                android:scaleType="fitXY"/>
+            android:id="@+id/flip_top_goalie_front"
+            android:layout_width="110dp"
+            android:layout_height="70dp"
+            android:scaleType="fitXY" />
 
     </com.wajahatkarim3.easyflipview.EasyFlipView>
 
     <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/puck"
-            android:layout_width="24dp"
-            android:layout_height="wrap_content"
-            android:adjustViewBounds="true"
-            android:src="@drawable/puck"
-            app:layout_constraintBottom_toTopOf="@id/guideline_horizontal"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/guideline_horizontal"/>
+        android:id="@+id/puck"
+        android:layout_width="24dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:adjustViewBounds="true"
+        android:src="@drawable/puck"
+        app:layout_constraintBottom_toTopOf="@id/guideline_horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/guideline_horizontal" />
 
-    <androidx.recyclerview.widget.RecyclerView
+    <FrameLayout
+        android:layout_width="0dp"
+        android:layout_height="100dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintBottom_toBottomOf="@id/card_bm_defender_left"
+        app:layout_constraintEnd_toStartOf="@id/card_bm_defender_left"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/card_bm_defender_left">
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ice" />
+
+        <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/v_recycler"
-            android:layout_width="0dp"
-            android:layout_height="100dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/message_box_background"
+            android:clickable="true"
+            android:focusable="true"
             android:overScrollMode="never"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/card_bm_defender_left"
-            app:layout_constraintTop_toTopOf="@id/card_bm_defender_left"
-            app:layout_constraintBottom_toBottomOf="@id/card_bm_defender_left"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="16dp"
             tools:itemCount="1"
-            tools:listitem="@layout/message_box_item"
-    />
+            tools:listitem="@layout/message_box_item" />
+
+    </FrameLayout>
+
+    <View
+        android:id="@+id/whole_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

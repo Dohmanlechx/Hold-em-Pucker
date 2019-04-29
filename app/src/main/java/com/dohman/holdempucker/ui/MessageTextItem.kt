@@ -8,8 +8,8 @@ import com.mikepenz.fastadapter.items.AbstractItem
 import kotlinx.android.synthetic.main.message_box_item.view.*
 
 class MessageTextItem(
-    val team: String,
-    val message: String
+    private val team: String?,
+    private val message: String
 ) : AbstractItem<MessageTextItem, MessageTextItem.ViewHolder>() {
     override fun getType(): Int = R.id.fastadapter_item
     override fun getViewHolder(v: View): ViewHolder = ViewHolder(v)
@@ -18,7 +18,10 @@ class MessageTextItem(
     override fun bindView(holder: ViewHolder, payloads: MutableList<Any>) {
         super.bindView(holder, payloads)
 
-        holder.itemView.txt_team.text = team
+        team?.let {
+            holder.itemView.txt_team.visibility = View.VISIBLE
+            holder.itemView.txt_team.text = it
+        }
         holder.itemView.txt_message.text = message
     }
 

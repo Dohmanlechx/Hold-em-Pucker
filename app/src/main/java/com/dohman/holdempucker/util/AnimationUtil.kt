@@ -207,7 +207,8 @@ object AnimationUtil {
         victimTeam: Array<Card?>,
         fNotifyToggleTurn: () -> Unit,
         fRestoreFlipViews: () -> Unit,
-        fAddNewGoalie: () -> Unit
+        fAddNewGoalie: () -> Unit,
+        fNotifyMessage: (message: String) -> Unit
     ): AnimatorSet {
         // Attacker
         val flipAniX = objAnimator(flipView, View.TRANSLATION_X, targetView.x - flipView.x - 150f)
@@ -246,6 +247,7 @@ object AnimationUtil {
                 AnimatorSet().apply {
                     playSequentially(jumpAni, bounceAni)
 
+                    doOnStart { fNotifyMessage.invoke("... and the goalie SAVED!") }
                     doOnEnd {
                         // Both
                         val attackerOutAni = objAnimator(flipView, View.TRANSLATION_X, 2000f)
@@ -284,7 +286,8 @@ object AnimationUtil {
         fNotifyToggleTurn: () -> Unit,
         fRestoreFlipViews: () -> Unit,
         fAddNewGoalie: () -> Unit,
-        fUpdateScores: () -> Unit
+        fUpdateScores: () -> Unit,
+        fNotifyMessage: (message: String) -> Unit
     ): AnimatorSet {
         // Attacker
         val flipAniX = objAnimator(flipView, View.TRANSLATION_X, targetView.x - flipView.x - 150f)
@@ -314,6 +317,7 @@ object AnimationUtil {
                     startDelay = 1000
                     duration = 500
 
+                    doOnStart { fNotifyMessage.invoke("... and it's GOAL!") }
                     doOnEnd {
                         // Both
                         val attackerOutAni = objAnimator(flipView, View.TRANSLATION_X, 2000f)

@@ -66,6 +66,7 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
             this,
             Observer {
                 flipNewCard(vm.resIdOfCard(vm.firstCardInDeck), isBadCard = true)
+                vm.notifyMessage("Aw, too weak card! It goes out!")
             })
 
         vm.updateScores(top_team_score, bm_team_score)
@@ -86,14 +87,14 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
             flipViewTopOriginalY = flip_top_goalie.y
         }
 
-        btn_debug.text = "Start!"
-        btn_debug.setOnClickListener {
-            addGoalieView(true)
-        }
-
         setupMessageRecycler()
         setOnClickListeners()
         storeAllViews()
+
+        whole_view.setOnClickListener {
+            addGoalieView(true)
+            it.visibility = View.GONE
+        }
     }
 
     /*
@@ -137,12 +138,18 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
         v_recycler.layoutManager = LinearLayoutManager(applicationContext)
         v_recycler.adapter = fastAdapter
         v_recycler.isNestedScrollingEnabled = true
+
+        updateMessageBox("Press anywhere to start the game!", disableTeamHeader = true)
     }
 
-    private fun updateMessageBox(message: String) {
-        itemAdapter.add(MessageTextItem(
-            if (whoseTurn == Constants.WhoseTurn.BOTTOM) "Bottom" else "Top",
-            message))
+    private fun updateMessageBox(message: String, disableTeamHeader: Boolean = false) {
+        val teamTxt = when {
+            disableTeamHeader -> null
+            whoseTurn == Constants.WhoseTurn.BOTTOM -> "Bottom"
+            else -> "Top"
+        }
+
+        itemAdapter.add(MessageTextItem(teamTxt, message))
 
         v_recycler.adapter?.itemCount?.minus(1)?.let { v_recycler.smoothScrollToPosition(it) }
     }
@@ -269,7 +276,8 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
                         { vm.notifyToggleTurn() },
                         { restoreFlipViewPosition() },
                         { addGoalieView(bottom = false, doNotFlip = true, doRemoveCardFromDeck = true) },
-                        { vm.updateScores(top_team_score, bm_team_score) }
+                        { vm.updateScores(top_team_score, bm_team_score) },
+                        { message -> vm.notifyMessage(message) }
                     ).start()
 
                 } else {
@@ -291,7 +299,8 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
                         { vm.notifyToggleTurn() },
                         { restoreFlipViewPosition() },
                         { addGoalieView(bottom = true, doNotFlip = true, doRemoveCardFromDeck = true) },
-                        { vm.updateScores(top_team_score, bm_team_score) }
+                        { vm.updateScores(top_team_score, bm_team_score) },
+                        { message -> vm.notifyMessage(message) }
                     ).start()
                 }
             }
@@ -326,7 +335,8 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
                 teamTop,
                 { vm.notifyToggleTurn() },
                 { restoreFlipViewPosition() },
-                { addGoalieView(bottom = false, doNotFlip = true) }
+                { addGoalieView(bottom = false, doNotFlip = true) },
+                { message -> vm.notifyMessage(message) }
             ).start()
 
         } else {
@@ -348,7 +358,8 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
                 teamBottom,
                 { vm.notifyToggleTurn() },
                 { restoreFlipViewPosition() },
-                { addGoalieView(bottom = true, doNotFlip = true) }
+                { addGoalieView(bottom = true, doNotFlip = true) },
+                { message -> vm.notifyMessage(message) }
             ).start()
         }
     }
@@ -363,10 +374,10 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
         period += nextPeriod
 
         if (period > 3 && (teamBottomScore != teamTopScore)) {
-            if (teamBottomScore > teamTopScore) btn_debug.text = "Bottom won!" else btn_debug.text = "Top won!"
+            // FIXME: if (teamBottomScore > teamTopScore) btn_debug.text = "Bottom won!" else btn_debug.text = "Top won!"
             removeAllOnClickListeners()
         } else {
-            btn_debug.text = "Period: $period"
+            // FIXME: btn_debug.text = "Period: $period"
 
             whoseTurn =
                 if (whoseTeamStartedLastPeriod == Constants.WhoseTurn.BOTTOM) Constants.WhoseTurn.TOP else Constants.WhoseTurn.BOTTOM
@@ -391,8 +402,6 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
     private fun removeAllOnClickListeners() {
         teamBottomViews.forEach { it.setOnClickListener(null) }
         teamTopViews.forEach { it.setOnClickListener(null) }
-
-        btn_debug.setOnClickListener(null)
     }
 
     override fun onClick(v: View) {
