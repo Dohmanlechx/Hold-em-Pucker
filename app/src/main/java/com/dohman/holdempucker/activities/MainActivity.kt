@@ -1,8 +1,9 @@
-package com.dohman.holdempucker
+package com.dohman.holdempucker.activities
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.WindowManager
+import com.dohman.holdempucker.R
 
 class MainActivity : AppCompatActivity() {
 
@@ -11,9 +12,5 @@ class MainActivity : AppCompatActivity() {
         window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN)
         setContentView(R.layout.activity_main)
 
-    }
-
-    companion object {
-        const val TAG = "DBG: MainActivity.kt"
     }
 }

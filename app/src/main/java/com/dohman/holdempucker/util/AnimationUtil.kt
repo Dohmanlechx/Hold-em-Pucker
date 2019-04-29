@@ -1,121 +1,350 @@
 package com.dohman.holdempucker.util
 
-import android.animation.Animator
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
+import android.animation.PropertyValuesHolder
+import android.util.Log
+import android.util.Property
 import android.view.View
-import android.view.animation.AccelerateInterpolator
 import android.view.animation.AnticipateInterpolator
+import android.view.animation.BounceInterpolator
+import android.view.animation.LinearInterpolator
 import android.view.animation.OvershootInterpolator
 import androidx.appcompat.widget.AppCompatImageView
+import androidx.appcompat.widget.AppCompatTextView
+import androidx.core.animation.doOnCancel
 import androidx.core.animation.doOnEnd
 import androidx.core.animation.doOnStart
 import androidx.interpolator.view.animation.LinearOutSlowInInterpolator
-import com.dohman.holdempucker.GameActivity
-import com.dohman.holdempucker.GameActivity.Companion.isAnimationRunning
-import com.dohman.holdempucker.GameActivity.WhoseTurn.Companion.toggleTurn
 import com.dohman.holdempucker.cards.Card
+import com.dohman.holdempucker.util.Constants.Companion.TAG_GAMEACTIVITY
+import com.dohman.holdempucker.util.Constants.Companion.isAnimationRunning
+import com.dohman.holdempucker.util.Constants.Companion.isOngoingGame
+import com.dohman.holdempucker.util.Constants.Companion.possibleMovesIndexes
+import com.dohman.holdempucker.util.Constants.Companion.restoringPlayers
+import com.dohman.holdempucker.util.Constants.Companion.teamBottomScore
+import com.dohman.holdempucker.util.Constants.Companion.teamBottomViews
+import com.dohman.holdempucker.util.Constants.Companion.teamTopScore
+import com.dohman.holdempucker.util.Constants.Companion.teamTopViews
+import com.dohman.holdempucker.util.Constants.Companion.whoseTurn
 import com.wajahatkarim3.easyflipview.EasyFlipView
 
 object AnimationUtil {
 
-    fun flipView(v: EasyFlipView, isBadCard: Boolean, fIsBadCard: () -> Unit) {
-        ObjectAnimator.ofFloat(v, View.TRANSLATION_X, 60f).apply {
-            addListener(object : Animator.AnimatorListener {
-                override fun onAnimationStart(animation: Animator?) {
-                    isAnimationRunning = true
-                }
+    private val listOfOngoingAnimations = mutableListOf<ObjectAnimator>()
 
-                override fun onAnimationCancel(animation: Animator?) {}
-                override fun onAnimationRepeat(animation: Animator?) {}
-                override fun onAnimationEnd(animation: Animator?) {
-                    v.flipTheView()
-                    isAnimationRunning = false
-                    if (isBadCard) fIsBadCard.invoke()
+    /*
+    * Template/private functions
+    * */
+
+    private fun objAnimator(
+        view: View,
+        direction: Property<View, Float>,
+        distance: Float
+    ): ObjectAnimator = ObjectAnimator.ofFloat(view, direction, distance)
+
+    private fun scaleAnimator(
+        view: View,
+        scaleToX: Float,
+        scaleToY: Float
+    ): ObjectAnimator = ObjectAnimator.ofPropertyValuesHolder(
+        view,
+        PropertyValuesHolder.ofFloat(View.SCALE_X, scaleToX),
+        PropertyValuesHolder.ofFloat(View.SCALE_Y, scaleToY)
+    )
+
+    private fun onGoalieActionEnd(view: View, isGoal: Boolean = false) {
+        view.visibility = View.GONE
+        isOngoingGame = false
+        restoringPlayers = true
+
+        if (isGoal) {
+            if (whoseTurn == Constants.WhoseTurn.BOTTOM) teamBottomScore++ else teamTopScore++
+        }
+
+        isAnimationRunning = false
+    }
+
+    /*
+    * Animation functions
+    * */
+
+    fun flipPlayingCard(
+        flipView: EasyFlipView,
+        cardsLeftText: AppCompatTextView,
+        isBadCard: Boolean,
+        fIsBadCard: () -> Unit,
+        fSetOnClickListeners: () -> Unit
+    ) {
+        cardsLeftText.scaleX = 1.3f
+        cardsLeftText.scaleY = 1.3f
+
+        objAnimator(flipView, View.TRANSLATION_X, 60f).apply {
+            doOnStart {
+                isAnimationRunning = true
+                scaleAnimator(cardsLeftText, 1f, 1f).apply {
+                    duration = 350
+                    start()
                 }
-            })
+            }
+            doOnEnd {
+                flipView.flipTheView()
+                if (isBadCard) fIsBadCard.invoke()
+                fSetOnClickListeners.invoke()
+                isAnimationRunning = false
+            }
+
             duration = 100
             start()
         }
     }
 
-    fun addGoalie(
+    fun startPulsingCardsAnimation() {
+
+        Log.d(TAG_GAMEACTIVITY, possibleMovesIndexes.toString())
+
+        val teamToPulse = if (whoseTurn == Constants.WhoseTurn.BOTTOM) teamTopViews else teamBottomViews
+
+        possibleMovesIndexes.forEach { view ->
+            listOfOngoingAnimations.add(scaleAnimator(
+                teamToPulse[view],
+                1.05f,
+                1.05f
+            ).apply {
+                doOnCancel {
+                    teamToPulse[view].apply {
+                        scaleX = 1f
+                        scaleY = 1f
+                    }
+                }
+
+                duration = 310
+                repeatCount = ObjectAnimator.INFINITE
+                repeatMode = ObjectAnimator.REVERSE
+                start()
+            })
+        }
+    }
+
+    fun stopAllPulsingCardAnimations() = listOfOngoingAnimations.let {
+        it.forEach { anim -> anim.cancel() }
+        it.clear()
+    }
+
+    fun addGoalieAnimation(
         flipView: EasyFlipView,
         goalieView: View,
         flipViewOriginalX: Float,
         flipViewOriginalY: Float
     ): AnimatorSet {
 
-        val aniX = ObjectAnimator.ofFloat(
+        val aniX = objAnimator(
             flipView,
             View.TRANSLATION_X,
             goalieView.x - flipViewOriginalX + ((goalieView.width / 2) - (goalieView.width / 2))
         )
-        val aniY = ObjectAnimator.ofFloat(
+        val aniY = objAnimator(
             flipView,
             View.TRANSLATION_Y,
             goalieView.y - flipViewOriginalY - (goalieView.height / 4)
         )
-        val aniRot = ObjectAnimator.ofFloat(flipView, View.ROTATION, 90f)
+        val aniRot = objAnimator(flipView, View.ROTATION, 90f)
 
-        val set = AnimatorSet().apply {
-            playTogether(aniX, aniY, aniRot)
+        return AnimatorSet().apply {
+            isAnimationRunning = true
             interpolator = LinearOutSlowInInterpolator()
-            duration = 700
-        }
-
-        isAnimationRunning = true
-
-        return set
-    }
-
-    fun addPlayer(flipView: EasyFlipView, targetView: AppCompatImageView): AnimatorSet {
-        val aniX = ObjectAnimator.ofFloat(flipView, View.TRANSLATION_X, targetView.x - flipView.x + 60f)
-        val aniY = ObjectAnimator.ofFloat(flipView, View.TRANSLATION_Y, targetView.y - flipView.y)
-
-        val set = AnimatorSet().apply {
-            playTogether(aniX, aniY)
-            interpolator = LinearOutSlowInInterpolator()
+            startDelay = 150
             duration = 500
+            playTogether(aniX, aniY, aniRot)
         }
-
-        isAnimationRunning = true
-
-        return set
     }
 
-    fun attack(flipView: EasyFlipView, targetView: AppCompatImageView, isAttacker: Boolean): AnimatorSet {
-        if (isAttacker) {
-            val flipAniX = ObjectAnimator.ofFloat(flipView, View.TRANSLATION_X, targetView.x - flipView.x - 30f)
-            val flipAniY = ObjectAnimator.ofFloat(flipView, View.TRANSLATION_Y, targetView.y - flipView.y + 30f)
+    fun addPlayerAnimation(
+        flipView: EasyFlipView,
+        targetView: AppCompatImageView
+    ): AnimatorSet {
+        isAnimationRunning = true
 
-            val set = AnimatorSet().apply {
-                playTogether(flipAniX, flipAniY)
+        val aniX = objAnimator(flipView, View.TRANSLATION_X, targetView.x - flipView.x + 60f)
+        //val aniX = ObjectAnimator.ofFloat(flipView, View.TRANSLATION_X, flipView.x, targetView.x - 60f)
+        val aniY = objAnimator(flipView, View.TRANSLATION_Y, targetView.y - flipView.y)
+        //val aniY = ObjectAnimator.ofFloat(flipView, View.TRANSLATION_Y, flipView.y, targetView.y)
+
+        return AnimatorSet().apply {
+            interpolator = LinearOutSlowInInterpolator()
+            duration = 400
+            playTogether(aniX, aniY)
+        }
+    }
+
+    fun attackAnimation(flipView: EasyFlipView, targetView: AppCompatImageView, isAttacking: Boolean): AnimatorSet {
+        if (isAttacking) {
+            val flipAniX = objAnimator(flipView, View.TRANSLATION_X, targetView.x - flipView.x - 30f)
+            val flipAniY = objAnimator(flipView, View.TRANSLATION_Y, targetView.y - flipView.y + 30f)
+
+            return AnimatorSet().apply {
+                isAnimationRunning = true
                 interpolator = LinearOutSlowInInterpolator()
                 duration = 500
+                playTogether(flipAniX, flipAniY)
             }
-
-            isAnimationRunning = true
-
-            return set
-
         } else {
-            val flipOutAni = ObjectAnimator.ofFloat(flipView, View.TRANSLATION_X, 2000f)
-            val victimOutAni = ObjectAnimator.ofFloat(targetView, View.TRANSLATION_X, 2000f)
+            val flipOutAni = objAnimator(flipView, View.TRANSLATION_X, 2000f)
+            val victimOutAni = objAnimator(targetView, View.TRANSLATION_X, 2000f)
 
-            val set = AnimatorSet().apply {
-                playTogether(flipOutAni, victimOutAni)
+            return AnimatorSet().apply {
+                isAnimationRunning = true
                 interpolator = AnticipateInterpolator(1.5f)
                 duration = 500
+                playTogether(flipOutAni, victimOutAni)
             }
-
-            isAnimationRunning = true
-
-            return set
         }
     }
 
-    fun badCardOut(
+    fun goalieSavedAnimation(
+        flipView: EasyFlipView,
+        targetView: EasyFlipView,
+        victimTeam: Array<Card?>,
+        fNotifyToggleTurn: () -> Unit,
+        fRestoreFlipViews: () -> Unit,
+        fAddNewGoalie: () -> Unit
+    ): AnimatorSet {
+        // Attacker
+        val flipAniX = objAnimator(flipView, View.TRANSLATION_X, targetView.x - flipView.x - 150f)
+        val flipAniY =
+            if (whoseTurn == Constants.WhoseTurn.BOTTOM) objAnimator(
+                flipView,
+                View.TRANSLATION_Y,
+                targetView.y - flipView.y
+            )
+            else objAnimator(
+                flipView,
+                View.TRANSLATION_Y,
+                targetView.y - flipView.y - (targetView.height / 2)
+            )
+
+        return AnimatorSet().apply {
+            isAnimationRunning = true
+            interpolator = LinearOutSlowInInterpolator()
+            duration = 1000
+            playTogether(flipAniX, flipAniY)
+
+            doOnEnd {
+                // Victim goalie
+                targetView.flipTheView()
+                // Attacker
+                val jumpAni = objAnimator(flipView, View.Y, flipView.y - 100f).apply {
+                    startDelay = 1000
+                    duration = 300
+                    interpolator = LinearInterpolator()
+                }
+                val bounceAni = objAnimator(flipView, View.Y, flipView.y).apply {
+                    duration = 300
+                    interpolator = BounceInterpolator()
+                }
+
+                AnimatorSet().apply {
+                    playSequentially(jumpAni, bounceAni)
+
+                    doOnEnd {
+                        // Both
+                        val attackerOutAni = objAnimator(flipView, View.TRANSLATION_X, 2000f)
+                        val victimOutAni = objAnimator(targetView, View.TRANSLATION_X, 2000f)
+
+                        AnimatorSet().apply {
+                            startDelay = 500
+                            interpolator = AnticipateInterpolator(1.5f)
+                            duration = 500
+                            playTogether(attackerOutAni, victimOutAni)
+
+                            doOnEnd {
+                                onGoalieActionEnd(targetView, isGoal = false)
+                                victimTeam[5] = null
+
+                                fNotifyToggleTurn.invoke()
+                                fRestoreFlipViews.invoke()
+                                fAddNewGoalie.invoke()
+                            }
+
+                            start()
+                        }
+                    }
+
+                    start()
+                }
+            }
+
+            start()
+        }
+    }
+
+    fun scoredAtGoalieAnimation(
+        flipView: EasyFlipView,
+        targetView: EasyFlipView,
+        fNotifyToggleTurn: () -> Unit,
+        fRestoreFlipViews: () -> Unit,
+        fAddNewGoalie: () -> Unit,
+        fUpdateScores: () -> Unit
+    ): AnimatorSet {
+        // Attacker
+        val flipAniX = objAnimator(flipView, View.TRANSLATION_X, targetView.x - flipView.x - 150f)
+        val flipAniY =
+            if (whoseTurn == Constants.WhoseTurn.BOTTOM) objAnimator(
+                flipView,
+                View.TRANSLATION_Y,
+                targetView.y - flipView.y
+            )
+            else objAnimator(
+                flipView,
+                View.TRANSLATION_Y,
+                targetView.y - flipView.y - (targetView.height / 2)
+            )
+
+        return AnimatorSet().apply {
+            isAnimationRunning = true
+            interpolator = LinearOutSlowInInterpolator()
+            duration = 1000
+            playTogether(flipAniX, flipAniY)
+
+            doOnEnd {
+                // Victim goalie
+                targetView.flipTheView()
+                // Attacker
+                objAnimator(flipView, View.ROTATION, 720f).apply {
+                    startDelay = 1000
+                    duration = 500
+
+                    doOnEnd {
+                        // Both
+                        val attackerOutAni = objAnimator(flipView, View.TRANSLATION_X, 2000f)
+                        val victimOutAni = objAnimator(targetView, View.TRANSLATION_X, 2000f)
+
+                        AnimatorSet().apply {
+                            doOnEnd {
+                                onGoalieActionEnd(targetView, isGoal = true)
+
+                                fUpdateScores.invoke()
+                                fNotifyToggleTurn.invoke()
+                                fRestoreFlipViews.invoke()
+                                fAddNewGoalie.invoke()
+                            }
+
+                            startDelay = 500
+                            interpolator = AnticipateInterpolator(1.5f)
+                            duration = 500
+                            playTogether(attackerOutAni, victimOutAni)
+
+                            start()
+                        }
+                    }
+
+                    start()
+                }
+            }
+        }
+    }
+
+    fun badCardOutAnimation(
         flipView: EasyFlipView,
         fGetFirstCardInDeck: () -> Card,
         fToggleTurn: () -> Unit,
@@ -124,35 +353,40 @@ object AnimationUtil {
         fIsThisTeamReady: () -> Boolean,
         fTriggerBadCard: () -> Unit
     ): ObjectAnimator? {
-        return ObjectAnimator.ofFloat(flipView, View.TRANSLATION_X, 2000f).apply {
-            interpolator = AnticipateInterpolator(1.25f)
-            startDelay = 750
-            duration = 750
+        return objAnimator(flipView, View.TRANSLATION_X, 2000f).apply {
             doOnStart { isAnimationRunning = true }
             doOnEnd {
                 fToggleTurn.invoke()
                 fRestoreFlipView.invoke()
-                isAnimationRunning = false
                 fRemoveCardFromDeck.invoke()
 
                 if (!fIsThisTeamReady.invoke()) {
-                    GameActivity.isOngoingGame = false
-                    GameActivity.restoringPlayers = true
+                    isOngoingGame = false
+                    restoringPlayers = true
                 }
 
-                if (GameActivity.isOngoingGame && !GameLogic.isTherePossibleMove(GameActivity.whoseTurn, fGetFirstCardInDeck.invoke())) fTriggerBadCard.invoke()
+                if (isOngoingGame && !GameLogic.isTherePossibleMove(
+                        whoseTurn,
+                        fGetFirstCardInDeck.invoke()
+                    )
+                ) fTriggerBadCard.invoke()
+                else if (isOngoingGame && GameLogic.isTherePossibleMove(
+                        whoseTurn,
+                        fGetFirstCardInDeck.invoke()
+                    )
+                ) startPulsingCardsAnimation()
+
+                isAnimationRunning = false
             }
+
+            startDelay = 750
+            duration = 750
+            interpolator = AnticipateInterpolator(1.25f)
         }
     }
 
-    fun fadeIn(targetView: AppCompatImageView): ObjectAnimator? {
-        return ObjectAnimator.ofFloat(targetView, View.ALPHA, 0f, 1f).apply {
-            duration = 200
-        }
-    }
-
-    fun togglePuck(puck: AppCompatImageView, team: String): ObjectAnimator? {
-        return ObjectAnimator.ofFloat(puck, View.TRANSLATION_Y, if (team.toLowerCase() == "bottom") 100f else -100f)
+    fun togglePuckAnimation(puck: AppCompatImageView, team: String): ObjectAnimator? {
+        return objAnimator(puck, View.TRANSLATION_Y, if (team.toLowerCase() == "bottom") 100f else -100f)
             .apply {
                 duration = 300
                 interpolator = OvershootInterpolator(2.5f)

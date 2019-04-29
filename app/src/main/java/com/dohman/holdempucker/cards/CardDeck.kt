@@ -6,6 +6,8 @@ class CardDeck {
     init {
         initializeCards()
         cardDeck.shuffle()
+        cardDeck.shuffle()
+        cardDeck.shuffle()
     }
 
     private fun initializeCards(): List<Card> {
