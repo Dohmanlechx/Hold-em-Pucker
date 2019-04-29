@@ -74,7 +74,8 @@ object AnimationUtil {
         cardsLeftText: AppCompatTextView,
         isBadCard: Boolean,
         fIsBadCard: () -> Unit,
-        fSetOnClickListeners: () -> Unit
+        fSetOnClickListeners: () -> Unit,
+        fNotifyMessage: (message: String) -> Unit
     ) {
         cardsLeftText.scaleX = 1.3f
         cardsLeftText.scaleY = 1.3f
@@ -91,6 +92,7 @@ object AnimationUtil {
                 flipView.flipTheView()
                 if (isBadCard) fIsBadCard.invoke()
                 fSetOnClickListeners.invoke()
+                if (!isOngoingGame) fNotifyMessage.invoke("Please\nchoose a\nposition\nto add\nyour card.")
                 isAnimationRunning = false
             }
 
@@ -383,7 +385,7 @@ object AnimationUtil {
                 isAnimationRunning = false
             }
 
-            startDelay = 750
+            startDelay = 1500
             duration = 750
             interpolator = AnticipateInterpolator(1.25f)
         }

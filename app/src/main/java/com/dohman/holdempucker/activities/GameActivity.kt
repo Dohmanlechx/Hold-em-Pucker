@@ -9,11 +9,12 @@ import androidx.appcompat.widget.AppCompatImageView
 import androidx.core.animation.doOnEnd
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
-import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.LinearSnapHelper
 import com.dohman.holdempucker.activities.viewmodels.GameViewModel
 import com.dohman.holdempucker.R
 import com.dohman.holdempucker.cards.Card
 import com.dohman.holdempucker.ui.MessageTextItem
+import com.dohman.holdempucker.ui.overrides.SpeedyLinearLayoutManager
 import com.dohman.holdempucker.util.AnimationUtil
 import com.dohman.holdempucker.util.Constants
 import com.dohman.holdempucker.util.Constants.Companion.TAG_GAMEACTIVITY
@@ -54,7 +55,7 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
         setContentView(R.layout.activity_game)
         vm = ViewModelProviders.of(this).get(GameViewModel::class.java)
 
-        vm.messageNotifier.observe(this, Observer { updateMessageBox(it) })
+        vm.messageNotifier.observe(this, Observer { updateMessageBox(it.first, it.second) })
         vm.halfTimeNotifier.observe(this, Observer {
             clearAllCards(it)
             addGoalieView(true)
@@ -135,16 +136,25 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
         itemAdapter.clear()
 
         v_recycler.itemAnimator = null
-        v_recycler.layoutManager = LinearLayoutManager(applicationContext)
+        v_recycler.layoutManager = SpeedyLinearLayoutManager(
+            applicationContext,
+            SpeedyLinearLayoutManager.VERTICAL,
+            false
+        )
         v_recycler.adapter = fastAdapter
         v_recycler.isNestedScrollingEnabled = true
 
-        updateMessageBox("Press anywhere to start the game!", isFirstMessage = true)
+        val snapHelper = LinearSnapHelper()
+        snapHelper.attachToRecyclerView(v_recycler)
+
+        updateMessageBox("Press anywhere to start the game!", isNeutralMessage = true)
     }
 
-    private fun updateMessageBox(message: String, isFirstMessage: Boolean = false) {
-        if (!isFirstMessage) itemAdapter.add(MessageTextItem(message, whoseTurn == Constants.WhoseTurn.TOP))
-        else itemAdapter.add(MessageTextItem(message, isFirstMessage = true))
+    private fun updateMessageBox(message: String, isNeutralMessage: Boolean = false) {
+        //itemAdapter.clear()
+
+        if (!isNeutralMessage) itemAdapter.add(MessageTextItem(message, whoseTurn == Constants.WhoseTurn.TOP))
+        else itemAdapter.add(MessageTextItem(message, isNeutralMessage = true))
 
         v_recycler.adapter?.itemCount?.minus(1)?.let { v_recycler.smoothScrollToPosition(it) }
     }
@@ -167,7 +177,8 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
                 { vm.isThisTeamReady() },
                 { vm.triggerBadCard() })?.start()
         },
-            { setOnClickListeners() })
+            { setOnClickListeners() },
+            { message -> vm.notifyMessage(message) })
     }
 
     private fun addGoalieView(bottom: Boolean, doNotFlip: Boolean = false, doRemoveCardFromDeck: Boolean = false) {
@@ -403,7 +414,7 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
         val spotIndex: Int
         Log.d(TAG_GAMEACTIVITY, "onclick: $isAnimationRunning")
         if (isOngoingGame) {
-            if (isAnimationRunning || v.tag == Integer.valueOf(android.R.color.transparent)) return //FIXME testa
+            if (isAnimationRunning || v.tag == Integer.valueOf(android.R.color.transparent)) return
             if (whoseTurn == Constants.WhoseTurn.BOTTOM) {
                 when (v.id) {
                     R.id.card_top_forward_left -> {

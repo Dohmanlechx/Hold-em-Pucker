@@ -414,7 +414,7 @@
         app:layout_constraintTop_toBottomOf="@id/guideline_horizontal" />
 
     <FrameLayout
-        android:layout_width="130dp"
+        android:layout_width="140dp"
         android:layout_height="130dp"
         android:layout_margin="16dp"
         app:layout_constraintEnd_toStartOf="@id/card_bm_defender_left"

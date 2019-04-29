@@ -11,7 +11,7 @@ import kotlinx.android.synthetic.main.message_box_item.view.*
 class MessageTextItem(
     private val message: String,
     private val isTeamTop: Boolean = false,
-    private val isFirstMessage: Boolean = false
+    private val isNeutralMessage: Boolean = false
 ) : AbstractItem<MessageTextItem, MessageTextItem.ViewHolder>() {
     override fun getType(): Int = R.id.fastadapter_item
     override fun getViewHolder(v: View): ViewHolder = ViewHolder(v)
@@ -24,13 +24,16 @@ class MessageTextItem(
             ContextCompat.getColor(
                 holder.context,
                 when {
-                    isFirstMessage -> R.color.white
+                    isNeutralMessage -> R.color.white
                     isTeamTop -> R.color.text_background_top
                     else -> R.color.text_background_btm
                 }
             )
         )
-        holder.itemView.txt_message.text = message
+        holder.itemView.txt_message.apply {
+            setCharacterDelay(50) // Setter, custom speed
+            animateText(message)
+        }
     }
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

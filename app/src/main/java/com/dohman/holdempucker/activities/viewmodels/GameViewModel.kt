@@ -29,7 +29,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     private var cardDeck = CardDeck().cardDeck
     var firstCardInDeck: Card = cardDeck.first()
 
-    val messageNotifier = MutableLiveData<String>()
+    val messageNotifier = MutableLiveData<Pair<String, Boolean>>()
     val halfTimeNotifier = MutableLiveData<Int>()
     val whoseTurnNotifier = MutableLiveData<String>()
     val pickedCardNotifier = MutableLiveData<Int>()
@@ -49,8 +49,8 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         whoseTurnNotifier.value = whoseTurn.name
     }
 
-    fun notifyMessage(message: String) {
-        messageNotifier.value = message
+    fun notifyMessage(message: String, isNeutralMessage: Boolean = false) {
+        messageNotifier.value = Pair(message, isNeutralMessage)
     }
 
     /*
@@ -72,7 +72,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         val amountOfNulls = team.filter { it == null }.size
         if ((amountOfNulls + 4) > cardDeck.size) { // 4 is the minimum amount to score an goal
             halfTime()
-            notifyMessage("Not enough cards. New period started.")
+            notifyMessage("Not enough cards. New period started.", isNeutralMessage = true)
             return false
         }
 
