@@ -101,11 +101,14 @@ object AnimationUtil {
         }
     }
 
-    fun startPulsingCardsAnimation() {
+    fun startPulsingCardsAnimation(fNotifyMessage: (message: String) -> Unit) {
 
         Log.d(TAG_GAMEACTIVITY, possibleMovesIndexes.toString())
 
         val teamToPulse = if (whoseTurn == Constants.WhoseTurn.BOTTOM) teamTopViews else teamBottomViews
+
+        val plural = if (possibleMovesIndexes.size == 1) "move" else "moves"
+        fNotifyMessage.invoke("${possibleMovesIndexes.size} possible\n$plural.\nGo Attack!")
 
         possibleMovesIndexes.forEach { view ->
             listOfOngoingAnimations.add(scaleAnimator(
@@ -206,6 +209,7 @@ object AnimationUtil {
     fun goalieSavedAnimation(
         flipView: EasyFlipView,
         targetView: EasyFlipView,
+        tempGoalieCard: Card?,
         victimTeam: Array<Card?>,
         fNotifyToggleTurn: () -> Unit,
         fRestoreFlipViews: () -> Unit,
@@ -229,6 +233,7 @@ object AnimationUtil {
         return AnimatorSet().apply {
             isAnimationRunning = true
             interpolator = LinearOutSlowInInterpolator()
+            startDelay = 1500
             duration = 1000
             playTogether(flipAniX, flipAniY)
 
@@ -249,7 +254,16 @@ object AnimationUtil {
                 AnimatorSet().apply {
                     playSequentially(jumpAni, bounceAni)
 
-                    doOnStart { fNotifyMessage.invoke("and the goalie\nSAVED!") }
+                    doOnStart {
+                        val rankInterpreted = when (tempGoalieCard?.rank) {
+                            11 -> "Jack"
+                            12 -> "Queen"
+                            13 -> "King"
+                            14 -> "Ace"
+                            else -> tempGoalieCard?.rank.toString()
+                        }
+                        fNotifyMessage.invoke("... of\nrank $rankInterpreted\nand the\ngoalie SAVED!")
+                    }
                     doOnEnd {
                         // Both
                         val attackerOutAni = objAnimator(flipView, View.TRANSLATION_X, 2000f)
@@ -285,6 +299,7 @@ object AnimationUtil {
     fun scoredAtGoalieAnimation(
         flipView: EasyFlipView,
         targetView: EasyFlipView,
+        tempGoalieCard: Card?,
         fNotifyToggleTurn: () -> Unit,
         fRestoreFlipViews: () -> Unit,
         fAddNewGoalie: () -> Unit,
@@ -308,6 +323,7 @@ object AnimationUtil {
         return AnimatorSet().apply {
             isAnimationRunning = true
             interpolator = LinearOutSlowInInterpolator()
+            startDelay = 1500
             duration = 1000
             playTogether(flipAniX, flipAniY)
 
@@ -319,7 +335,16 @@ object AnimationUtil {
                     startDelay = 1000
                     duration = 500
 
-                    doOnStart { fNotifyMessage.invoke("and it's\nGOAL!") }
+                    doOnStart {
+                        val rankInterpreted = when (tempGoalieCard?.rank) {
+                            11 -> "Jack"
+                            12 -> "Queen"
+                            13 -> "King"
+                            14 -> "Ace"
+                            else -> tempGoalieCard?.rank.toString()
+                        }
+                        fNotifyMessage.invoke("... of\nrank $rankInterpreted\nand it's\nGOAL!")
+                    }
                     doOnEnd {
                         // Both
                         val attackerOutAni = objAnimator(flipView, View.TRANSLATION_X, 2000f)
@@ -357,7 +382,8 @@ object AnimationUtil {
         fRestoreFlipView: () -> Unit,
         fRemoveCardFromDeck: () -> Unit,
         fIsThisTeamReady: () -> Boolean,
-        fTriggerBadCard: () -> Unit
+        fTriggerBadCard: () -> Unit,
+        fNotifyMessage: (message: String) -> Unit
     ): ObjectAnimator? {
         return objAnimator(flipView, View.TRANSLATION_X, 2000f).apply {
             doOnStart { isAnimationRunning = true }
@@ -380,7 +406,7 @@ object AnimationUtil {
                         whoseTurn,
                         fGetFirstCardInDeck.invoke()
                     )
-                ) startPulsingCardsAnimation()
+                ) startPulsingCardsAnimation { message -> fNotifyMessage.invoke(message) }
 
                 isAnimationRunning = false
             }

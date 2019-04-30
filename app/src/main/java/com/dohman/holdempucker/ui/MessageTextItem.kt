@@ -31,7 +31,7 @@ class MessageTextItem(
             )
         )
         holder.itemView.txt_message.apply {
-            setCharacterDelay(50) // Setter, custom speed
+            setCharacterDelay(30) // Setter, custom speed
             animateText(message)
         }
     }

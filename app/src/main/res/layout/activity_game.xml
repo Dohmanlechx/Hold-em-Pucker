@@ -201,6 +201,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="20dp"
+        android:alpha="0.8"
         android:fontFamily="@font/hockey_score_font"
         android:textColor="@color/black"
         android:textSize="52sp"
@@ -213,6 +214,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="20dp"
+        android:alpha="0.8"
         android:fontFamily="@font/hockey_score_font"
         android:textColor="@color/black"
         android:textSize="52sp"
@@ -430,10 +432,10 @@
             android:id="@+id/v_recycler"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:clipToPadding="true"
+            android:overScrollMode="never"
             android:paddingTop="10dp"
             android:paddingBottom="10dp"
-            android:overScrollMode="never"
-            android:clipToPadding="true"
             tools:itemCount="1"
             tools:listitem="@layout/message_box_item" />
 

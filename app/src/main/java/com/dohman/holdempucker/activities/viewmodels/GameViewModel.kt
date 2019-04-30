@@ -63,7 +63,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
             halfTime()
         } else {
             firstCardInDeck = cardDeck.first()
-            notifyPickedCard()
+            if (cardDeck.size < 50) notifyPickedCard() // Don't flip the card unless goalies are set
             cardsCountNotifier.value = cardDeck.size
         }
     }
@@ -147,7 +147,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         }
 
         if (isOngoingGame && !GameLogic.isTherePossibleMove(whoseTurn, firstCardInDeck)) triggerBadCard()
-        else if (isOngoingGame && GameLogic.isTherePossibleMove(whoseTurn, firstCardInDeck)) AnimationUtil.startPulsingCardsAnimation()
+        else if (isOngoingGame && GameLogic.isTherePossibleMove(whoseTurn, firstCardInDeck)) AnimationUtil.startPulsingCardsAnimation { message -> notifyMessage(message) }
     }
 
     fun triggerBadCard() {

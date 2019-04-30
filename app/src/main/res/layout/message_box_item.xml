@@ -11,7 +11,7 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:fontFamily="@font/press_start_2p"
-        android:lineSpacingExtra="4dp"
+        android:lineSpacingExtra="6dp"
         android:padding="14dp"
         android:textColor="@color/white"
         android:textSize="10sp"

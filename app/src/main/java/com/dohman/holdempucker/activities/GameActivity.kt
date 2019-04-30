@@ -58,7 +58,7 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
         vm.messageNotifier.observe(this, Observer { updateMessageBox(it.first, it.second) })
         vm.halfTimeNotifier.observe(this, Observer {
             clearAllCards(it)
-            addGoalieView(true)
+            addGoalieView(true, withStartDelay = true)
         })
         vm.whoseTurnNotifier.observe(this, Observer { AnimationUtil.togglePuckAnimation(puck, it)?.start() })
         vm.pickedCardNotifier.observe(this, Observer { flipNewCard(it) })
@@ -67,7 +67,7 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
             this,
             Observer {
                 flipNewCard(vm.resIdOfCard(vm.firstCardInDeck), isBadCard = true)
-                vm.notifyMessage("Aw, too weak card! It goes out!")
+                vm.notifyMessage("Aw, too\nweak card!\nIt goes\nout!")
             })
 
         vm.updateScores(top_team_score, bm_team_score)
@@ -147,7 +147,7 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
         val snapHelper = LinearSnapHelper()
         snapHelper.attachToRecyclerView(v_recycler)
 
-        updateMessageBox("Press anywhere to start the game!", isNeutralMessage = true)
+        updateMessageBox("Press\nanywhere\nto start\nthe game!", isNeutralMessage = true)
     }
 
     private fun updateMessageBox(message: String, isNeutralMessage: Boolean = false) {
@@ -175,13 +175,14 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
                 { restoreFlipViewPosition() },
                 { vm.removeCardFromDeck() },
                 { vm.isThisTeamReady() },
-                { vm.triggerBadCard() })?.start()
+                { vm.triggerBadCard() },
+                { message -> vm.notifyMessage(message) })?.start()
         },
             { setOnClickListeners() },
             { message -> vm.notifyMessage(message) })
     }
 
-    private fun addGoalieView(bottom: Boolean, doNotFlip: Boolean = false, doRemoveCardFromDeck: Boolean = false) {
+    private fun addGoalieView(bottom: Boolean, doNotFlip: Boolean = false, doRemoveCardFromDeck: Boolean = false, withStartDelay: Boolean = false) {
         // ONLY adding view. No real goalie card is assigning to that team by this function.
         removeAllOnClickListeners()
 
@@ -196,6 +197,8 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
             flipViewOriginalX = flipViewOriginalX - 60f,
             flipViewOriginalY = flipViewOriginalY
         ).apply {
+            if (withStartDelay) startDelay = 1500
+
             doOnEnd {
                 restoreFlipViewPosition()
                 vm.onGoalieAddedAnimationEnd(view)
@@ -263,6 +266,8 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
                 removeAllOnClickListeners()
                 AnimationUtil.stopAllPulsingCardAnimations()
 
+                notifyMessageAttackingGoalie()
+
                 if (whoseTurn == Constants.WhoseTurn.BOTTOM) {
                     vm.setImagesOnFlipView(
                         flip_top_goalie,
@@ -279,6 +284,7 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
                     AnimationUtil.scoredAtGoalieAnimation(
                         flip_view,
                         flip_top_goalie,
+                        tempGoalieCard,
                         { vm.notifyToggleTurn() },
                         { restoreFlipViewPosition() },
                         { addGoalieView(bottom = false, doNotFlip = true, doRemoveCardFromDeck = true) },
@@ -302,6 +308,7 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
                     AnimationUtil.scoredAtGoalieAnimation(
                         flip_view,
                         flip_btm_goalie,
+                        tempGoalieCard,
                         { vm.notifyToggleTurn() },
                         { restoreFlipViewPosition() },
                         { addGoalieView(bottom = true, doNotFlip = true, doRemoveCardFromDeck = true) },
@@ -319,8 +326,9 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
 
     private fun prepareGoalieSaved(victimView: AppCompatImageView) {
         removeAllOnClickListeners()
-
         AnimationUtil.stopAllPulsingCardAnimations()
+
+        notifyMessageAttackingGoalie()
 
         if (whoseTurn == Constants.WhoseTurn.BOTTOM) {
             vm.setImagesOnFlipView(
@@ -338,6 +346,7 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
             AnimationUtil.goalieSavedAnimation(
                 flip_view,
                 flip_top_goalie,
+                tempGoalieCard,
                 teamTop,
                 { vm.notifyToggleTurn() },
                 { restoreFlipViewPosition() },
@@ -361,12 +370,29 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
             AnimationUtil.goalieSavedAnimation(
                 flip_view,
                 flip_btm_goalie,
+                tempGoalieCard,
                 teamBottom,
                 { vm.notifyToggleTurn() },
                 { restoreFlipViewPosition() },
                 { addGoalieView(bottom = true, doNotFlip = true) },
                 { message -> vm.notifyMessage(message) }
             ).start()
+        }
+    }
+
+    private fun notifyMessageAttackingGoalie() {
+        vm.firstCardInDeck.let {
+            val rankInterpreted = when (it.rank) {
+                11 -> "Jack"
+                12 -> "Queen"
+                13 -> "King"
+                14 -> "Ace"
+                else -> it.rank.toString()
+            }
+
+            vm.notifyMessage(
+                "${it.suit.toString().toLowerCase().capitalize()} $rankInterpreted\nattacks the\ngoalie..."
+            )
         }
     }
 
@@ -412,7 +438,6 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
 
     override fun onClick(v: View) {
         val spotIndex: Int
-        Log.d(TAG_GAMEACTIVITY, "onclick: $isAnimationRunning")
         if (isOngoingGame) {
             if (isAnimationRunning || v.tag == Integer.valueOf(android.R.color.transparent)) return
             if (whoseTurn == Constants.WhoseTurn.BOTTOM) {
