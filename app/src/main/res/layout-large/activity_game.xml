@@ -183,7 +183,7 @@
         android:orientation="vertical"
         android:visibility="visible"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintGuide_percent="0.60"
+        app:layout_constraintGuide_percent="0.50"
         app:layout_constraintStart_toStartOf="parent" />
 
     <androidx.constraintlayout.widget.Guideline
@@ -467,10 +467,10 @@
         android:id="@+id/computer_lamp"
         android:layout_width="7dp"
         android:layout_height="7dp"
-        android:layout_marginEnd="15dp"
         android:background="@drawable/old_computer_background"
-        app:layout_constraintBottom_toBottomOf="@id/frame_layout"
-        app:layout_constraintEnd_toEndOf="@id/frame_layout" />
+        app:layout_constraintEnd_toEndOf="@id/frame_layout"
+        android:layout_marginEnd="15dp"
+        app:layout_constraintBottom_toBottomOf="@id/frame_layout"/>
 
     <View
         android:id="@+id/whole_view"
@@ -479,7 +479,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:visibility="gone" />
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

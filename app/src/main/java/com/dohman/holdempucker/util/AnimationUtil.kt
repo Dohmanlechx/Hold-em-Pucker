@@ -43,6 +43,12 @@ object AnimationUtil {
         distance: Float
     ): ObjectAnimator = ObjectAnimator.ofFloat(view, direction, distance)
 
+    private fun fadeAnimator(
+        view: View,
+        from: Float,
+        to: Float
+    ): ObjectAnimator = ObjectAnimator.ofFloat(view, View.ALPHA, from, to)
+
     private fun scaleAnimator(
         view: View,
         scaleToX: Float,
@@ -69,12 +75,22 @@ object AnimationUtil {
     * Animation functions
     * */
 
+    fun startLampAnimation(v: View) {
+        fadeAnimator(v, 1.0f, 0.3f).apply {
+            duration = 100
+            repeatCount = ObjectAnimator.INFINITE
+
+            start()
+        }
+    }
+
     fun flipPlayingCard(
         flipView: EasyFlipView,
         cardsLeftText: AppCompatTextView,
         isBadCard: Boolean,
         fIsBadCard: () -> Unit,
-        fSetOnClickListeners: () -> Unit
+        fSetOnClickListeners: () -> Unit,
+        fNotifyMessage: (message: String) -> Unit
     ) {
         cardsLeftText.scaleX = 1.3f
         cardsLeftText.scaleY = 1.3f
@@ -91,6 +107,7 @@ object AnimationUtil {
                 flipView.flipTheView()
                 if (isBadCard) fIsBadCard.invoke()
                 fSetOnClickListeners.invoke()
+                if (!isOngoingGame) fNotifyMessage.invoke("Please\nchoose a\nposition\nto add\nyour card.")
                 isAnimationRunning = false
             }
 
@@ -99,11 +116,14 @@ object AnimationUtil {
         }
     }
 
-    fun startPulsingCardsAnimation() {
+    fun startPulsingCardsAnimation(fNotifyMessage: (message: String) -> Unit) {
 
         Log.d(TAG_GAMEACTIVITY, possibleMovesIndexes.toString())
 
         val teamToPulse = if (whoseTurn == Constants.WhoseTurn.BOTTOM) teamTopViews else teamBottomViews
+
+        val plural = if (possibleMovesIndexes.size == 1) "move" else "moves"
+        fNotifyMessage.invoke("${possibleMovesIndexes.size} possible\n$plural.\nGo Attack!")
 
         possibleMovesIndexes.forEach { view ->
             listOfOngoingAnimations.add(scaleAnimator(
@@ -204,10 +224,12 @@ object AnimationUtil {
     fun goalieSavedAnimation(
         flipView: EasyFlipView,
         targetView: EasyFlipView,
+        tempGoalieCard: Card?,
         victimTeam: Array<Card?>,
         fNotifyToggleTurn: () -> Unit,
         fRestoreFlipViews: () -> Unit,
-        fAddNewGoalie: () -> Unit
+        fAddNewGoalie: () -> Unit,
+        fNotifyMessage: (message: String) -> Unit
     ): AnimatorSet {
         // Attacker
         val flipAniX = objAnimator(flipView, View.TRANSLATION_X, targetView.x - flipView.x - 150f)
@@ -226,6 +248,7 @@ object AnimationUtil {
         return AnimatorSet().apply {
             isAnimationRunning = true
             interpolator = LinearOutSlowInInterpolator()
+            startDelay = 1500
             duration = 1000
             playTogether(flipAniX, flipAniY)
 
@@ -246,6 +269,16 @@ object AnimationUtil {
                 AnimatorSet().apply {
                     playSequentially(jumpAni, bounceAni)
 
+                    doOnStart {
+                        val rankInterpreted = when (tempGoalieCard?.rank) {
+                            11 -> "Jack"
+                            12 -> "Queen"
+                            13 -> "King"
+                            14 -> "Ace"
+                            else -> tempGoalieCard?.rank.toString()
+                        }
+                        fNotifyMessage.invoke("... of\nrank $rankInterpreted\nand the\ngoalie SAVED!")
+                    }
                     doOnEnd {
                         // Both
                         val attackerOutAni = objAnimator(flipView, View.TRANSLATION_X, 2000f)
@@ -281,10 +314,12 @@ object AnimationUtil {
     fun scoredAtGoalieAnimation(
         flipView: EasyFlipView,
         targetView: EasyFlipView,
+        tempGoalieCard: Card?,
         fNotifyToggleTurn: () -> Unit,
         fRestoreFlipViews: () -> Unit,
         fAddNewGoalie: () -> Unit,
-        fUpdateScores: () -> Unit
+        fUpdateScores: () -> Unit,
+        fNotifyMessage: (message: String) -> Unit
     ): AnimatorSet {
         // Attacker
         val flipAniX = objAnimator(flipView, View.TRANSLATION_X, targetView.x - flipView.x - 150f)
@@ -303,6 +338,7 @@ object AnimationUtil {
         return AnimatorSet().apply {
             isAnimationRunning = true
             interpolator = LinearOutSlowInInterpolator()
+            startDelay = 1500
             duration = 1000
             playTogether(flipAniX, flipAniY)
 
@@ -314,6 +350,16 @@ object AnimationUtil {
                     startDelay = 1000
                     duration = 500
 
+                    doOnStart {
+                        val rankInterpreted = when (tempGoalieCard?.rank) {
+                            11 -> "Jack"
+                            12 -> "Queen"
+                            13 -> "King"
+                            14 -> "Ace"
+                            else -> tempGoalieCard?.rank.toString()
+                        }
+                        fNotifyMessage.invoke("... of\nrank $rankInterpreted\nand it's\nGOAL!")
+                    }
                     doOnEnd {
                         // Both
                         val attackerOutAni = objAnimator(flipView, View.TRANSLATION_X, 2000f)
@@ -351,7 +397,8 @@ object AnimationUtil {
         fRestoreFlipView: () -> Unit,
         fRemoveCardFromDeck: () -> Unit,
         fIsThisTeamReady: () -> Boolean,
-        fTriggerBadCard: () -> Unit
+        fTriggerBadCard: () -> Unit,
+        fNotifyMessage: (message: String) -> Unit
     ): ObjectAnimator? {
         return objAnimator(flipView, View.TRANSLATION_X, 2000f).apply {
             doOnStart { isAnimationRunning = true }
@@ -374,12 +421,12 @@ object AnimationUtil {
                         whoseTurn,
                         fGetFirstCardInDeck.invoke()
                     )
-                ) startPulsingCardsAnimation()
+                ) startPulsingCardsAnimation { message -> fNotifyMessage.invoke(message) }
 
                 isAnimationRunning = false
             }
 
-            startDelay = 750
+            startDelay = 1500
             duration = 750
             interpolator = AnticipateInterpolator(1.25f)
         }

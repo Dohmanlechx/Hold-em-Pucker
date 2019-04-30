@@ -1,6 +1,5 @@
 package com.dohman.holdempucker.activities
 
-import android.graphics.Bitmap
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -10,9 +9,12 @@ import androidx.appcompat.widget.AppCompatImageView
 import androidx.core.animation.doOnEnd
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import androidx.recyclerview.widget.LinearSnapHelper
 import com.dohman.holdempucker.activities.viewmodels.GameViewModel
 import com.dohman.holdempucker.R
 import com.dohman.holdempucker.cards.Card
+import com.dohman.holdempucker.ui.MessageTextItem
+import com.dohman.holdempucker.ui.overrides.SpeedyLinearLayoutManager
 import com.dohman.holdempucker.util.AnimationUtil
 import com.dohman.holdempucker.util.Constants
 import com.dohman.holdempucker.util.Constants.Companion.TAG_GAMEACTIVITY
@@ -27,11 +29,16 @@ import com.dohman.holdempucker.util.Constants.Companion.teamTopScore
 import com.dohman.holdempucker.util.Constants.Companion.teamTopViews
 import com.dohman.holdempucker.util.Constants.Companion.whoseTeamStartedLastPeriod
 import com.dohman.holdempucker.util.Constants.Companion.whoseTurn
-import com.wajahatkarim3.easyflipview.EasyFlipView
+import com.mikepenz.fastadapter.FastAdapter
+import com.mikepenz.fastadapter.adapters.ItemAdapter
+import com.mikepenz.fastadapter.items.AbstractItem
 import kotlinx.android.synthetic.main.activity_game.*
 
 class GameActivity : AppCompatActivity(), View.OnClickListener {
     private lateinit var vm: GameViewModel
+
+    private val itemAdapter = ItemAdapter<AbstractItem<*, *>>()
+    private val fastAdapter = FastAdapter.with<AbstractItem<*, *>, ItemAdapter<AbstractItem<*, *>>>(itemAdapter)
 
     private var flipViewOriginalX: Float = 0f
     private var flipViewOriginalY: Float = 0f
@@ -48,9 +55,10 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
         setContentView(R.layout.activity_game)
         vm = ViewModelProviders.of(this).get(GameViewModel::class.java)
 
+        vm.messageNotifier.observe(this, Observer { updateMessageBox(it.first, it.second) })
         vm.halfTimeNotifier.observe(this, Observer {
             clearAllCards(it)
-            addGoalieView(true)
+            addGoalieView(true, withStartDelay = true)
         })
         vm.whoseTurnNotifier.observe(this, Observer { AnimationUtil.togglePuckAnimation(puck, it)?.start() })
         vm.pickedCardNotifier.observe(this, Observer { flipNewCard(it) })
@@ -59,6 +67,7 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
             this,
             Observer {
                 flipNewCard(vm.resIdOfCard(vm.firstCardInDeck), isBadCard = true)
+                vm.notifyMessage("Aw, too\nweak card!\nIt goes\nout!")
             })
 
         vm.updateScores(top_team_score, bm_team_score)
@@ -79,13 +88,18 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
             flipViewTopOriginalY = flip_top_goalie.y
         }
 
-        btn_debug.text = "Start!"
-        btn_debug.setOnClickListener {
-            addGoalieView(true)
+        computer_lamp.post {
+            AnimationUtil.startLampAnimation(computer_lamp)
         }
 
+        setupMessageRecycler()
         setOnClickListeners()
         storeAllViews()
+
+        whole_view.setOnClickListener {
+            addGoalieView(true)
+            it.visibility = View.GONE
+        }
     }
 
     /*
@@ -122,6 +136,33 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
         }
     }
 
+    private fun setupMessageRecycler() {
+        itemAdapter.clear()
+
+        v_recycler.itemAnimator = null
+        v_recycler.layoutManager = SpeedyLinearLayoutManager(
+            applicationContext,
+            SpeedyLinearLayoutManager.VERTICAL,
+            false
+        )
+        v_recycler.adapter = fastAdapter
+        v_recycler.isNestedScrollingEnabled = true
+
+        val snapHelper = LinearSnapHelper()
+        snapHelper.attachToRecyclerView(v_recycler)
+
+        updateMessageBox("Press\nanywhere\nto start\nthe game!", isNeutralMessage = true)
+    }
+
+    private fun updateMessageBox(message: String, isNeutralMessage: Boolean = false) {
+        //itemAdapter.clear()
+
+        if (!isNeutralMessage) itemAdapter.add(MessageTextItem(message, whoseTurn == Constants.WhoseTurn.TOP))
+        else itemAdapter.add(MessageTextItem(message, isNeutralMessage = true))
+
+        v_recycler.adapter?.itemCount?.minus(1)?.let { v_recycler.smoothScrollToPosition(it) }
+    }
+
     /*
     * Animation initializer
     * */
@@ -138,12 +179,14 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
                 { restoreFlipViewPosition() },
                 { vm.removeCardFromDeck() },
                 { vm.isThisTeamReady() },
-                { vm.triggerBadCard() })?.start()
+                { vm.triggerBadCard() },
+                { message -> vm.notifyMessage(message) })?.start()
         },
-            { setOnClickListeners() })
+            { setOnClickListeners() },
+            { message -> vm.notifyMessage(message) })
     }
 
-    private fun addGoalieView(bottom: Boolean, doNotFlip: Boolean = false, doRemoveCardFromDeck: Boolean = false) {
+    private fun addGoalieView(bottom: Boolean, doNotFlip: Boolean = false, doRemoveCardFromDeck: Boolean = false, withStartDelay: Boolean = false) {
         // ONLY adding view. No real goalie card is assigning to that team by this function.
         removeAllOnClickListeners()
 
@@ -158,6 +201,8 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
             flipViewOriginalX = flipViewOriginalX - 60f,
             flipViewOriginalY = flipViewOriginalY
         ).apply {
+            if (withStartDelay) startDelay = 1500
+
             doOnEnd {
                 restoreFlipViewPosition()
                 vm.onGoalieAddedAnimationEnd(view)
@@ -225,6 +270,8 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
                 removeAllOnClickListeners()
                 AnimationUtil.stopAllPulsingCardAnimations()
 
+                notifyMessageAttackingGoalie()
+
                 if (whoseTurn == Constants.WhoseTurn.BOTTOM) {
                     vm.setImagesOnFlipView(
                         flip_top_goalie,
@@ -241,10 +288,12 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
                     AnimationUtil.scoredAtGoalieAnimation(
                         flip_view,
                         flip_top_goalie,
+                        tempGoalieCard,
                         { vm.notifyToggleTurn() },
                         { restoreFlipViewPosition() },
                         { addGoalieView(bottom = false, doNotFlip = true, doRemoveCardFromDeck = true) },
-                        { vm.updateScores(top_team_score, bm_team_score) }
+                        { vm.updateScores(top_team_score, bm_team_score) },
+                        { message -> vm.notifyMessage(message) }
                     ).start()
 
                 } else {
@@ -263,10 +312,12 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
                     AnimationUtil.scoredAtGoalieAnimation(
                         flip_view,
                         flip_btm_goalie,
+                        tempGoalieCard,
                         { vm.notifyToggleTurn() },
                         { restoreFlipViewPosition() },
                         { addGoalieView(bottom = true, doNotFlip = true, doRemoveCardFromDeck = true) },
-                        { vm.updateScores(top_team_score, bm_team_score) }
+                        { vm.updateScores(top_team_score, bm_team_score) },
+                        { message -> vm.notifyMessage(message) }
                     ).start()
                 }
             }
@@ -279,8 +330,9 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
 
     private fun prepareGoalieSaved(victimView: AppCompatImageView) {
         removeAllOnClickListeners()
-
         AnimationUtil.stopAllPulsingCardAnimations()
+
+        notifyMessageAttackingGoalie()
 
         if (whoseTurn == Constants.WhoseTurn.BOTTOM) {
             vm.setImagesOnFlipView(
@@ -298,10 +350,12 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
             AnimationUtil.goalieSavedAnimation(
                 flip_view,
                 flip_top_goalie,
+                tempGoalieCard,
                 teamTop,
                 { vm.notifyToggleTurn() },
                 { restoreFlipViewPosition() },
-                { addGoalieView(bottom = false, doNotFlip = true) }
+                { addGoalieView(bottom = false, doNotFlip = true) },
+                { message -> vm.notifyMessage(message) }
             ).start()
 
         } else {
@@ -320,11 +374,29 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
             AnimationUtil.goalieSavedAnimation(
                 flip_view,
                 flip_btm_goalie,
+                tempGoalieCard,
                 teamBottom,
                 { vm.notifyToggleTurn() },
                 { restoreFlipViewPosition() },
-                { addGoalieView(bottom = true, doNotFlip = true) }
+                { addGoalieView(bottom = true, doNotFlip = true) },
+                { message -> vm.notifyMessage(message) }
             ).start()
+        }
+    }
+
+    private fun notifyMessageAttackingGoalie() {
+        vm.firstCardInDeck.let {
+            val rankInterpreted = when (it.rank) {
+                11 -> "Jack"
+                12 -> "Queen"
+                13 -> "King"
+                14 -> "Ace"
+                else -> it.rank.toString()
+            }
+
+            vm.notifyMessage(
+                "${it.suit.toString().toLowerCase().capitalize()} $rankInterpreted\nattacks the\ngoalie..."
+            )
         }
     }
 
@@ -338,10 +410,10 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
         period += nextPeriod
 
         if (period > 3 && (teamBottomScore != teamTopScore)) {
-            if (teamBottomScore > teamTopScore) btn_debug.text = "Bottom won!" else btn_debug.text = "Top won!"
+            // FIXME: if (teamBottomScore > teamTopScore) btn_debug.text = "Bottom won!" else btn_debug.text = "Top won!"
             removeAllOnClickListeners()
         } else {
-            btn_debug.text = "Period: $period"
+            // FIXME: btn_debug.text = "Period: $period"
 
             whoseTurn =
                 if (whoseTeamStartedLastPeriod == Constants.WhoseTurn.BOTTOM) Constants.WhoseTurn.TOP else Constants.WhoseTurn.BOTTOM
@@ -366,15 +438,12 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
     private fun removeAllOnClickListeners() {
         teamBottomViews.forEach { it.setOnClickListener(null) }
         teamTopViews.forEach { it.setOnClickListener(null) }
-
-        btn_debug.setOnClickListener(null)
     }
 
     override fun onClick(v: View) {
         val spotIndex: Int
-        Log.d(TAG_GAMEACTIVITY, "onclick: $isAnimationRunning")
         if (isOngoingGame) {
-            if (isAnimationRunning || v.tag == Integer.valueOf(android.R.color.transparent)) return //FIXME testa
+            if (isAnimationRunning || v.tag == Integer.valueOf(android.R.color.transparent)) return
             if (whoseTurn == Constants.WhoseTurn.BOTTOM) {
                 when (v.id) {
                     R.id.card_top_forward_left -> {
