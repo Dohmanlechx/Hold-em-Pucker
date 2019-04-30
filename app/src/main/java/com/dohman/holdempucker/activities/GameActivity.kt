@@ -88,6 +88,10 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
             flipViewTopOriginalY = flip_top_goalie.y
         }
 
+        computer_lamp.post {
+            AnimationUtil.startLampAnimation(computer_lamp)
+        }
+
         setupMessageRecycler()
         setOnClickListeners()
         storeAllViews()

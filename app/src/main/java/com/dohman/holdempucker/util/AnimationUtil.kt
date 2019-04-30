@@ -43,6 +43,12 @@ object AnimationUtil {
         distance: Float
     ): ObjectAnimator = ObjectAnimator.ofFloat(view, direction, distance)
 
+    private fun fadeAnimator(
+        view: View,
+        from: Float,
+        to: Float
+    ): ObjectAnimator = ObjectAnimator.ofFloat(view, View.ALPHA, from, to)
+
     private fun scaleAnimator(
         view: View,
         scaleToX: Float,
@@ -68,6 +74,15 @@ object AnimationUtil {
     /*
     * Animation functions
     * */
+
+    fun startLampAnimation(v: View) {
+        fadeAnimator(v, 1.0f, 0.3f).apply {
+            duration = 100
+            repeatCount = ObjectAnimator.INFINITE
+
+            start()
+        }
+    }
 
     fun flipPlayingCard(
         flipView: EasyFlipView,

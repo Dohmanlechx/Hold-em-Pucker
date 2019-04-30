@@ -63,7 +63,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
             halfTime()
         } else {
             firstCardInDeck = cardDeck.first()
-            if (cardDeck.size < 50) notifyPickedCard() // Don't flip the card unless goalies are set
+            notifyPickedCard()
             cardsCountNotifier.value = cardDeck.size
         }
     }
