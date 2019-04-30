@@ -277,7 +277,7 @@ object AnimationUtil {
                             14 -> "Ace"
                             else -> tempGoalieCard?.rank.toString()
                         }
-                        fNotifyMessage.invoke("... of\nrank $rankInterpreted\nand the\ngoalie SAVED!")
+                        fNotifyMessage.invoke("... of\nrank $rankInterpreted\nand the\ngoalie\nSAVED!")
                     }
                     doOnEnd {
                         // Both

@@ -2,7 +2,6 @@ package com.dohman.holdempucker.activities
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.view.WindowManager
 import androidx.appcompat.widget.AppCompatImageView
@@ -17,7 +16,6 @@ import com.dohman.holdempucker.ui.MessageTextItem
 import com.dohman.holdempucker.ui.overrides.SpeedyLinearLayoutManager
 import com.dohman.holdempucker.util.AnimationUtil
 import com.dohman.holdempucker.util.Constants
-import com.dohman.holdempucker.util.Constants.Companion.TAG_GAMEACTIVITY
 import com.dohman.holdempucker.util.Constants.Companion.teamBottomViews
 import com.dohman.holdempucker.util.Constants.Companion.isAnimationRunning
 import com.dohman.holdempucker.util.Constants.Companion.isOngoingGame
@@ -57,8 +55,7 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
 
         vm.messageNotifier.observe(this, Observer { updateMessageBox(it.first, it.second) })
         vm.halfTimeNotifier.observe(this, Observer {
-            clearAllCards(it)
-            addGoalieView(true, withStartDelay = true)
+            if (isNextPeriodReady(it)) addGoalieView(true, withStartDelay = true)
         })
         vm.whoseTurnNotifier.observe(this, Observer { AnimationUtil.togglePuckAnimation(puck, it)?.start() })
         vm.pickedCardNotifier.observe(this, Observer { flipNewCard(it) })
@@ -97,6 +94,18 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
         storeAllViews()
 
         whole_view.setOnClickListener {
+            teamBottomScore = 0
+            teamTopScore = 0
+            bm_team_score.text = teamBottomScore.toString()
+            top_team_score.text = teamTopScore.toString()
+            period = 1
+
+            teamBottomViews.forEach { view -> view.setImageResource(android.R.color.transparent) }
+            teamTopViews.forEach { view -> view.setImageResource(android.R.color.transparent) }
+
+            card_top_goalie.tag = null
+            card_bm_goalie.tag = null
+
             addGoalieView(true)
             it.visibility = View.GONE
         }
@@ -151,7 +160,7 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
         val snapHelper = LinearSnapHelper()
         snapHelper.attachToRecyclerView(v_recycler)
 
-        updateMessageBox("Press\nanywhere\nto start\nthe game!", isNeutralMessage = true)
+        updateMessageBox("Press\nanywhere\nto start\nthe game!\nPeriod: $period", isNeutralMessage = true)
     }
 
     private fun updateMessageBox(message: String, isNeutralMessage: Boolean = false) {
@@ -186,7 +195,12 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
             { message -> vm.notifyMessage(message) })
     }
 
-    private fun addGoalieView(bottom: Boolean, doNotFlip: Boolean = false, doRemoveCardFromDeck: Boolean = false, withStartDelay: Boolean = false) {
+    private fun addGoalieView(
+        bottom: Boolean,
+        doNotFlip: Boolean = false,
+        doRemoveCardFromDeck: Boolean = false,
+        withStartDelay: Boolean = false
+    ) {
         // ONLY adding view. No real goalie card is assigning to that team by this function.
         removeAllOnClickListeners()
 
@@ -404,16 +418,31 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
     * Game management
     * */
 
-    private fun clearAllCards(nextPeriod: Int) {
+    private fun isNextPeriodReady(nextPeriod: Int): Boolean {
         cards_left.visibility = View.GONE
 
         period += nextPeriod
 
         if (period > 3 && (teamBottomScore != teamTopScore)) {
-            // FIXME: if (teamBottomScore > teamTopScore) btn_debug.text = "Bottom won!" else btn_debug.text = "Top won!"
+            when {
+                teamBottomScore > teamTopScore -> vm.notifyMessage(
+                    "Team Bottom\nwon with\n$teamBottomScore-$teamTopScore!\nNew game?\nPress anywhere!",
+                    isNeutralMessage = true
+                )
+                teamBottomScore < teamTopScore -> vm.notifyMessage(
+                    "Team Top\nwon with\n$teamTopScore-$teamBottomScore!\nNew game?\nPress anywhere!",
+                    isNeutralMessage = true
+                )
+            }
+
             removeAllOnClickListeners()
+            whole_view.visibility = View.VISIBLE
+            return false
         } else {
-            // FIXME: btn_debug.text = "Period: $period"
+            if (period > 3) vm.notifyMessage(
+                "Overtime!\nPlay until\nall cards\nare out.\nPeriod: $period",
+                isNeutralMessage = true
+            )
 
             whoseTurn =
                 if (whoseTeamStartedLastPeriod == Constants.WhoseTurn.BOTTOM) Constants.WhoseTurn.TOP else Constants.WhoseTurn.BOTTOM
@@ -423,6 +452,8 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
 
             card_top_goalie.tag = null
             card_bm_goalie.tag = null
+
+            return true
         }
     }
 

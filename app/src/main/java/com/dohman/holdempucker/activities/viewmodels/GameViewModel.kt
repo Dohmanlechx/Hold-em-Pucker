@@ -16,6 +16,7 @@ import com.dohman.holdempucker.util.AnimationUtil
 import com.dohman.holdempucker.util.Constants
 import com.dohman.holdempucker.util.Constants.Companion.areTeamsReadyToStartPeriod
 import com.dohman.holdempucker.util.Constants.Companion.isOngoingGame
+import com.dohman.holdempucker.util.Constants.Companion.period
 import com.dohman.holdempucker.util.Constants.Companion.restoringPlayers
 import com.dohman.holdempucker.util.Constants.Companion.teamBottom
 import com.dohman.holdempucker.util.Constants.Companion.teamBottomScore
@@ -72,7 +73,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         val amountOfNulls = team.filter { it == null }.size
         if ((amountOfNulls + 4) > cardDeck.size) { // 4 is the minimum amount to score an goal
             halfTime()
-            notifyMessage("Not enough cards. New period started.", isNeutralMessage = true)
+            if (period < 3) notifyMessage("Not enough cards. Period $period started.", isNeutralMessage = true)
             return false
         }
 

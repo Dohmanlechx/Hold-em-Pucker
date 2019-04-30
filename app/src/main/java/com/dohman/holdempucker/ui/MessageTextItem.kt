@@ -30,11 +30,12 @@ class MessageTextItem(
                 }
             )
         )
-        holder.itemView.txt_message.text = message
-//        holder.itemView.txt_message.apply {
-//            setCharacterDelay(30) // Setter, custom speed
-//            animateText(message)
-//        }
+//        holder.itemView.txt_message.text = message
+
+        holder.itemView.txt_message.apply {
+            setCharacterDelay(20) // Setter, custom speed
+            animateText(message)
+        }
     }
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
