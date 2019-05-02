@@ -73,7 +73,6 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         val amountOfNulls = team.filter { it == null }.size
         if ((amountOfNulls + 4) > cardDeck.size) { // 4 is the minimum amount to score an goal
             halfTime()
-            if (period < 3) notifyMessage("Not enough cards. Period $period started.", isNeutralMessage = true)
             return false
         }
 
@@ -163,6 +162,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
             teamTop[index] = null
         }
         halfTimeNotifier.value = 1
+        if (period <= 3) notifyMessage("Not enough\ncards.\nPeriod $period\nstarted.", isNeutralMessage = true)
         isOngoingGame = false
         areTeamsReadyToStartPeriod = false
     }

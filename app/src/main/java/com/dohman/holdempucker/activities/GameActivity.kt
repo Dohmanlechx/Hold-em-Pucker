@@ -373,7 +373,7 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
                 teamTop,
                 { vm.notifyToggleTurn() },
                 { restoreFlipViewPosition() },
-                { addGoalieView(bottom = false, doNotFlip = true) },
+                { addGoalieView(bottom = false, doNotFlip = true/*, doRemoveCardFromDeck = true*/) },
                 { message -> vm.notifyMessage(message) }
             ).start()
 
@@ -397,7 +397,7 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
                 teamBottom,
                 { vm.notifyToggleTurn() },
                 { restoreFlipViewPosition() },
-                { addGoalieView(bottom = true, doNotFlip = true) },
+                { addGoalieView(bottom = true, doNotFlip = true/*, doRemoveCardFromDeck = true*/) },
                 { message -> vm.notifyMessage(message) }
             ).start()
         }

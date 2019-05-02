@@ -108,9 +108,9 @@ object AnimationUtil {
             doOnEnd {
                 flipView.flipTheView()
                 if (isBadCard) fIsBadCard.invoke()
-                fSetOnClickListeners.invoke()
                 if (!isOngoingGame && !doNotShowMessage && !justShotAtGoalie) fNotifyMessage.invoke("Please\nchoose a\nposition\nto add\nyour card.")
                 if (justShotAtGoalie) justShotAtGoalie = false
+                fSetOnClickListeners.invoke()
                 isAnimationRunning = false
             }
 
@@ -288,11 +288,6 @@ object AnimationUtil {
                         val victimOutAni = objAnimator(targetView, View.TRANSLATION_X, 2000f)
 
                         AnimatorSet().apply {
-                            startDelay = 500
-                            interpolator = AnticipateInterpolator(1.5f)
-                            duration = 500
-                            playTogether(attackerOutAni, victimOutAni)
-
                             doOnEnd {
                                 onGoalieActionEnd(targetView, isGoal = false)
                                 victimTeam[5] = null
@@ -301,6 +296,11 @@ object AnimationUtil {
                                 fRestoreFlipViews.invoke()
                                 fAddNewGoalie.invoke()
                             }
+
+                            startDelay = 500
+                            interpolator = AnticipateInterpolator(1.5f)
+                            duration = 500
+                            playTogether(attackerOutAni, victimOutAni)
 
                             start()
                         }
@@ -429,7 +429,7 @@ object AnimationUtil {
                 isAnimationRunning = false
             }
 
-            startDelay = 1500
+            startDelay = 1250
             duration = 750
             interpolator = AnticipateInterpolator(1.25f)
         }
