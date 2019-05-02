@@ -16,6 +16,7 @@ class Constants {
         var isOngoingGame = false // Set to true when all cards are laid out
         var restoringPlayers = false // Set to true when a team need to lay out new cards to fulfill
         var areTeamsReadyToStartPeriod = false // Set to true as soon as both teams are full in the very beginning
+        var justShotAtGoalie = false // To prevent duplicate message
 
         // Objects
         val teamTop = arrayOfNulls<Card>(6)

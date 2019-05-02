@@ -19,6 +19,7 @@ import com.dohman.holdempucker.util.Constants
 import com.dohman.holdempucker.util.Constants.Companion.teamBottomViews
 import com.dohman.holdempucker.util.Constants.Companion.isAnimationRunning
 import com.dohman.holdempucker.util.Constants.Companion.isOngoingGame
+import com.dohman.holdempucker.util.Constants.Companion.justShotAtGoalie
 import com.dohman.holdempucker.util.Constants.Companion.period
 import com.dohman.holdempucker.util.Constants.Companion.teamBottom
 import com.dohman.holdempucker.util.Constants.Companion.teamBottomScore
@@ -179,7 +180,7 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
     private fun flipNewCard(resId: Int, isBadCard: Boolean = false) {
         vm.setImagesOnFlipView(flip_view, card_deck, card_picked, resId, null, isVertical = true)
 
-        AnimationUtil.flipPlayingCard(flip_view, cards_left, isBadCard, {
+        AnimationUtil.flipPlayingCard(flip_view, cards_left, isBadCard, vm.cardDeck.size > 50, {
             // If it is bad card, this runs
             AnimationUtil.badCardOutAnimation(
                 flip_view,
@@ -280,6 +281,8 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
     private fun attackPlayer(victimTeam: Array<Card?>, spotIndex: Int, victimView: AppCompatImageView) {
         if (spotIndex == 5) {
             // Attacking goalie
+            justShotAtGoalie = true
+
             if (vm.canAttack(victimTeam, spotIndex, victimView)) {
                 removeAllOnClickListeners()
                 AnimationUtil.stopAllPulsingCardAnimations()
@@ -345,6 +348,8 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
     private fun prepareGoalieSaved(victimView: AppCompatImageView) {
         removeAllOnClickListeners()
         AnimationUtil.stopAllPulsingCardAnimations()
+
+        justShotAtGoalie = true
 
         notifyMessageAttackingGoalie()
 

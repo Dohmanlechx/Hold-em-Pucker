@@ -20,6 +20,7 @@ import com.dohman.holdempucker.cards.Card
 import com.dohman.holdempucker.util.Constants.Companion.TAG_GAMEACTIVITY
 import com.dohman.holdempucker.util.Constants.Companion.isAnimationRunning
 import com.dohman.holdempucker.util.Constants.Companion.isOngoingGame
+import com.dohman.holdempucker.util.Constants.Companion.justShotAtGoalie
 import com.dohman.holdempucker.util.Constants.Companion.possibleMovesIndexes
 import com.dohman.holdempucker.util.Constants.Companion.restoringPlayers
 import com.dohman.holdempucker.util.Constants.Companion.teamBottomScore
@@ -88,6 +89,7 @@ object AnimationUtil {
         flipView: EasyFlipView,
         cardsLeftText: AppCompatTextView,
         isBadCard: Boolean,
+        doNotShowMessage: Boolean = false,
         fIsBadCard: () -> Unit,
         fSetOnClickListeners: () -> Unit,
         fNotifyMessage: (message: String) -> Unit
@@ -107,7 +109,8 @@ object AnimationUtil {
                 flipView.flipTheView()
                 if (isBadCard) fIsBadCard.invoke()
                 fSetOnClickListeners.invoke()
-                if (!isOngoingGame) fNotifyMessage.invoke("Please\nchoose a\nposition\nto add\nyour card.")
+                if (!isOngoingGame && !doNotShowMessage && !justShotAtGoalie) fNotifyMessage.invoke("Please\nchoose a\nposition\nto add\nyour card.")
+                if (justShotAtGoalie) justShotAtGoalie = false
                 isAnimationRunning = false
             }
 

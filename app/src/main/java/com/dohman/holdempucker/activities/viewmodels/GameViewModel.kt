@@ -27,7 +27,7 @@ import com.dohman.holdempucker.util.GameLogic
 import com.wajahatkarim3.easyflipview.EasyFlipView
 
 class GameViewModel(application: Application) : AndroidViewModel(application) {
-    private var cardDeck = CardDeck().cardDeck
+    var cardDeck = CardDeck().cardDeck
     var firstCardInDeck: Card = cardDeck.first()
 
     val messageNotifier = MutableLiveData<Pair<String, Boolean>>()
