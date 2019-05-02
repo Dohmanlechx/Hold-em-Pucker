@@ -5,119 +5,262 @@
     android:id="@+id/board_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/background"
+    android:background="@color/white"
     tools:context=".activities.GameActivity">
+
+    <!-- GUIDELINES -->
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_vertical_30"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintGuide_percent="0.3"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_vertical_40"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintGuide_percent="0.4"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_vertical_50"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintGuide_percent="0.5"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_vertical_60"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintGuide_percent="0.6"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_vertical_70"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintGuide_percent="0.7"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_vertical_80"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintGuide_percent="0.8"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_vertical_90"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintGuide_percent="0.9"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_horizontal_15"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintGuide_percent="0.15"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_horizontal_325"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintGuide_percent="0.325"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_horizontal_50"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintGuide_percent="0.5"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_horizontal_675"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintGuide_percent="0.675"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_horizontal_85"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintGuide_percent="0.85"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <!-- BACKGROUND PLACEHOLDERS -->
 
     <androidx.appcompat.widget.AppCompatImageView
-        android:layout_width="70dp"
-        android:layout_height="110dp"
-        android:layout_marginTop="8dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="6dp"
         android:background="@drawable/card_background_btm"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/flip_view"
-        app:layout_constraintTop_toBottomOf="@id/guideline_horizontal" />
+        app:layout_constraintBottom_toTopOf="@id/guideline_horizontal_675"
+        app:layout_constraintEnd_toEndOf="@id/guideline_vertical_70"
+        app:layout_constraintStart_toEndOf="@id/guideline_vertical_50"
+        app:layout_constraintTop_toBottomOf="@id/guideline_horizontal_50" />
 
     <androidx.appcompat.widget.AppCompatImageView
-        android:layout_width="70dp"
-        android:layout_height="110dp"
-        android:layout_marginEnd="10dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="6dp"
         android:background="@drawable/card_background_btm"
-        app:layout_constraintEnd_toStartOf="@id/card_bm_center"
-        app:layout_constraintTop_toTopOf="@id/card_bm_center" />
+        app:layout_constraintBottom_toTopOf="@id/guideline_horizontal_675"
+        app:layout_constraintEnd_toStartOf="@id/guideline_vertical_50"
+        app:layout_constraintStart_toEndOf="@id/guideline_vertical_30"
+        app:layout_constraintTop_toTopOf="@id/guideline_horizontal_50" />
 
     <androidx.appcompat.widget.AppCompatImageView
-        android:layout_width="70dp"
-        android:layout_height="110dp"
-        android:layout_marginStart="10dp"
-        android:layout_marginEnd="10dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="6dp"
         android:background="@drawable/card_background_btm"
-        app:layout_constraintStart_toEndOf="@id/card_bm_center"
-        app:layout_constraintTop_toTopOf="@id/card_bm_center" />
+        app:layout_constraintBottom_toTopOf="@id/guideline_horizontal_675"
+        app:layout_constraintEnd_toStartOf="@id/guideline_vertical_90"
+        app:layout_constraintStart_toEndOf="@id/guideline_vertical_70"
+        app:layout_constraintTop_toBottomOf="@id/guideline_horizontal_50" />
 
     <androidx.appcompat.widget.AppCompatImageView
-        android:layout_width="70dp"
-        android:layout_height="110dp"
-        android:layout_marginTop="12dp"
-        android:layout_marginEnd="5dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="6dp"
         android:background="@drawable/card_background_btm"
-        app:layout_constraintEnd_toEndOf="@id/guideline_vertical"
-        app:layout_constraintTop_toBottomOf="@id/card_bm_center" />
+        app:layout_constraintBottom_toTopOf="@id/guideline_horizontal_85"
+        app:layout_constraintEnd_toStartOf="@id/guideline_vertical_60"
+        app:layout_constraintStart_toEndOf="@id/guideline_vertical_40"
+        app:layout_constraintTop_toBottomOf="@id/guideline_horizontal_675" />
 
     <androidx.appcompat.widget.AppCompatImageView
-        android:layout_width="70dp"
-        android:layout_height="110dp"
-        android:layout_marginStart="5dp"
-        android:layout_marginTop="12dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="6dp"
         android:background="@drawable/card_background_btm"
-        app:layout_constraintStart_toEndOf="@id/guideline_vertical"
-        app:layout_constraintTop_toBottomOf="@id/card_bm_center" />
+        app:layout_constraintBottom_toTopOf="@id/guideline_horizontal_85"
+        app:layout_constraintEnd_toStartOf="@id/guideline_vertical_80"
+        app:layout_constraintStart_toEndOf="@id/guideline_vertical_60"
+        app:layout_constraintTop_toBottomOf="@id/guideline_horizontal_675" />
 
     <androidx.appcompat.widget.AppCompatImageView
-        android:layout_width="110dp"
-        android:layout_height="70dp"
-        android:layout_marginStart="5dp"
-        android:layout_marginTop="12dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="6dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginBottom="32dp"
         android:background="@drawable/card_background_btm"
-        app:layout_constraintEnd_toEndOf="@id/card_bm_defender_right"
-        app:layout_constraintStart_toStartOf="@id/card_bm_defender_left"
-        app:layout_constraintTop_toBottomOf="@id/card_bm_defender_left" />
+        android:minHeight="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/guideline_vertical_80"
+        app:layout_constraintStart_toEndOf="@id/guideline_vertical_40"
+        app:layout_constraintTop_toBottomOf="@id/guideline_horizontal_85" />
 
     <!-- TEAM TOP -->
 
     <androidx.appcompat.widget.AppCompatImageView
-        android:layout_width="70dp"
-        android:layout_height="110dp"
-        android:layout_marginBottom="8dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="6dp"
         android:background="@drawable/card_background_top"
-        app:layout_constraintBottom_toBottomOf="@id/guideline_horizontal"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/flip_view"
-        app:layout_constraintVertical_bias="0.38" />
+        app:layout_constraintBottom_toTopOf="@id/guideline_horizontal_50"
+        app:layout_constraintEnd_toStartOf="@id/guideline_vertical_70"
+        app:layout_constraintStart_toEndOf="@id/guideline_vertical_50"
+        app:layout_constraintTop_toBottomOf="@id/guideline_horizontal_325" />
 
     <androidx.appcompat.widget.AppCompatImageView
-        android:layout_width="70dp"
-        android:layout_height="110dp"
-        android:layout_marginStart="10dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="6dp"
         android:background="@drawable/card_background_top"
-        app:layout_constraintBottom_toBottomOf="@id/card_top_center"
-        app:layout_constraintStart_toEndOf="@id/card_top_center" />
+        app:layout_constraintBottom_toTopOf="@id/guideline_horizontal_50"
+        app:layout_constraintEnd_toEndOf="@id/guideline_vertical_90"
+        app:layout_constraintStart_toEndOf="@id/guideline_vertical_70"
+        app:layout_constraintTop_toBottomOf="@id/guideline_horizontal_325" />
 
     <androidx.appcompat.widget.AppCompatImageView
-        android:layout_width="70dp"
-        android:layout_height="110dp"
-        android:layout_marginEnd="10dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="6dp"
         android:background="@drawable/card_background_top"
-        app:layout_constraintBottom_toBottomOf="@id/card_top_center"
-        app:layout_constraintEnd_toStartOf="@id/card_top_center" />
+        app:layout_constraintBottom_toTopOf="@id/guideline_horizontal_50"
+        app:layout_constraintEnd_toStartOf="@id/guideline_vertical_50"
+        app:layout_constraintStart_toEndOf="@id/guideline_vertical_30"
+        app:layout_constraintTop_toBottomOf="@id/guideline_horizontal_325" />
 
     <androidx.appcompat.widget.AppCompatImageView
-        android:layout_width="70dp"
-        android:layout_height="110dp"
-        android:layout_marginStart="5dp"
-        android:layout_marginBottom="12dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="6dp"
         android:background="@drawable/card_background_top"
-        app:layout_constraintBottom_toTopOf="@id/card_top_center"
-        app:layout_constraintStart_toEndOf="@id/guideline_vertical" />
+        app:layout_constraintBottom_toTopOf="@id/guideline_horizontal_325"
+        app:layout_constraintEnd_toStartOf="@id/guideline_vertical_80"
+        app:layout_constraintStart_toEndOf="@id/guideline_vertical_60"
+        app:layout_constraintTop_toBottomOf="@id/guideline_horizontal_15" />
 
     <androidx.appcompat.widget.AppCompatImageView
-        android:layout_width="70dp"
-        android:layout_height="110dp"
-        android:layout_marginEnd="5dp"
-        android:layout_marginBottom="12dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="6dp"
         android:background="@drawable/card_background_top"
-        app:layout_constraintBottom_toTopOf="@id/card_top_center"
-        app:layout_constraintEnd_toStartOf="@id/guideline_vertical" />
+        app:layout_constraintBottom_toTopOf="@id/guideline_horizontal_325"
+        app:layout_constraintEnd_toStartOf="@id/guideline_vertical_60"
+        app:layout_constraintStart_toEndOf="@id/guideline_vertical_40"
+        app:layout_constraintTop_toBottomOf="@id/guideline_horizontal_15" />
 
     <androidx.appcompat.widget.AppCompatImageView
-        android:layout_width="110dp"
-        android:layout_height="70dp"
-        android:layout_marginBottom="12dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginBottom="6dp"
         android:background="@drawable/card_background_top"
-        app:layout_constraintBottom_toTopOf="@id/card_top_defender_left"
-        app:layout_constraintEnd_toEndOf="@id/card_top_defender_left"
-        app:layout_constraintStart_toStartOf="@id/card_top_defender_right" />
+        android:minHeight="8dp"
+        app:layout_constraintBottom_toTopOf="@id/guideline_horizontal_15"
+        app:layout_constraintEnd_toEndOf="@id/guideline_vertical_80"
+        app:layout_constraintStart_toEndOf="@id/guideline_vertical_40"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <!-- END OF PLACEHOLDERS -->
 
@@ -143,9 +286,9 @@
         android:layout_marginStart="16dp"
         android:scaleType="fitXY"
         android:src="@drawable/red_back_vertical"
-        app:layout_constraintBottom_toBottomOf="@id/guideline_horizontal"
+        app:layout_constraintBottom_toBottomOf="@id/guideline_horizontal_50"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/guideline_horizontal" />
+        app:layout_constraintTop_toTopOf="@id/guideline_horizontal_50" />
 
     <com.wajahatkarim3.easyflipview.EasyFlipView
         android:id="@+id/flip_view"
@@ -156,9 +299,9 @@
         app:flipFrom="right"
         app:flipOnTouch="false"
         app:flipType="horizontal"
-        app:layout_constraintBottom_toBottomOf="@id/guideline_horizontal"
+        app:layout_constraintBottom_toBottomOf="@id/guideline_horizontal_50"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/guideline_horizontal">
+        app:layout_constraintTop_toTopOf="@id/guideline_horizontal_50">
 
         <!-- BACK -->
         <androidx.appcompat.widget.AppCompatImageView
@@ -175,26 +318,6 @@
             android:scaleType="fitXY" />
 
     </com.wajahatkarim3.easyflipview.EasyFlipView>
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline_vertical"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:visibility="visible"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintGuide_percent="0.60"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline_horizontal"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:visibility="visible"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintGuide_percent="0.5"
-        app:layout_constraintStart_toStartOf="parent" />
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/top_team_score"
@@ -232,7 +355,7 @@
         android:scaleType="fitXY"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/flip_view"
-        app:layout_constraintTop_toBottomOf="@id/guideline_horizontal" />
+        app:layout_constraintTop_toBottomOf="@id/guideline_horizontal_50" />
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/card_bm_forward_left"
@@ -260,7 +383,7 @@
         android:layout_marginTop="12dp"
         android:layout_marginEnd="5dp"
         android:scaleType="fitXY"
-        app:layout_constraintEnd_toEndOf="@id/guideline_vertical"
+        app:layout_constraintEnd_toEndOf="@id/guideline_vertical_50"
         app:layout_constraintTop_toBottomOf="@id/card_bm_center" />
 
     <androidx.appcompat.widget.AppCompatImageView
@@ -270,7 +393,7 @@
         android:layout_marginStart="5dp"
         android:layout_marginTop="12dp"
         android:scaleType="fitXY"
-        app:layout_constraintStart_toEndOf="@id/guideline_vertical"
+        app:layout_constraintStart_toEndOf="@id/guideline_vertical_50"
         app:layout_constraintTop_toBottomOf="@id/card_bm_center" />
 
     <androidx.appcompat.widget.AppCompatImageView
@@ -322,7 +445,7 @@
         android:layout_height="110dp"
         android:layout_marginBottom="8dp"
         android:scaleType="fitXY"
-        app:layout_constraintBottom_toBottomOf="@id/guideline_horizontal"
+        app:layout_constraintBottom_toBottomOf="@id/guideline_horizontal_50"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/flip_view"
         app:layout_constraintVertical_bias="0.38" />
@@ -353,7 +476,7 @@
         android:layout_marginBottom="12dp"
         android:scaleType="fitXY"
         app:layout_constraintBottom_toTopOf="@id/card_top_center"
-        app:layout_constraintStart_toEndOf="@id/guideline_vertical" />
+        app:layout_constraintStart_toEndOf="@id/guideline_vertical_50" />
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/card_top_defender_right"
@@ -363,7 +486,7 @@
         android:layout_marginBottom="12dp"
         android:scaleType="fitXY"
         app:layout_constraintBottom_toTopOf="@id/card_top_center"
-        app:layout_constraintEnd_toStartOf="@id/guideline_vertical" />
+        app:layout_constraintEnd_toStartOf="@id/guideline_vertical_50" />
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/card_top_goalie"
@@ -411,9 +534,9 @@
         android:layout_marginEnd="8dp"
         android:adjustViewBounds="true"
         android:src="@drawable/puck"
-        app:layout_constraintBottom_toTopOf="@id/guideline_horizontal"
+        app:layout_constraintBottom_toTopOf="@id/guideline_horizontal_50"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/guideline_horizontal" />
+        app:layout_constraintTop_toBottomOf="@id/guideline_horizontal_50" />
 
 
     <!-- RECYCLER VIEW -->
