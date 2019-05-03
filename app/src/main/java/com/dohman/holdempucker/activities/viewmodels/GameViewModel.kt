@@ -140,6 +140,22 @@ class GameViewModel : ViewModel() {
         return Bitmap.createBitmap(scaledBitmap, 0, 0, scaledBitmap.width, scaledBitmap.height, matrix, true)
     }
 
+    fun notifyMessageAttackingGoalie() {
+        firstCardInDeck.let {
+            val rankInterpreted = when (it.rank) {
+                11 -> "Jack"
+                12 -> "Queen"
+                13 -> "King"
+                14 -> "Ace"
+                else -> it.rank.toString()
+            }
+
+            notifyMessage(
+                "${it.suit.toString().toLowerCase().capitalize()} $rankInterpreted\nattacks the\ngoalie..."
+            )
+        }
+    }
+
     /*
     * Game management functions
     * */

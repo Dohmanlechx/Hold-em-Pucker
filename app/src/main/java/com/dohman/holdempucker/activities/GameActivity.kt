@@ -20,6 +20,7 @@ import com.dohman.holdempucker.util.Constants.Companion.teamBottomViews
 import com.dohman.holdempucker.util.Constants.Companion.isAnimationRunning
 import com.dohman.holdempucker.util.Constants.Companion.isOngoingGame
 import com.dohman.holdempucker.util.Constants.Companion.justShotAtGoalie
+import com.dohman.holdempucker.util.Constants.Companion.mikePenzPositions
 import com.dohman.holdempucker.util.Constants.Companion.period
 import com.dohman.holdempucker.util.Constants.Companion.teamBottom
 import com.dohman.holdempucker.util.Constants.Companion.teamBottomScore
@@ -54,6 +55,7 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
         setContentView(R.layout.activity_game)
         vm = ViewModelProviders.of(this).get(GameViewModel::class.java)
 
+        // Observables
         vm.messageNotifier.observe(this, Observer { updateMessageBox(it.first, it.second) })
         vm.halfTimeNotifier.observe(this, Observer {
             if (isNextPeriodReady(it)) addGoalieView(true, withStartDelay = true)
@@ -67,6 +69,7 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
                 flipNewCard(vm.resIdOfCard(vm.firstCardInDeck), isBadCard = true)
                 vm.notifyMessage("Aw, too\nweak card!\nIt goes\nout!")
             })
+        // End of Observables
 
         vm.updateScores(top_team_score, bm_team_score)
 
@@ -168,10 +171,22 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun updateMessageBox(message: String, isNeutralMessage: Boolean = false) {
-        //itemAdapter.clear()
-
-        if (!isNeutralMessage) itemAdapter.add(MessageTextItem(message, whoseTurn == Constants.WhoseTurn.TOP))
-        else itemAdapter.add(MessageTextItem(message, isNeutralMessage = true))
+        if (!isNeutralMessage) itemAdapter.add(
+            MessageTextItem(
+                message,
+                mikePenzPositions,
+                { pos -> mikePenzPositions.add(pos) },
+                whoseTurn == Constants.WhoseTurn.TOP
+            )
+        )
+        else itemAdapter.add(
+            MessageTextItem(
+                message,
+                mikePenzPositions,
+                { pos -> mikePenzPositions.add(pos) },
+                isNeutralMessage = true
+            )
+        )
 
         v_recycler.adapter?.itemCount?.minus(1)?.let { v_recycler.smoothScrollToPosition(it) }
     }
@@ -282,7 +297,7 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
         }
     }
 
-    private fun attackPlayer(victimTeam: Array<Card?>, spotIndex: Int, victimView: AppCompatImageView) {
+    private fun prepareAttackPlayer(victimTeam: Array<Card?>, spotIndex: Int, victimView: AppCompatImageView) {
         if (spotIndex == 5) {
             // Attacking goalie
             justShotAtGoalie = true
@@ -291,7 +306,7 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
                 removeAllOnClickListeners()
                 Animations.stopAllPulsingCardAnimations()
 
-                notifyMessageAttackingGoalie()
+                vm.notifyMessageAttackingGoalie()
 
                 if (whoseTurn == Constants.WhoseTurn.BOTTOM) {
                     vm.setImagesOnFlipView(
@@ -355,7 +370,7 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
 
         justShotAtGoalie = true
 
-        notifyMessageAttackingGoalie()
+        vm.notifyMessageAttackingGoalie()
 
         if (whoseTurn == Constants.WhoseTurn.BOTTOM) {
             vm.setImagesOnFlipView(
@@ -404,22 +419,6 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
                 { addGoalieView(bottom = true, doNotFlip = true, doRemoveCardFromDeck = true) },
                 { message -> vm.notifyMessage(message) }
             ).start()
-        }
-    }
-
-    private fun notifyMessageAttackingGoalie() {
-        vm.firstCardInDeck.let {
-            val rankInterpreted = when (it.rank) {
-                11 -> "Jack"
-                12 -> "Queen"
-                13 -> "King"
-                14 -> "Ace"
-                else -> it.rank.toString()
-            }
-
-            vm.notifyMessage(
-                "${it.suit.toString().toLowerCase().capitalize()} $rankInterpreted\nattacks the\ngoalie..."
-            )
         }
     }
 
@@ -487,26 +486,30 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
             if (whoseTurn == Constants.WhoseTurn.BOTTOM) {
                 when (v.id) {
                     R.id.card_top_forward_left -> {
-                        attackPlayer(teamTop, 0, card_top_forward_left)
+                        prepareAttackPlayer(teamTop, 0, card_top_forward_left)
                     }
                     R.id.card_top_center -> {
-                        attackPlayer(teamTop, 1, card_top_center)
+                        prepareAttackPlayer(teamTop, 1, card_top_center)
                     }
                     R.id.card_top_forward_right -> {
-                        attackPlayer(teamTop, 2, card_top_forward_right)
+                        prepareAttackPlayer(teamTop, 2, card_top_forward_right)
                     }
                     R.id.card_top_defender_left -> {
                         if (vm.areEnoughForwardsOut(teamTop, 3))
-                            attackPlayer(teamTop, 3, card_top_defender_left)
+                            prepareAttackPlayer(teamTop, 3, card_top_defender_left)
                     }
                     R.id.card_top_defender_right -> {
                         if (vm.areEnoughForwardsOut(teamTop, 4))
-                            attackPlayer(teamTop, 4, card_top_defender_right)
+                            prepareAttackPlayer(teamTop, 4, card_top_defender_right)
                     }
                     R.id.card_top_goalie -> {
                         if (vm.isAtLeastOneDefenderOut(teamTop)) {
                             tempGoalieCard = teamTop[5]
-                            if (vm.canAttack(teamTop, 5, card_top_goalie)) attackPlayer(teamTop, 5, card_top_goalie)
+                            if (vm.canAttack(teamTop, 5, card_top_goalie)) prepareAttackPlayer(
+                                teamTop,
+                                5,
+                                card_top_goalie
+                            )
                             else prepareGoalieSaved(card_top_goalie)
                         }
                     }
@@ -514,26 +517,30 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
             } else {
                 when (v.id) {
                     R.id.card_bm_forward_left -> {
-                        attackPlayer(teamBottom, 0, card_bm_forward_left)
+                        prepareAttackPlayer(teamBottom, 0, card_bm_forward_left)
                     }
                     R.id.card_bm_center -> {
-                        attackPlayer(teamBottom, 1, card_bm_center)
+                        prepareAttackPlayer(teamBottom, 1, card_bm_center)
                     }
                     R.id.card_bm_forward_right -> {
-                        attackPlayer(teamBottom, 2, card_bm_forward_right)
+                        prepareAttackPlayer(teamBottom, 2, card_bm_forward_right)
                     }
                     R.id.card_bm_defender_left -> {
                         if (vm.areEnoughForwardsOut(teamBottom, 3))
-                            attackPlayer(teamBottom, 3, card_bm_defender_left)
+                            prepareAttackPlayer(teamBottom, 3, card_bm_defender_left)
                     }
                     R.id.card_bm_defender_right -> {
                         if (vm.areEnoughForwardsOut(teamBottom, 4))
-                            attackPlayer(teamBottom, 4, card_bm_defender_right)
+                            prepareAttackPlayer(teamBottom, 4, card_bm_defender_right)
                     }
                     R.id.card_bm_goalie -> {
                         if (vm.isAtLeastOneDefenderOut(teamBottom)) {
                             tempGoalieCard = teamBottom[5]
-                            if (vm.canAttack(teamBottom, 5, card_bm_goalie)) attackPlayer(teamBottom, 5, card_bm_goalie)
+                            if (vm.canAttack(teamBottom, 5, card_bm_goalie)) prepareAttackPlayer(
+                                teamBottom,
+                                5,
+                                card_bm_goalie
+                            )
                             else prepareGoalieSaved(card_bm_goalie)
                         }
                     }

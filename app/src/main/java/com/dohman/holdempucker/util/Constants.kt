@@ -30,7 +30,10 @@ class Constants {
         var period = 1
         var teamTopScore = 0
         var teamBottomScore = 0
+
+        // Lists
         var possibleMovesIndexes = mutableListOf<Int>() // For the pulse animations
+        var mikePenzPositions = mutableListOf<Int>() // For the MikePenz adapter
 
         // Whose turn
         var whoseTurn = WhoseTurn.TOP

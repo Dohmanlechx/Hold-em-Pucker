@@ -10,6 +10,8 @@ import kotlinx.android.synthetic.main.message_box_item.view.*
 
 class MessageTextItem(
     private val message: String,
+    private val positionsList: List<Int>,
+    private val fAddPositionToList: (Int) -> Unit,
     private val isTeamTop: Boolean = false,
     private val isNeutralMessage: Boolean = false
 ) : AbstractItem<MessageTextItem, MessageTextItem.ViewHolder>() {
@@ -30,11 +32,15 @@ class MessageTextItem(
                 }
             )
         )
-//        holder.itemView.txt_message.text = message
 
-        holder.itemView.txt_message.apply {
-            setCharacterDelay(20) // Setter, custom speed
-            animateText(message)
+        if (positionsList.any { it == holder.adapterPosition }) {
+            holder.itemView.txt_message.text = message
+        } else {
+            fAddPositionToList.invoke(holder.adapterPosition)
+            holder.itemView.txt_message.apply {
+                setCharacterDelay(20) // Setter, custom speed
+                animateText(message)
+            }
         }
     }
 
