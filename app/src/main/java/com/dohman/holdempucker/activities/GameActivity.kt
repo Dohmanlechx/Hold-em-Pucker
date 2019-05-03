@@ -6,7 +6,6 @@ import android.view.View
 import android.view.WindowManager
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.core.animation.doOnEnd
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearSnapHelper
@@ -15,7 +14,7 @@ import com.dohman.holdempucker.R
 import com.dohman.holdempucker.cards.Card
 import com.dohman.holdempucker.ui.MessageTextItem
 import com.dohman.holdempucker.ui.overrides.SpeedyLinearLayoutManager
-import com.dohman.holdempucker.util.AnimationUtil
+import com.dohman.holdempucker.util.Animations
 import com.dohman.holdempucker.util.Constants
 import com.dohman.holdempucker.util.Constants.Companion.teamBottomViews
 import com.dohman.holdempucker.util.Constants.Companion.isAnimationRunning
@@ -33,7 +32,6 @@ import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.items.AbstractItem
 import kotlinx.android.synthetic.main.activity_game.*
-import kotlinx.android.synthetic.main.message_box_item.*
 
 class GameActivity : AppCompatActivity(), View.OnClickListener {
     private lateinit var vm: GameViewModel
@@ -60,7 +58,7 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
         vm.halfTimeNotifier.observe(this, Observer {
             if (isNextPeriodReady(it)) addGoalieView(true, withStartDelay = true)
         })
-        vm.whoseTurnNotifier.observe(this, Observer { AnimationUtil.togglePuckAnimation(puck, it)?.start() })
+        vm.whoseTurnNotifier.observe(this, Observer { Animations.togglePuckAnimation(puck, it)?.start() })
         vm.pickedCardNotifier.observe(this, Observer { flipNewCard(it) })
         vm.cardsCountNotifier.observe(this, Observer { cards_left.text = it.toString() })
         vm.badCardNotifier.observe(
@@ -91,7 +89,7 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
         }
 
         computer_lamp.post {
-            AnimationUtil.startLampAnimation(computer_lamp)
+            Animations.startLampAnimation(computer_lamp)
         }
 
         setupMessageRecycler()
@@ -185,9 +183,9 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
     private fun flipNewCard(resId: Int, isBadCard: Boolean = false) {
         vm.setImagesOnFlipView(flip_view, card_deck, card_picked, resId, null, isVertical = true)
 
-        AnimationUtil.flipPlayingCard(flip_view, cards_left, isBadCard, vm.cardDeck.size > 50, {
+        Animations.flipPlayingCard(flip_view, cards_left, isBadCard, vm.cardDeck.size > 50, {
             // If it is bad card, this runs
-            AnimationUtil.badCardOutAnimation(
+            Animations.badCardOutAnimation(
                 flip_view,
                 { vm.firstCardInDeck },
                 { vm.notifyToggleTurn() },
@@ -216,7 +214,7 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
         card_deck.setImageResource(R.drawable.red_back_vertical)
         card_picked.setImageResource(R.drawable.red_back_vertical)
 
-        AnimationUtil.addGoalieAnimation(
+        Animations.addGoalieAnimation(
             flipView = flip_view,
             goalieView = view,
             flipViewOriginalX = flipViewOriginalX - 60f,
@@ -241,7 +239,7 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
 
     private fun animateAddPlayer(targetView: AppCompatImageView, team: Array<Card?>, spotIndex: Int) {
         removeAllOnClickListeners()
-        AnimationUtil.addPlayerAnimation(
+        Animations.addPlayerAnimation(
             flipView = flip_view,
             targetView = targetView
         ).apply {
@@ -258,17 +256,17 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
 
     private fun animateAttack(targetView: AppCompatImageView) {
         removeAllOnClickListeners()
-        AnimationUtil.stopAllPulsingCardAnimations()
+        Animations.stopAllPulsingCardAnimations()
 
         val victimX = targetView.x
         val victimY = targetView.y
 
-        AnimationUtil.attackAnimation(flipView = flip_view, targetView = targetView, isAttacking = true).apply {
+        Animations.attackAnimation(flipView = flip_view, targetView = targetView, isAttacking = true).apply {
             doOnEnd {
                 targetView.bringToFront()
                 flip_view.bringToFront()
 
-                AnimationUtil.attackAnimation(flipView = flip_view, targetView = targetView, isAttacking = false)
+                Animations.attackAnimation(flipView = flip_view, targetView = targetView, isAttacking = false)
                     .apply {
                         doOnEnd {
                             targetView.x = victimX
@@ -291,7 +289,7 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
 
             if (vm.canAttack(victimTeam, spotIndex, victimView)) {
                 removeAllOnClickListeners()
-                AnimationUtil.stopAllPulsingCardAnimations()
+                Animations.stopAllPulsingCardAnimations()
 
                 notifyMessageAttackingGoalie()
 
@@ -308,7 +306,7 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
                     victimView.setImageResource(android.R.color.transparent)
                     victimView.tag = Integer.valueOf(android.R.color.transparent)
 
-                    AnimationUtil.scoredAtGoalieAnimation(
+                    Animations.scoredAtGoalieAnimation(
                         flip_view,
                         flip_top_goalie,
                         tempGoalieCard,
@@ -332,7 +330,7 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
                     victimView.setImageResource(android.R.color.transparent)
                     victimView.tag = Integer.valueOf(android.R.color.transparent)
 
-                    AnimationUtil.scoredAtGoalieAnimation(
+                    Animations.scoredAtGoalieAnimation(
                         flip_view,
                         flip_btm_goalie,
                         tempGoalieCard,
@@ -353,7 +351,7 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
 
     private fun prepareGoalieSaved(victimView: AppCompatImageView) {
         removeAllOnClickListeners()
-        AnimationUtil.stopAllPulsingCardAnimations()
+        Animations.stopAllPulsingCardAnimations()
 
         justShotAtGoalie = true
 
@@ -372,7 +370,7 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
             victimView.setImageResource(android.R.color.transparent)
             victimView.tag = Integer.valueOf(android.R.color.transparent)
 
-            AnimationUtil.goalieSavedAnimation(
+            Animations.goalieSavedAnimation(
                 flip_view,
                 flip_top_goalie,
                 tempGoalieCard,
@@ -396,7 +394,7 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
             victimView.setImageResource(android.R.color.transparent)
             victimView.tag = Integer.valueOf(android.R.color.transparent)
 
-            AnimationUtil.goalieSavedAnimation(
+            Animations.goalieSavedAnimation(
                 flip_view,
                 flip_btm_goalie,
                 tempGoalieCard,

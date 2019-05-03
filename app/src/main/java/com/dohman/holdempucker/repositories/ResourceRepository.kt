@@ -1,6 +1,7 @@
 package com.dohman.holdempucker.repositories
 
 import android.app.Application
+import android.content.res.Resources
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -12,6 +13,6 @@ class ResourceRepository @Inject constructor(
     val context
         get() = this.application
 
-    val resources
+    val resources: Resources
         get() = this.application.resources
 }

@@ -10,10 +10,10 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.dohman.holdempucker.R
 import com.dohman.holdempucker.cards.Card
-import com.dohman.holdempucker.cards.CardDeck
 import com.dohman.holdempucker.dagger.RepositoryComponent
+import com.dohman.holdempucker.repositories.CardRepository
 import com.dohman.holdempucker.repositories.ResourceRepository
-import com.dohman.holdempucker.util.AnimationUtil
+import com.dohman.holdempucker.util.Animations
 import com.dohman.holdempucker.util.Constants
 import com.dohman.holdempucker.util.Constants.Companion.areTeamsReadyToStartPeriod
 import com.dohman.holdempucker.util.Constants.Companion.isOngoingGame
@@ -31,9 +31,11 @@ import javax.inject.Inject
 class GameViewModel : ViewModel() {
     @Inject
     lateinit var appRepo: ResourceRepository
+    @Inject
+    lateinit var cardRepo: CardRepository
 
-    var cardDeck = CardDeck().cardDeck
-    var firstCardInDeck: Card = cardDeck.first()
+    var cardDeck = mutableListOf<Card>()
+    var firstCardInDeck: Card
 
     val messageNotifier = MutableLiveData<Pair<String, Boolean>>()
     val halfTimeNotifier = MutableLiveData<Int>()
@@ -44,6 +46,9 @@ class GameViewModel : ViewModel() {
 
     init {
         RepositoryComponent.inject(this)
+
+        cardDeck = cardRepo.createCards() as MutableList<Card>
+        firstCardInDeck = cardDeck.first()
     }
 
     /*
@@ -160,7 +165,7 @@ class GameViewModel : ViewModel() {
                 whoseTurn,
                 firstCardInDeck
             )
-        ) AnimationUtil.startPulsingCardsAnimation { message -> notifyMessage(message) }
+        ) Animations.startPulsingCardsAnimation { message -> notifyMessage(message) }
     }
 
     fun triggerBadCard() {
@@ -168,12 +173,14 @@ class GameViewModel : ViewModel() {
     }
 
     private fun halfTime() {
-        cardDeck = CardDeck().cardDeck
+        cardDeck = cardRepo.createCards() as MutableList<Card>
         firstCardInDeck = cardDeck.first()
+
         for (index in 0..5) {
             teamBottom[index] = null
             teamTop[index] = null
         }
+
         halfTimeNotifier.value = 1
         if (period <= 3) notifyMessage("Not enough\ncards.\nPeriod $period\nstarted.", isNeutralMessage = true)
         isOngoingGame = false
