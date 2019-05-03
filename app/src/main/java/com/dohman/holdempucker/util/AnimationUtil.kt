@@ -259,18 +259,9 @@ object AnimationUtil {
                 // Victim goalie
                 targetView.flipTheView()
                 // Attacker
-                val jumpAni = objAnimator(flipView, View.Y, flipView.y - 100f).apply {
+                objAnimator(flipView, View.SCALE_X, 0.5f).apply {
                     startDelay = 1000
-                    duration = 300
-                    interpolator = LinearInterpolator()
-                }
-                val bounceAni = objAnimator(flipView, View.Y, flipView.y).apply {
-                    duration = 300
-                    interpolator = BounceInterpolator()
-                }
-
-                AnimatorSet().apply {
-                    playSequentially(jumpAni, bounceAni)
+                    duration = 500
 
                     doOnStart {
                         val rankInterpreted = when (tempGoalieCard?.rank) {
@@ -309,9 +300,89 @@ object AnimationUtil {
                     start()
                 }
             }
-
-            start()
         }
+
+
+
+
+
+//        val flipAniX = objAnimator(flipView, View.TRANSLATION_X, targetView.x - flipView.x - 150f)
+//        val flipAniY =
+//            if (whoseTurn == Constants.WhoseTurn.BOTTOM) objAnimator(
+//                flipView,
+//                View.TRANSLATION_Y,
+//                targetView.y - flipView.y
+//            )
+//            else objAnimator(
+//                flipView,
+//                View.TRANSLATION_Y,
+//                targetView.y - flipView.y - (targetView.height / 2)
+//            )
+//
+//        return AnimatorSet().apply {
+//            isAnimationRunning = true
+//            interpolator = LinearOutSlowInInterpolator()
+//            startDelay = 1500
+//            duration = 1000
+//            playTogether(flipAniX, flipAniY)
+//
+//            doOnEnd {
+//                // Victim goalie
+//                targetView.flipTheView()
+//                // Attacker
+//                val jumpAni = objAnimator(flipView, View.Y, flipView.y - 100f).apply {
+//                    startDelay = 1000
+//                    duration = 300
+//                    interpolator = LinearInterpolator()
+//                }
+//                val bounceAni = objAnimator(flipView, View.Y, flipView.y).apply {
+//                    duration = 300
+//                    interpolator = BounceInterpolator()
+//                }
+//
+//                AnimatorSet().apply {
+//                    playSequentially(jumpAni, bounceAni)
+//
+//                    doOnStart {
+//                        val rankInterpreted = when (tempGoalieCard?.rank) {
+//                            11 -> "Jack"
+//                            12 -> "Queen"
+//                            13 -> "King"
+//                            14 -> "Ace"
+//                            else -> tempGoalieCard?.rank.toString()
+//                        }
+//                        fNotifyMessage.invoke("... of\nrank $rankInterpreted\nand the\ngoalie\nSAVED!")
+//                    }
+//                    doOnEnd {
+//                        // Both
+//                        val attackerOutAni = objAnimator(flipView, View.TRANSLATION_X, 2000f)
+//                        val victimOutAni = objAnimator(targetView, View.TRANSLATION_X, 2000f)
+//
+//                        AnimatorSet().apply {
+//                            doOnEnd {
+//                                onGoalieActionEnd(targetView, isGoal = false)
+//                                victimTeam[5] = null
+//
+//                                fNotifyToggleTurn.invoke()
+//                                fRestoreFlipViews.invoke()
+//                                fAddNewGoalie.invoke()
+//                            }
+//
+//                            startDelay = 500
+//                            interpolator = AnticipateInterpolator(1.5f)
+//                            duration = 500
+//                            playTogether(attackerOutAni, victimOutAni)
+//
+//                            start()
+//                        }
+//                    }
+//
+//                    start()
+//                }
+//            }
+//
+//            start()
+//        }
     }
 
     fun scoredAtGoalieAnimation(
@@ -431,7 +502,7 @@ object AnimationUtil {
 
             startDelay = 1250
             duration = 750
-            interpolator = AnticipateInterpolator(1.25f)
+            interpolator = AnticipateInterpolator(1f)
         }
     }
 

@@ -77,11 +77,13 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
         }
 
         flip_btm_goalie.post {
+            flip_btm_goalie.bringToFront()
             flipViewBtmOriginalX = flip_btm_goalie.x
             flipViewBtmOriginalY = flip_btm_goalie.y
         }
 
         flip_top_goalie.post {
+            flip_top_goalie.bringToFront()
             flipViewTopOriginalX = flip_top_goalie.x
             flipViewTopOriginalY = flip_top_goalie.y
         }
@@ -120,6 +122,7 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
         flip_view.rotation = 0f
         flip_view.x = flipViewOriginalX
         flip_view.y = flipViewOriginalY
+        flip_view.scaleX = 1f // FIXME: Use another animation?
         flip_btm_goalie.x = flipViewBtmOriginalX
         flip_btm_goalie.y = flipViewBtmOriginalY
         flip_top_goalie.x = flipViewTopOriginalX
@@ -373,7 +376,7 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
                 teamTop,
                 { vm.notifyToggleTurn() },
                 { restoreFlipViewPosition() },
-                { addGoalieView(bottom = false, doNotFlip = true/*, doRemoveCardFromDeck = true*/) },
+                { addGoalieView(bottom = false, doNotFlip = true, doRemoveCardFromDeck = true) },
                 { message -> vm.notifyMessage(message) }
             ).start()
 
@@ -397,7 +400,7 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
                 teamBottom,
                 { vm.notifyToggleTurn() },
                 { restoreFlipViewPosition() },
-                { addGoalieView(bottom = true, doNotFlip = true/*, doRemoveCardFromDeck = true*/) },
+                { addGoalieView(bottom = true, doNotFlip = true, doRemoveCardFromDeck = true) },
                 { message -> vm.notifyMessage(message) }
             ).start()
         }
