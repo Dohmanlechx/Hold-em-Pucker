@@ -1,18 +1,19 @@
 package com.dohman.holdempucker.activities.viewmodels
 
-import android.app.Application
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
 import android.view.View
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import com.dohman.holdempucker.R
 import com.dohman.holdempucker.cards.Card
-import com.dohman.holdempucker.cards.CardDeck
-import com.dohman.holdempucker.util.AnimationUtil
+import com.dohman.holdempucker.dagger.RepositoryComponent
+import com.dohman.holdempucker.repositories.CardRepository
+import com.dohman.holdempucker.repositories.ResourceRepository
+import com.dohman.holdempucker.util.Animations
 import com.dohman.holdempucker.util.Constants
 import com.dohman.holdempucker.util.Constants.Companion.areTeamsReadyToStartPeriod
 import com.dohman.holdempucker.util.Constants.Companion.isOngoingGame
@@ -25,10 +26,16 @@ import com.dohman.holdempucker.util.Constants.Companion.teamTopScore
 import com.dohman.holdempucker.util.Constants.Companion.whoseTurn
 import com.dohman.holdempucker.util.GameLogic
 import com.wajahatkarim3.easyflipview.EasyFlipView
+import javax.inject.Inject
 
-class GameViewModel(application: Application) : AndroidViewModel(application) {
-    var cardDeck = CardDeck().cardDeck
-    var firstCardInDeck: Card = cardDeck.first()
+class GameViewModel : ViewModel() {
+    @Inject
+    lateinit var appRepo: ResourceRepository
+    @Inject
+    lateinit var cardRepo: CardRepository
+
+    var cardDeck = mutableListOf<Card>()
+    var firstCardInDeck: Card
 
     val messageNotifier = MutableLiveData<Pair<String, Boolean>>()
     val halfTimeNotifier = MutableLiveData<Int>()
@@ -36,6 +43,13 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     val pickedCardNotifier = MutableLiveData<Int>()
     val cardsCountNotifier = MutableLiveData<Int>()
     val badCardNotifier = MutableLiveData<Boolean>()
+
+    init {
+        RepositoryComponent.inject(this)
+
+        cardDeck = cardRepo.createCards() as MutableList<Card>
+        firstCardInDeck = cardDeck.first()
+    }
 
     /*
     * Notify functions
@@ -106,8 +120,8 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
 
     fun resIdOfCard(card: Card?): Int {
         return card.let {
-            getApplication<Application>().resources.getIdentifier(
-                it?.src, "drawable", getApplication<Application>().packageName
+            appRepo.context.resources.getIdentifier(
+                it?.src, "drawable", appRepo.context.packageName
             )
         }
     }
@@ -117,7 +131,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         matrix.postRotate(90f)
 
         val scaledBitmap = Bitmap.createScaledBitmap(
-            BitmapFactory.decodeResource(getApplication<Application>().resources, resIdOfCard(card)),
+            BitmapFactory.decodeResource(appRepo.resources, resIdOfCard(card)),
             691,
             1056,
             true
@@ -147,7 +161,11 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         }
 
         if (isOngoingGame && !GameLogic.isTherePossibleMove(whoseTurn, firstCardInDeck)) triggerBadCard()
-        else if (isOngoingGame && GameLogic.isTherePossibleMove(whoseTurn, firstCardInDeck)) AnimationUtil.startPulsingCardsAnimation { message -> notifyMessage(message) }
+        else if (isOngoingGame && GameLogic.isTherePossibleMove(
+                whoseTurn,
+                firstCardInDeck
+            )
+        ) Animations.startPulsingCardsAnimation { message -> notifyMessage(message) }
     }
 
     fun triggerBadCard() {
@@ -155,12 +173,14 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     private fun halfTime() {
-        cardDeck = CardDeck().cardDeck
+        cardDeck = cardRepo.createCards() as MutableList<Card>
         firstCardInDeck = cardDeck.first()
+
         for (index in 0..5) {
             teamBottom[index] = null
             teamTop[index] = null
         }
+
         halfTimeNotifier.value = 1
         if (period <= 3) notifyMessage("Not enough\ncards.\nPeriod $period\nstarted.", isNeutralMessage = true)
         isOngoingGame = false

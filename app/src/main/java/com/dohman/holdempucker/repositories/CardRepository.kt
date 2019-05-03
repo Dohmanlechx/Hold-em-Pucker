@@ -1,16 +1,19 @@
-package com.dohman.holdempucker.cards
+package com.dohman.holdempucker.repositories
 
-class CardDeck {
-    val cardDeck = mutableListOf<Card>()
+import com.dohman.holdempucker.cards.Card
+import com.dohman.holdempucker.cards.Suits
+import javax.inject.Inject
+import javax.inject.Singleton
 
-    init {
-        initializeCards()
-        cardDeck.shuffle()
-        cardDeck.shuffle()
-        cardDeck.shuffle()
-    }
+@Singleton
+class CardRepository @Inject constructor(
+    // Placeholder for other Repositories.
+) {
 
-    private fun initializeCards(): List<Card> {
+    fun createCards() = initializeCards().shuffled()
+
+    private fun initializeCards(): MutableList<Card> {
+        val cardDeck = mutableListOf<Card>()
         enumValues<Suits>().forEach { suit ->
             suit.let {
                 for (i in 2..14) {
