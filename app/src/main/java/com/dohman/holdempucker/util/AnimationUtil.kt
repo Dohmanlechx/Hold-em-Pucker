@@ -107,10 +107,9 @@ object AnimationUtil {
             }
             doOnEnd {
                 flipView.flipTheView()
-                if (isBadCard) fIsBadCard.invoke()
+                if (!isBadCard) fSetOnClickListeners.invoke() else fIsBadCard.invoke()
                 if (!isOngoingGame && !doNotShowMessage && !justShotAtGoalie) fNotifyMessage.invoke("Please\nchoose a\nposition\nto add\nyour card.")
                 if (justShotAtGoalie) justShotAtGoalie = false
-                fSetOnClickListeners.invoke()
                 isAnimationRunning = false
             }
 
@@ -303,9 +302,6 @@ object AnimationUtil {
         }
 
 
-
-
-
 //        val flipAniX = objAnimator(flipView, View.TRANSLATION_X, targetView.x - flipView.x - 150f)
 //        val flipAniY =
 //            if (whoseTurn == Constants.WhoseTurn.BOTTOM) objAnimator(
@@ -472,10 +468,14 @@ object AnimationUtil {
         fRemoveCardFromDeck: () -> Unit,
         fIsThisTeamReady: () -> Boolean,
         fTriggerBadCard: () -> Unit,
+        fRemoveAllOnClickListeners: () -> Unit,
         fNotifyMessage: (message: String) -> Unit
     ): ObjectAnimator? {
         return objAnimator(flipView, View.TRANSLATION_X, 2000f).apply {
-            doOnStart { isAnimationRunning = true }
+            doOnStart {
+                fRemoveAllOnClickListeners.invoke()
+                isAnimationRunning = true
+            }
             doOnEnd {
                 fToggleTurn.invoke()
                 fRestoreFlipView.invoke()
@@ -485,7 +485,6 @@ object AnimationUtil {
                     isOngoingGame = false
                     restoringPlayers = true
                 }
-
                 if (isOngoingGame && !GameLogic.isTherePossibleMove(
                         whoseTurn,
                         fGetFirstCardInDeck.invoke()

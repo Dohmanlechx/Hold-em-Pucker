@@ -6,6 +6,7 @@ import android.view.View
 import android.view.WindowManager
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.core.animation.doOnEnd
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearSnapHelper
@@ -32,6 +33,7 @@ import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.items.AbstractItem
 import kotlinx.android.synthetic.main.activity_game.*
+import kotlinx.android.synthetic.main.message_box_item.*
 
 class GameActivity : AppCompatActivity(), View.OnClickListener {
     private lateinit var vm: GameViewModel
@@ -193,6 +195,7 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
                 { vm.removeCardFromDeck() },
                 { vm.isThisTeamReady() },
                 { vm.triggerBadCard() },
+                { removeAllOnClickListeners() },
                 { message -> vm.notifyMessage(message) })?.start()
         },
             { setOnClickListeners() },
