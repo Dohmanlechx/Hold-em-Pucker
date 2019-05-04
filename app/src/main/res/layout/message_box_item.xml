@@ -23,4 +23,67 @@
         tools:text="Press anywhere to start the game"
         tools:ignore="SmallSp" />
 
+    <!-- RECYCLER VIEW -->
+
+    <!--<androidx.constraintlayout.widget.ConstraintLayout-->
+        <!--android:layout_width="140dp"-->
+        <!--android:layout_height="110dp"-->
+        <!--app:layout_constraintEnd_toStartOf="@id/card_top_defender_right"-->
+        <!--app:layout_constraintDimensionRatio="H,1:1"-->
+        <!--app:layout_constraintStart_toStartOf="parent"-->
+        <!--app:layout_constraintTop_toTopOf="parent">-->
+
+        <!--<FrameLayout-->
+            <!--android:id="@+id/frame_layout"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="match_parent"-->
+            <!--android:layout_margin="16dp">-->
+
+            <!--<View-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="match_parent"-->
+                <!--android:background="@drawable/computer_screen" />-->
+
+            <!--<androidx.recyclerview.widget.RecyclerView-->
+                <!--android:id="@+id/v_recycler"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:clipToPadding="true"-->
+                <!--android:overScrollMode="never"-->
+                <!--android:paddingTop="10dp"-->
+                <!--android:paddingBottom="10dp"-->
+                <!--tools:itemCount="1"-->
+                <!--tools:listitem="@layout/message_box_item" />-->
+
+        <!--</FrameLayout>-->
+
+        <!--<View-->
+            <!--android:id="@+id/computer_stand_a"-->
+            <!--android:layout_width="15dp"-->
+            <!--android:layout_height="40dp"-->
+            <!--android:background="@drawable/computer_stand_a"-->
+            <!--app:layout_constraintEnd_toEndOf="parent"-->
+            <!--app:layout_constraintStart_toStartOf="parent"-->
+            <!--app:layout_constraintTop_toBottomOf="@id/frame_layout" />-->
+
+        <!--<View-->
+            <!--android:id="@+id/computer_stand_b"-->
+            <!--android:layout_width="0dp"-->
+            <!--android:layout_height="15dp"-->
+            <!--android:background="@drawable/computer_stand_b"-->
+            <!--app:layout_constraintBottom_toBottomOf="@id/computer_stand_a"-->
+            <!--app:layout_constraintEnd_toStartOf="@id/computer_stand_a"-->
+            <!--app:layout_constraintStart_toStartOf="parent" />-->
+
+        <!--<View-->
+            <!--android:id="@+id/computer_lamp"-->
+            <!--android:layout_width="7dp"-->
+            <!--android:layout_height="7dp"-->
+            <!--android:layout_marginEnd="15dp"-->
+            <!--android:background="@drawable/old_computer_background"-->
+            <!--app:layout_constraintBottom_toBottomOf="@id/frame_layout"-->
+            <!--app:layout_constraintEnd_toEndOf="@id/frame_layout" />-->
+
+    <!--</androidx.constraintlayout.widget.ConstraintLayout>-->
+
 </androidx.constraintlayout.widget.ConstraintLayout>
