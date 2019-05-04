@@ -36,7 +36,7 @@ class MainMenuFragment : Fragment(), View.OnTouchListener {
     }
 
     private fun setGradientOnTexts() {
-        tv_title.paint.shader = vm.getLinearGradient(tv_title)
+        //tv_title.paint.shader = vm.getLinearGradient(tv_title)
     }
 
     private fun goToGameFragment() {
