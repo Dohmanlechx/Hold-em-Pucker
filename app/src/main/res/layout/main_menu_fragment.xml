@@ -87,15 +87,20 @@
 		android:id="@+id/tv_title"
 		android:layout_width="0dp"
 		android:layout_height="0dp"
+		android:background="@color/black"
 		android:fontFamily="@font/hockey_score_font"
 		android:gravity="center"
+		android:shadowColor="@color/black"
+		android:shadowDx="0"
+		android:shadowDy="0"
+		android:shadowRadius="25"
 		android:text="@string/app_name"
-		android:textColor="@color/black"
 		android:textSize="42sp"
 		app:layout_constraintBottom_toTopOf="@id/gl_hor_34"
 		app:layout_constraintEnd_toEndOf="parent"
 		app:layout_constraintStart_toStartOf="parent"
-		app:layout_constraintTop_toTopOf="parent" />
+		app:layout_constraintTop_toTopOf="parent"
+		tools:textColor="@color/white" />
 
 	<!-- EASY MODE -->
 

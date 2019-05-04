@@ -8,13 +8,13 @@
             <LayoutPositions>
               <option name="myPositions">
                 <map>
-                  <entry key="gameFragment2">
+                  <entry key="gameFragment">
                     <value>
                       <LayoutPositions>
                         <option name="myPosition">
                           <Point>
-                            <option name="x" value="288" />
-                            <option name="y" value="256" />
+                            <option name="x" value="266" />
+                            <option name="y" value="141" />
                           </Point>
                         </option>
                       </LayoutPositions>
@@ -31,7 +31,7 @@
                         </option>
                         <option name="myPositions">
                           <map>
-                            <entry key="action_mainMenuFragment_to_gameFragment2">
+                            <entry key="action_mainMenuFragment_to_gameFragment">
                               <value>
                                 <LayoutPositions />
                               </value>
