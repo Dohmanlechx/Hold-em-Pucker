@@ -1,4 +1,4 @@
-package com.dohman.holdempucker.activities.viewmodels
+package com.dohman.holdempucker.ui.fragments
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory

@@ -1,7 +1,7 @@
 package com.dohman.holdempucker.dagger
 
 import com.dohman.holdempucker.MainApplication
-import com.dohman.holdempucker.activities.viewmodels.GameViewModel
+import com.dohman.holdempucker.ui.fragments.GameViewModel
 import dagger.Component
 import javax.inject.Singleton
 

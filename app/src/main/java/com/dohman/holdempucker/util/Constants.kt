@@ -8,7 +8,7 @@ class Constants {
 
         // Tags
         const val TAG_MAINACTIVITY = "DBG: MainActivity.kt"
-        const val TAG_GAMEACTIVITY = "DBG: GameActivity.kt"
+        const val TAG_GAMEACTIVITY = "DBG: GameFragment.kt"
         const val TAG_GAMEVIEWMODEL = "DBG: GameViewModel.kt"
 
         // Booleans

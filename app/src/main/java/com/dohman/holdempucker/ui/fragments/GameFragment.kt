@@ -1,15 +1,15 @@
-package com.dohman.holdempucker.activities
+package com.dohman.holdempucker.ui.fragments
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
-import android.view.WindowManager
+import android.view.ViewGroup
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.core.animation.doOnEnd
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearSnapHelper
-import com.dohman.holdempucker.activities.viewmodels.GameViewModel
 import com.dohman.holdempucker.R
 import com.dohman.holdempucker.cards.Card
 import com.dohman.holdempucker.ui.MessageTextItem
@@ -32,9 +32,9 @@ import com.dohman.holdempucker.util.Constants.Companion.whoseTurn
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.items.AbstractItem
-import kotlinx.android.synthetic.main.activity_game.*
+import kotlinx.android.synthetic.main.game_fragment.*
 
-class GameActivity : AppCompatActivity(), View.OnClickListener {
+class GameFragment : Fragment(), View.OnClickListener {
     private lateinit var vm: GameViewModel
 
     private val itemAdapter = ItemAdapter<AbstractItem<*, *>>()
@@ -49,10 +49,7 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
 
     private var tempGoalieCard: Card? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN)
-        setContentView(R.layout.activity_game)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         vm = ViewModelProviders.of(this).get(GameViewModel::class.java)
 
         // Observables
@@ -70,6 +67,12 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
                 vm.notifyMessage("Aw, too\nweak card!\nIt goes\nout!")
             })
         // End of Observables
+
+        return inflater.inflate(R.layout.game_fragment, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         vm.updateScores(top_team_score, bm_team_score)
 
@@ -157,7 +160,7 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
 
         v_recycler.itemAnimator = null
         v_recycler.layoutManager = SpeedyLinearLayoutManager(
-            applicationContext,
+            requireContext(),
             SpeedyLinearLayoutManager.VERTICAL,
             false
         )
@@ -567,11 +570,13 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
                 }
             }
 
-            val view = findViewById<AppCompatImageView>(v.id)
+            val view = view?.findViewById<AppCompatImageView>(v.id)
             val team = if (whoseTurn == Constants.WhoseTurn.BOTTOM) teamBottom else teamTop
 
-            if (vm.canAddPlayerView(view, team, spotIndex))
-                animateAddPlayer(view, team, spotIndex)
+            view?.let {
+                if (vm.canAddPlayerView(view, team, spotIndex))
+                    animateAddPlayer(view, team, spotIndex)
+            }
         }
     }
 }
