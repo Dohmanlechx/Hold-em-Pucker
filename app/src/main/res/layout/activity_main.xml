@@ -50,12 +50,12 @@
 	<!-- GUIDE LINES VERTICAL-->
 
 	<androidx.constraintlayout.widget.Guideline
-		android:id="@+id/gl_ver_125"
+		android:id="@+id/gl_ver_15"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:orientation="vertical"
 		app:layout_constraintEnd_toEndOf="parent"
-		app:layout_constraintGuide_percent="0.125"
+		app:layout_constraintGuide_percent="0.15"
 		app:layout_constraintStart_toStartOf="parent" />
 
 	<!-- VIEW LINES -->
@@ -102,10 +102,11 @@
 		android:id="@+id/puck_ai_random"
 		android:layout_width="0dp"
 		android:layout_height="0dp"
+		android:scaleType="fitEnd"
 		android:src="@drawable/puck"
 		app:layout_constraintBottom_toTopOf="@id/gl_hor_50"
 		app:layout_constraintDimensionRatio="H,16:9"
-		app:layout_constraintEnd_toStartOf="@id/gl_ver_125"
+		app:layout_constraintEnd_toStartOf="@id/gl_ver_15"
 		app:layout_constraintStart_toStartOf="parent"
 		app:layout_constraintTop_toBottomOf="@id/gl_hor_34" />
 
@@ -121,7 +122,7 @@
 		android:textSize="24sp"
 		app:layout_constraintBottom_toTopOf="@id/gl_hor_50"
 		app:layout_constraintEnd_toEndOf="parent"
-		app:layout_constraintStart_toEndOf="@id/gl_ver_125"
+		app:layout_constraintStart_toEndOf="@id/gl_ver_15"
 		app:layout_constraintTop_toBottomOf="@id/gl_hor_34" />
 
 	<!-- HARD MODE (DEVELOPER AI) -->
@@ -130,10 +131,11 @@
 		android:id="@+id/puck_ai_developer"
 		android:layout_width="0dp"
 		android:layout_height="0dp"
+		android:scaleType="fitEnd"
 		android:src="@drawable/puck"
 		app:layout_constraintBottom_toTopOf="@id/gl_hor_66"
 		app:layout_constraintDimensionRatio="H,16:9"
-		app:layout_constraintEnd_toStartOf="@id/gl_ver_125"
+		app:layout_constraintEnd_toStartOf="@id/gl_ver_15"
 		app:layout_constraintStart_toStartOf="parent"
 		app:layout_constraintTop_toBottomOf="@id/gl_hor_50" />
 
@@ -149,7 +151,7 @@
 		android:textSize="24sp"
 		app:layout_constraintBottom_toTopOf="@id/gl_hor_66"
 		app:layout_constraintEnd_toEndOf="parent"
-		app:layout_constraintStart_toEndOf="@id/gl_ver_125"
+		app:layout_constraintStart_toEndOf="@id/gl_ver_15"
 		app:layout_constraintTop_toBottomOf="@id/gl_hor_50" />
 
 	<!-- VS FRIEND-->
@@ -158,10 +160,11 @@
 		android:id="@+id/puck_vs_friend"
 		android:layout_width="0dp"
 		android:layout_height="0dp"
+		android:scaleType="fitEnd"
 		android:src="@drawable/puck"
 		app:layout_constraintBottom_toTopOf="@id/gl_hor_82"
 		app:layout_constraintDimensionRatio="H,16:9"
-		app:layout_constraintEnd_toStartOf="@id/gl_ver_125"
+		app:layout_constraintEnd_toStartOf="@id/gl_ver_15"
 		app:layout_constraintStart_toStartOf="parent"
 		app:layout_constraintTop_toBottomOf="@id/gl_hor_66" />
 
@@ -177,7 +180,7 @@
 		android:textSize="24sp"
 		app:layout_constraintBottom_toTopOf="@id/gl_hor_82"
 		app:layout_constraintEnd_toEndOf="parent"
-		app:layout_constraintStart_toEndOf="@id/gl_ver_125"
+		app:layout_constraintStart_toEndOf="@id/gl_ver_15"
 		app:layout_constraintTop_toBottomOf="@id/gl_hor_66" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
