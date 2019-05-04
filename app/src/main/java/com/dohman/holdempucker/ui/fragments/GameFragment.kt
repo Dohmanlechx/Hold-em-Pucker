@@ -120,6 +120,11 @@ class GameFragment : Fragment(), View.OnClickListener {
         }
     }
 
+    override fun onStop() {
+        super.onStop()
+        clearListsOfViews()
+    }
+
     /*
     * Views management
     * */
@@ -153,6 +158,12 @@ class GameFragment : Fragment(), View.OnClickListener {
             add(card_top_defender_right)
             add(card_top_goalie)
         }
+    }
+
+    // FIXME! This fun is only temporary. Leading into crashes. Cuz Constant storage of views... remove later!
+    private fun clearListsOfViews() {
+        teamBottomViews.clear()
+        teamTopViews.clear()
     }
 
     private fun setupMessageRecycler() {

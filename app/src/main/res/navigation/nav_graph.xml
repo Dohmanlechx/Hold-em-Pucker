@@ -9,7 +9,7 @@
 		android:name="com.dohman.holdempucker.ui.fragments.MainMenuFragment"
 		android:label="MainMenuFragment" >
 		<action
-			android:id="@+id/action_mainMenuFragment_to_gameFragment2"
+			android:id="@+id/action_mainMenuFragment_to_gameFragment"
 			app:destination="@id/gameFragment" />
 	</fragment>
 
