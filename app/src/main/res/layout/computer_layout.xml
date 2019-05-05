@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:orientation="vertical"
+	android:weightSum="4">
+
+	<!--RECYCLER VIEW -->
+
+	<FrameLayout
+		android:id="@+id/frame_layout"
+		android:layout_width="match_parent"
+		android:layout_height="0dp"
+		android:layout_weight="3"
+		android:paddingStart="16dp"
+		android:paddingTop="16dp"
+		android:paddingEnd="16dp">
+
+		<View
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:background="@drawable/computer_screen" />
+
+		<androidx.recyclerview.widget.RecyclerView
+			android:id="@+id/v_recycler"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:clipToPadding="true"
+			android:overScrollMode="never"
+			android:paddingStart="16dp"
+			android:paddingTop="10dp"
+			android:paddingEnd="16dp"
+			android:paddingBottom="10dp"
+			tools:itemCount="1"
+			tools:listitem="@layout/message_box_item" />
+
+		<View
+			android:id="@+id/computer_lamp"
+			android:layout_width="12dp"
+			android:layout_height="12dp"
+			android:layout_gravity="bottom|end"
+			android:layout_marginEnd="15dp"
+			android:background="@drawable/old_computer_background" />
+
+	</FrameLayout>
+
+	<androidx.constraintlayout.widget.ConstraintLayout
+		android:layout_width="match_parent"
+		android:layout_height="0dp"
+		android:layout_weight="2">
+
+		<View
+			android:id="@+id/computer_stand_a"
+			android:layout_width="15dp"
+			android:layout_height="40dp"
+			android:background="@drawable/computer_stand_a"
+			app:layout_constraintEnd_toEndOf="parent"
+			app:layout_constraintStart_toStartOf="parent"
+			app:layout_constraintTop_toTopOf="parent" />
+
+		<View
+			android:id="@+id/computer_stand_b"
+			android:layout_width="0dp"
+			android:layout_height="15dp"
+			android:background="@drawable/computer_stand_b"
+			app:layout_constraintBottom_toBottomOf="@id/computer_stand_a"
+			app:layout_constraintEnd_toStartOf="@id/computer_stand_a"
+			app:layout_constraintStart_toStartOf="parent" />
+
+	</androidx.constraintlayout.widget.ConstraintLayout>
+
+</LinearLayout>

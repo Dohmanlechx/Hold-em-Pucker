@@ -108,7 +108,7 @@ object Animations {
             doOnEnd {
                 flipView.flipTheView()
                 if (!isBadCard) fSetOnClickListeners.invoke() else fIsBadCard.invoke()
-                if (!isOngoingGame && !doNotShowMessage && !justShotAtGoalie) fNotifyMessage.invoke("Please\nchoose a\nposition\nto add\nyour card.")
+                if (!isOngoingGame && !doNotShowMessage && !justShotAtGoalie) fNotifyMessage.invoke("Please choose a position to add your card.")
                 if (justShotAtGoalie) justShotAtGoalie = false
                 isAnimationRunning = false
             }
@@ -125,7 +125,7 @@ object Animations {
         val teamToPulse = if (whoseTurn == Constants.WhoseTurn.BOTTOM) teamTopViews else teamBottomViews
 
         val plural = if (possibleMovesIndexes.size == 1) "move" else "moves"
-        fNotifyMessage.invoke("${possibleMovesIndexes.size} possible\n$plural.\nGo Attack!")
+        fNotifyMessage.invoke("${possibleMovesIndexes.size} possible $plural. Go Attack!")
 
         possibleMovesIndexes.forEach { view ->
             listOfOngoingAnimations.add(scaleAnimator(
@@ -270,7 +270,7 @@ object Animations {
                             14 -> "Ace"
                             else -> tempGoalieCard?.rank.toString()
                         }
-                        fNotifyMessage.invoke("... of\nrank $rankInterpreted\nand the\ngoalie\nSAVED!")
+                        fNotifyMessage.invoke("... of rank $rankInterpreted and the goalie SAVED!")
                     }
                     doOnEnd {
                         // Both
@@ -349,7 +349,7 @@ object Animations {
                             14 -> "Ace"
                             else -> tempGoalieCard?.rank.toString()
                         }
-                        fNotifyMessage.invoke("... of\nrank $rankInterpreted\nand it's\nGOAL!")
+                        fNotifyMessage.invoke("... of rank $rankInterpreted and it's GOAL!")
                     }
                     doOnEnd {
                         // Both

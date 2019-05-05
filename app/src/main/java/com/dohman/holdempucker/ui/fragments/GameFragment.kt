@@ -32,6 +32,7 @@ import com.dohman.holdempucker.util.Constants.Companion.whoseTurn
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.items.AbstractItem
+import kotlinx.android.synthetic.main.computer_layout.*
 import kotlinx.android.synthetic.main.game_fragment.*
 
 class GameFragment : Fragment(), View.OnClickListener {
@@ -64,7 +65,7 @@ class GameFragment : Fragment(), View.OnClickListener {
             this,
             Observer {
                 flipNewCard(vm.resIdOfCard(vm.firstCardInDeck), isBadCard = true)
-                vm.notifyMessage("Aw, too\nweak card!\nIt goes\nout!")
+                vm.notifyMessage("Aw, too weak card! It goes out!")
             })
         // End of Observables
 
@@ -181,7 +182,7 @@ class GameFragment : Fragment(), View.OnClickListener {
         val snapHelper = LinearSnapHelper()
         snapHelper.attachToRecyclerView(v_recycler)
 
-        updateMessageBox("Press\nanywhere\nto start\nthe game!\nPeriod: $period", isNeutralMessage = true)
+        updateMessageBox("Press anywhere to start the game! Period: $period", isNeutralMessage = true)
     }
 
     private fun updateMessageBox(message: String, isNeutralMessage: Boolean = false) {
@@ -448,11 +449,11 @@ class GameFragment : Fragment(), View.OnClickListener {
         if (period > 3 && (teamBottomScore != teamTopScore)) {
             when {
                 teamBottomScore > teamTopScore -> vm.notifyMessage(
-                    "Team Bottom\nwon with\n$teamBottomScore-$teamTopScore!\nNew game?\nPress anywhere!",
+                    "Team Bottom won with $teamBottomScore-$teamTopScore!\nNew game? Press anywhere!",
                     isNeutralMessage = true
                 )
                 teamBottomScore < teamTopScore -> vm.notifyMessage(
-                    "Team Top\nwon with\n$teamTopScore-$teamBottomScore!\nNew game?\nPress anywhere!",
+                    "Team Top won with $teamTopScore-$teamBottomScore!\nNew game? Press anywhere!",
                     isNeutralMessage = true
                 )
             }
@@ -462,7 +463,7 @@ class GameFragment : Fragment(), View.OnClickListener {
             return false
         } else {
             if (period > 3) vm.notifyMessage(
-                "Overtime!\nPlay until\nall cards\nare out.\nPeriod: $period",
+                "Overtime! Play until all cards are out.\nPeriod: $period",
                 isNeutralMessage = true
             )
 
