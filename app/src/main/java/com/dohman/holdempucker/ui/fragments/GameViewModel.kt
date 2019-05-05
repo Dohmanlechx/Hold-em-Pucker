@@ -154,7 +154,7 @@ class GameViewModel : ViewModel() {
             }
 
             notifyMessage(
-                "${it.suit.toString().toLowerCase().capitalize()} $rankInterpreted attacks the goalie..."
+                "${it.suit.toString().toLowerCase().capitalize()} $rankInterpreted attacks the goalie\n..."
             )
         }
     }

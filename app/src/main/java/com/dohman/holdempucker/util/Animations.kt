@@ -108,7 +108,7 @@ object Animations {
             doOnEnd {
                 flipView.flipTheView()
                 if (!isBadCard) fSetOnClickListeners.invoke() else fIsBadCard.invoke()
-                if (!isOngoingGame && !doNotShowMessage && !justShotAtGoalie) fNotifyMessage.invoke("Please choose a position to add your card.")
+                if (!isOngoingGame && !doNotShowMessage && !justShotAtGoalie) fNotifyMessage.invoke("Please choose a position.")
                 if (justShotAtGoalie) justShotAtGoalie = false
                 isAnimationRunning = false
             }
@@ -125,7 +125,13 @@ object Animations {
         val teamToPulse = if (whoseTurn == Constants.WhoseTurn.BOTTOM) teamTopViews else teamBottomViews
 
         val plural = if (possibleMovesIndexes.size == 1) "move" else "moves"
-        fNotifyMessage.invoke("${possibleMovesIndexes.size} possible $plural. Go Attack!")
+        val numberToText = when (possibleMovesIndexes.size) {
+            1 -> "One"
+            2 -> "Two"
+            3 -> "Three"
+            else -> "${possibleMovesIndexes.size}"
+        }
+        fNotifyMessage.invoke("$numberToText possible $plural. Go Attack!")
 
         possibleMovesIndexes.forEach { view ->
             listOfOngoingAnimations.add(scaleAnimator(
@@ -270,7 +276,7 @@ object Animations {
                             14 -> "Ace"
                             else -> tempGoalieCard?.rank.toString()
                         }
-                        fNotifyMessage.invoke("... of rank $rankInterpreted and the goalie SAVED!")
+                        fNotifyMessage.invoke("...\nof rank $rankInterpreted and the goalie SAVED!")
                     }
                     doOnEnd {
                         // Both
@@ -349,7 +355,7 @@ object Animations {
                             14 -> "Ace"
                             else -> tempGoalieCard?.rank.toString()
                         }
-                        fNotifyMessage.invoke("... of rank $rankInterpreted and it's GOAL!")
+                        fNotifyMessage.invoke("...\nof rank $rankInterpreted and it's GOAL!")
                     }
                     doOnEnd {
                         // Both

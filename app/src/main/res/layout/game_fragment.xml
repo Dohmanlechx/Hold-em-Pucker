@@ -209,7 +209,7 @@
 		android:alpha="0.8"
 		android:fontFamily="@font/hockey_score_font"
 		android:gravity="center"
-		android:textColor="@color/black"
+		android:textColor="@color/text_background_top"
 		android:textSize="42sp"
 		app:layout_constraintBottom_toTopOf="@id/gl_hor_34"
 		app:layout_constraintEnd_toEndOf="parent"
@@ -224,7 +224,7 @@
 		android:alpha="0.8"
 		android:fontFamily="@font/hockey_score_font"
 		android:gravity="center"
-		android:textColor="@color/black"
+		android:textColor="@color/text_background_btm"
 		android:textSize="42sp"
 		app:layout_constraintBottom_toBottomOf="parent"
 		app:layout_constraintEnd_toEndOf="parent"
@@ -246,76 +246,13 @@
 		app:layout_constraintStart_toEndOf="@id/gl_ver_90"
 		app:layout_constraintTop_toBottomOf="@id/gl_hor_50" />
 
-	<!-- CARD DECK -->
-
-	<androidx.appcompat.widget.AppCompatTextView
-		android:id="@+id/cards_left"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_marginBottom="4dp"
-		android:fontFamily="@font/faster_one"
-		android:gravity="center"
-		android:textAlignment="center"
-		android:textColor="@color/red"
-		android:textSize="22sp"
-		app:layout_constraintBottom_toTopOf="@id/flip_view"
-		app:layout_constraintEnd_toEndOf="@id/card_background"
-		app:layout_constraintStart_toStartOf="@id/card_background"
-		tools:text="52" />
-
-	<androidx.appcompat.widget.AppCompatImageView
-		android:id="@+id/card_background"
-		android:layout_width="0dp"
-		android:layout_height="0dp"
-		android:layout_margin="6dp"
-		android:padding="1dp"
-		android:scaleType="fitXY"
-		android:src="@drawable/red_back_vertical"
-		app:layout_constraintBottom_toTopOf="@id/gl_hor_58"
-		app:layout_constraintDimensionRatio="H,7:11"
-		app:layout_constraintEnd_toStartOf="@id/gl_ver_20"
-		app:layout_constraintStart_toStartOf="parent"
-		app:layout_constraintTop_toBottomOf="@id/gl_hor_42" />
-
-	<com.wajahatkarim3.easyflipview.EasyFlipView
-		android:id="@+id/flip_view"
-		android:layout_width="0dp"
-		android:layout_height="0dp"
-		android:layout_margin="6dp"
-		app:flipDuration="150"
-		app:flipFrom="right"
-		app:flipOnTouch="false"
-		app:flipType="horizontal"
-		app:layout_constraintBottom_toTopOf="@id/gl_hor_58"
-		app:layout_constraintDimensionRatio="H,7:11"
-		app:layout_constraintEnd_toStartOf="@id/gl_ver_20"
-		app:layout_constraintStart_toStartOf="parent"
-		app:layout_constraintTop_toBottomOf="@id/gl_hor_42">
-
-		<!-- BACK -->
-		<androidx.appcompat.widget.AppCompatImageView
-			android:id="@+id/card_picked"
-			android:layout_width="match_parent"
-			android:layout_height="match_parent"
-			android:padding="1dp"
-			android:scaleType="fitXY" />
-
-		<!-- FRONT -->
-		<androidx.appcompat.widget.AppCompatImageView
-			android:id="@+id/card_deck"
-			android:layout_width="match_parent"
-			android:layout_height="match_parent"
-			android:padding="1dp"
-			android:scaleType="fitXY" />
-
-	</com.wajahatkarim3.easyflipview.EasyFlipView>
-
 	<!-- COMPUTER VIEW -->
 
 	<FrameLayout
 		android:layout_width="0dp"
 		android:layout_height="0dp"
 		app:layout_constraintBottom_toTopOf="@id/gl_hor_34"
+		app:layout_constraintDimensionRatio="H,1:1"
 		app:layout_constraintEnd_toStartOf="@id/gl_ver_40"
 		app:layout_constraintStart_toStartOf="parent"
 		app:layout_constraintTop_toTopOf="parent">
@@ -469,41 +406,6 @@
 		app:layout_constraintStart_toEndOf="@id/gl_ver_45"
 		app:layout_constraintTop_toBottomOf="@id/gl_hor_82" />
 
-	<!-- BOTTOM GOALIE FLIP VIEW -->
-
-	<com.wajahatkarim3.easyflipview.EasyFlipView
-		android:id="@+id/flip_btm_goalie"
-		android:layout_width="0dp"
-		android:layout_height="0dp"
-		android:layout_margin="6dp"
-		app:flipDuration="300"
-		app:flipFrom="back"
-		app:flipOnTouch="false"
-		app:flipType="vertical"
-		app:layout_constraintDimensionRatio="H,11:7"
-		app:layout_constraintEnd_toStartOf="@id/gl_ver_75"
-		app:layout_constraintStart_toEndOf="@id/gl_ver_45"
-		app:layout_constraintTop_toBottomOf="@id/gl_hor_82">
-
-		<!-- BACK -->
-		<androidx.appcompat.widget.AppCompatImageView
-			android:id="@+id/flip_btm_goalie_back"
-			android:layout_width="match_parent"
-			android:layout_height="match_parent"
-			android:padding="1dp"
-			android:scaleType="fitXY" />
-
-		<!-- FRONT -->
-		<androidx.appcompat.widget.AppCompatImageView
-			android:id="@+id/flip_btm_goalie_front"
-			android:layout_width="match_parent"
-			android:layout_height="match_parent"
-			android:padding="1dp"
-			android:scaleType="fitXY"
-			tools:src="@drawable/red_back" />
-
-	</com.wajahatkarim3.easyflipview.EasyFlipView>
-
 	<!-- TEAM TOP -->
 
 	<View
@@ -648,7 +550,7 @@
 		app:layout_constraintEnd_toStartOf="@id/gl_ver_75"
 		app:layout_constraintStart_toEndOf="@id/gl_ver_45" />
 
-	<!-- TOP GOALIE FLIP VIEW -->
+	<!-- ALL FLIP VIEWS, TO OVERLAP -->
 
 	<com.wajahatkarim3.easyflipview.EasyFlipView
 		android:id="@+id/flip_top_goalie"
@@ -675,6 +577,103 @@
 		<!-- FRONT -->
 		<androidx.appcompat.widget.AppCompatImageView
 			android:id="@+id/flip_top_goalie_front"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:padding="1dp"
+			android:scaleType="fitXY" />
+
+	</com.wajahatkarim3.easyflipview.EasyFlipView>
+
+	<com.wajahatkarim3.easyflipview.EasyFlipView
+		android:id="@+id/flip_btm_goalie"
+		android:layout_width="0dp"
+		android:layout_height="0dp"
+		android:layout_margin="6dp"
+		app:flipDuration="300"
+		app:flipFrom="back"
+		app:flipOnTouch="false"
+		app:flipType="vertical"
+		app:layout_constraintDimensionRatio="H,11:7"
+		app:layout_constraintEnd_toStartOf="@id/gl_ver_75"
+		app:layout_constraintStart_toEndOf="@id/gl_ver_45"
+		app:layout_constraintTop_toBottomOf="@id/gl_hor_82">
+
+		<!-- BACK -->
+		<androidx.appcompat.widget.AppCompatImageView
+			android:id="@+id/flip_btm_goalie_back"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:padding="1dp"
+			android:scaleType="fitXY" />
+
+		<!-- FRONT -->
+		<androidx.appcompat.widget.AppCompatImageView
+			android:id="@+id/flip_btm_goalie_front"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:padding="1dp"
+			android:scaleType="fitXY"
+			tools:src="@drawable/red_back" />
+
+	</com.wajahatkarim3.easyflipview.EasyFlipView>
+
+	<!-- CARD DECK -->
+
+	<androidx.appcompat.widget.AppCompatTextView
+		android:id="@+id/cards_left"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_marginBottom="4dp"
+		android:fontFamily="@font/faster_one"
+		android:gravity="center"
+		android:textAlignment="center"
+		android:textColor="@color/red"
+		android:textSize="22sp"
+		app:layout_constraintBottom_toTopOf="@id/flip_view"
+		app:layout_constraintEnd_toEndOf="@id/card_background"
+		app:layout_constraintStart_toStartOf="@id/card_background"
+		tools:text="52" />
+
+	<androidx.appcompat.widget.AppCompatImageView
+		android:id="@+id/card_background"
+		android:layout_width="0dp"
+		android:layout_height="0dp"
+		android:layout_margin="6dp"
+		android:padding="1dp"
+		android:scaleType="fitXY"
+		android:src="@drawable/red_back_vertical"
+		app:layout_constraintBottom_toTopOf="@id/gl_hor_58"
+		app:layout_constraintDimensionRatio="H,7:11"
+		app:layout_constraintEnd_toStartOf="@id/gl_ver_20"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toBottomOf="@id/gl_hor_42" />
+
+	<com.wajahatkarim3.easyflipview.EasyFlipView
+		android:id="@+id/flip_view"
+		android:layout_width="0dp"
+		android:layout_height="0dp"
+		android:layout_margin="6dp"
+		app:flipDuration="150"
+		app:flipFrom="right"
+		app:flipOnTouch="false"
+		app:flipType="horizontal"
+		app:layout_constraintBottom_toTopOf="@id/gl_hor_58"
+		app:layout_constraintDimensionRatio="H,7:11"
+		app:layout_constraintEnd_toStartOf="@id/gl_ver_20"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toBottomOf="@id/gl_hor_42">
+
+		<!-- BACK -->
+		<androidx.appcompat.widget.AppCompatImageView
+			android:id="@+id/card_picked"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:padding="1dp"
+			android:scaleType="fitXY" />
+
+		<!-- FRONT -->
+		<androidx.appcompat.widget.AppCompatImageView
+			android:id="@+id/card_deck"
 			android:layout_width="match_parent"
 			android:layout_height="match_parent"
 			android:padding="1dp"
