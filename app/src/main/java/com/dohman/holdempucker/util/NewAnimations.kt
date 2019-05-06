@@ -1,6 +1,7 @@
 package com.dohman.holdempucker.util
 
 import android.view.View
+import android.view.animation.AnticipateInterpolator
 import androidx.appcompat.widget.AppCompatTextView
 import com.github.florent37.viewanimator.ViewAnimator
 import com.wajahatkarim3.easyflipview.EasyFlipView
@@ -20,7 +21,7 @@ object NewAnimations {
             .start()
     }
 
-    fun flipPlayingCard(
+    fun animateFlipPlayingCard(
         flipView: EasyFlipView,
         cardsLeftText: AppCompatTextView,
         doNotShowMessage: Boolean = false,
@@ -49,5 +50,20 @@ object NewAnimations {
             .start()
     }
 
-
+    fun animateBadCard(
+        flipView: EasyFlipView,
+        screenWidth: Int,
+        fRemoveAllOnClickListeners: () -> Unit,
+        fOnBadCardEnd: () -> Unit
+    ) {
+        ViewAnimator
+            .animate(flipView)
+                .translationX(screenWidth.toFloat())
+                .startDelay(750)
+                .duration(750)
+                .interpolator(AnticipateInterpolator(1f))
+                .onStart { fRemoveAllOnClickListeners.invoke() }
+                .onStop { fOnBadCardEnd.invoke() }
+            .start()
+    }
 }

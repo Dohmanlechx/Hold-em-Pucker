@@ -52,6 +52,12 @@ class GameViewModel : ViewModel() {
     }
 
     /*
+    * General functions
+    * */
+
+    fun getScreenWidth() = appRepo.getScreenWidth()
+
+    /*
     * Notify functions
     * */
 

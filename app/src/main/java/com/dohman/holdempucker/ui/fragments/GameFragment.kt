@@ -16,19 +16,20 @@ import com.dohman.holdempucker.ui.MessageTextItem
 import com.dohman.holdempucker.ui.overrides.SpeedyLinearLayoutManager
 import com.dohman.holdempucker.util.Animations
 import com.dohman.holdempucker.util.Constants
-import com.dohman.holdempucker.util.Constants.Companion.teamBottomViews
 import com.dohman.holdempucker.util.Constants.Companion.isAnimationRunning
 import com.dohman.holdempucker.util.Constants.Companion.isOngoingGame
 import com.dohman.holdempucker.util.Constants.Companion.justShotAtGoalie
 import com.dohman.holdempucker.util.Constants.Companion.mikePenzPositions
 import com.dohman.holdempucker.util.Constants.Companion.period
+import com.dohman.holdempucker.util.Constants.Companion.possibleMovesIndexes
+import com.dohman.holdempucker.util.Constants.Companion.restoringPlayers
 import com.dohman.holdempucker.util.Constants.Companion.teamBottom
 import com.dohman.holdempucker.util.Constants.Companion.teamBottomScore
 import com.dohman.holdempucker.util.Constants.Companion.teamTop
 import com.dohman.holdempucker.util.Constants.Companion.teamTopScore
-import com.dohman.holdempucker.util.Constants.Companion.teamTopViews
 import com.dohman.holdempucker.util.Constants.Companion.whoseTeamStartedLastPeriod
 import com.dohman.holdempucker.util.Constants.Companion.whoseTurn
+import com.dohman.holdempucker.util.GameLogic
 import com.dohman.holdempucker.util.NewAnimations
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
@@ -48,6 +49,9 @@ class GameFragment : Fragment(), View.OnClickListener {
     private var flipViewBtmOriginalY: Float = 0f
     private var flipViewTopOriginalX: Float = 0f
     private var flipViewTopOriginalY: Float = 0f
+
+    private var teamBottomViews = mutableListOf<AppCompatImageView>()
+    private var teamTopViews = mutableListOf<AppCompatImageView>()
 
     private var tempGoalieCard: Card? = null
 
@@ -120,6 +124,11 @@ class GameFragment : Fragment(), View.OnClickListener {
             addGoalieView(true)
             it.visibility = View.GONE
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        storeAllViews()
     }
 
     override fun onStop() {
@@ -214,7 +223,7 @@ class GameFragment : Fragment(), View.OnClickListener {
     private fun flipNewCard(resId: Int, isBadCard: Boolean = false) {
         vm.setImagesOnFlipView(flip_view, card_deck, card_picked, resId, null, isVertical = true)
 
-        NewAnimations.flipPlayingCard(
+        NewAnimations.animateFlipPlayingCard(
             flip_view,
             cards_left,
             vm.cardDeck.size > 50,
@@ -229,19 +238,45 @@ class GameFragment : Fragment(), View.OnClickListener {
             setOnClickListeners()
         } else {
             // If it is bad card, this runs
-            Animations.badCardOutAnimation(
+//            Animations.badCardOutAnimation(
+//                flip_view,
+//                { vm.firstCardInDeck },
+//                { vm.notifyToggleTurn() },
+//                { restoreFlipViewPosition() },
+//                { vm.removeCardFromDeck() },
+//                { vm.isThisTeamReady() },
+//                { vm.triggerBadCard() },
+//                { removeAllOnClickListeners() },
+//                { message -> vm.notifyMessage(message) })?.start()
+            NewAnimations.animateBadCard(
                 flip_view,
-                { vm.firstCardInDeck },
-                { vm.notifyToggleTurn() },
-                { restoreFlipViewPosition() },
-                { vm.removeCardFromDeck() },
-                { vm.isThisTeamReady() },
-                { vm.triggerBadCard() },
+                vm.getScreenWidth(),
                 { removeAllOnClickListeners() },
-                { message -> vm.notifyMessage(message) })?.start()
+                {
+                    // OnStop
+                    vm.notifyToggleTurn()
+                    restoreFlipViewPosition()
+                    vm.removeCardFromDeck()
+
+                    if (!vm.isThisTeamReady()) {
+                        isOngoingGame = false
+                        restoringPlayers = true
+                    }
+
+                    if (isOngoingGame && !GameLogic.isTherePossibleMove(whoseTurn, vm.firstCardInDeck)) {
+                        vm.triggerBadCard()
+                    } else if (isOngoingGame && GameLogic.isTherePossibleMove(whoseTurn, vm.firstCardInDeck)) {
+                        prepareViewsToPulse()
+                    }
+                })
         }
 
         if (justShotAtGoalie) justShotAtGoalie = false
+    }
+
+    private fun prepareViewsToPulse() {
+        Animations.startPulsingCardsAnimation { message -> updateMessageBox(message) }
+
     }
 
     private fun addGoalieView(

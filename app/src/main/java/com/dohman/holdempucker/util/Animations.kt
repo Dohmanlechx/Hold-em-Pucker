@@ -24,9 +24,7 @@ import com.dohman.holdempucker.util.Constants.Companion.justShotAtGoalie
 import com.dohman.holdempucker.util.Constants.Companion.possibleMovesIndexes
 import com.dohman.holdempucker.util.Constants.Companion.restoringPlayers
 import com.dohman.holdempucker.util.Constants.Companion.teamBottomScore
-import com.dohman.holdempucker.util.Constants.Companion.teamBottomViews
 import com.dohman.holdempucker.util.Constants.Companion.teamTopScore
-import com.dohman.holdempucker.util.Constants.Companion.teamTopViews
 import com.dohman.holdempucker.util.Constants.Companion.whoseTurn
 import com.wajahatkarim3.easyflipview.EasyFlipView
 
@@ -120,38 +118,38 @@ object Animations {
 
     fun startPulsingCardsAnimation(fNotifyMessage: (message: String) -> Unit) {
 
-        Log.d(TAG_GAMEACTIVITY, possibleMovesIndexes.toString())
-
-        val teamToPulse = if (whoseTurn == Constants.WhoseTurn.BOTTOM) teamTopViews else teamBottomViews
-
-        val plural = if (possibleMovesIndexes.size == 1) "move" else "moves"
-        val numberToText = when (possibleMovesIndexes.size) {
-            1 -> "One"
-            2 -> "Two"
-            3 -> "Three"
-            else -> "${possibleMovesIndexes.size}"
-        }
-        fNotifyMessage.invoke("$numberToText possible $plural. Go Attack!")
-
-        possibleMovesIndexes.forEach { view ->
-            listOfOngoingAnimations.add(scaleAnimator(
-                teamToPulse[view],
-                1.05f,
-                1.05f
-            ).apply {
-                doOnCancel {
-                    teamToPulse[view].apply {
-                        scaleX = 1f
-                        scaleY = 1f
-                    }
-                }
-
-                duration = 310
-                repeatCount = ObjectAnimator.INFINITE
-                repeatMode = ObjectAnimator.REVERSE
-                start()
-            })
-        }
+//        Log.d(TAG_GAMEACTIVITY, possibleMovesIndexes.toString())
+//
+//        val teamToPulse = if (whoseTurn == Constants.WhoseTurn.BOTTOM) teamTopViews else teamBottomViews
+//
+//        val plural = if (possibleMovesIndexes.size == 1) "move" else "moves"
+//        val numberToText = when (possibleMovesIndexes.size) {
+//            1 -> "One"
+//            2 -> "Two"
+//            3 -> "Three"
+//            else -> "${possibleMovesIndexes.size}"
+//        }
+//        fNotifyMessage.invoke("$numberToText possible $plural. Go Attack!")
+//
+//        possibleMovesIndexes.forEach { view ->
+//            listOfOngoingAnimations.add(scaleAnimator(
+//                teamToPulse[view],
+//                1.05f,
+//                1.05f
+//            ).apply {
+//                doOnCancel {
+//                    teamToPulse[view].apply {
+//                        scaleX = 1f
+//                        scaleY = 1f
+//                    }
+//                }
+//
+//                duration = 310
+//                repeatCount = ObjectAnimator.INFINITE
+//                repeatMode = ObjectAnimator.REVERSE
+//                start()
+//            })
+//        }
     }
 
     fun stopAllPulsingCardAnimations() = listOfOngoingAnimations.let {
