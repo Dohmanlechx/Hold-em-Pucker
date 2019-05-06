@@ -105,8 +105,6 @@ class GameFragment : Fragment(), View.OnClickListener {
         }
 
         setupMessageRecycler()
-        setOnClickListeners()
-        storeAllViews()
 
         whole_view.setOnClickListener {
             teamBottomScore = 0
@@ -126,13 +124,14 @@ class GameFragment : Fragment(), View.OnClickListener {
         }
     }
 
-    override fun onResume() {
+    override fun onResume() { // FIXME Buggigt
         super.onResume()
         storeAllViews()
+        setOnClickListeners()
     }
 
-    override fun onStop() {
-        super.onStop()
+    override fun onDestroy() {
+        super.onDestroy()
         clearListsOfViews()
     }
 
@@ -152,22 +151,26 @@ class GameFragment : Fragment(), View.OnClickListener {
     }
 
     private fun storeAllViews() {
-        teamBottomViews.apply {
-            add(card_bm_forward_left)
-            add(card_bm_center)
-            add(card_bm_forward_right)
-            add(card_bm_defender_left)
-            add(card_bm_defender_right)
-            add(card_bm_goalie)
+        if (teamBottomViews.isEmpty()) {
+            teamBottomViews.apply {
+                add(card_bm_forward_left)
+                add(card_bm_center)
+                add(card_bm_forward_right)
+                add(card_bm_defender_left)
+                add(card_bm_defender_right)
+                add(card_bm_goalie)
+            }
         }
 
-        teamTopViews.apply {
-            add(card_top_forward_left)
-            add(card_top_center)
-            add(card_top_forward_right)
-            add(card_top_defender_left)
-            add(card_top_defender_right)
-            add(card_top_goalie)
+        if (teamTopViews.isEmpty()) {
+            teamTopViews.apply {
+                add(card_top_forward_left)
+                add(card_top_center)
+                add(card_top_forward_right)
+                add(card_top_defender_left)
+                add(card_top_defender_right)
+                add(card_top_goalie)
+            }
         }
     }
 
@@ -275,8 +278,19 @@ class GameFragment : Fragment(), View.OnClickListener {
     }
 
     private fun prepareViewsToPulse() {
-        Animations.startPulsingCardsAnimation { message -> updateMessageBox(message) }
+        val teamToPulse = if (whoseTurn == Constants.WhoseTurn.BOTTOM) teamTopViews else teamBottomViews
 
+        val viewsToPulse = mutableListOf<AppCompatImageView>()
+
+        possibleMovesIndexes.forEach {
+            viewsToPulse.add(teamToPulse[it])
+        }
+
+        NewAnimations.animatePulsingCards(viewsToPulse as List<AppCompatImageView>) { message ->
+            updateMessageBox(
+                message
+            )
+        }
     }
 
     private fun addGoalieView(
@@ -324,7 +338,7 @@ class GameFragment : Fragment(), View.OnClickListener {
         ).apply {
             doOnEnd {
                 restoreFlipViewPosition()
-                vm.onPlayerAddedAnimationEnd(targetView, team, spotIndex)
+                vm.onPlayerAddedAnimationEnd(targetView, team, spotIndex) { prepareViewsToPulse() }
                 isAnimationRunning = false
             }
 
@@ -335,7 +349,7 @@ class GameFragment : Fragment(), View.OnClickListener {
 
     private fun animateAttack(targetView: AppCompatImageView) {
         removeAllOnClickListeners()
-        Animations.stopAllPulsingCardAnimations()
+        NewAnimations.stopAllPulsingCards()
 
         val victimX = targetView.x
         val victimY = targetView.y
@@ -351,7 +365,7 @@ class GameFragment : Fragment(), View.OnClickListener {
                             targetView.x = victimX
                             targetView.y = victimY
                             restoreFlipViewPosition()
-                            vm.onAttackedAnimationEnd(targetView)
+                            vm.onAttackedAnimationEnd(targetView) { prepareViewsToPulse() }
                             isAnimationRunning = false
                         }
                         start()
@@ -368,7 +382,7 @@ class GameFragment : Fragment(), View.OnClickListener {
 
             if (vm.canAttack(victimTeam, spotIndex, victimView)) {
                 removeAllOnClickListeners()
-                Animations.stopAllPulsingCardAnimations()
+                NewAnimations.stopAllPulsingCards()
 
                 vm.notifyMessageAttackingGoalie()
 
@@ -430,7 +444,7 @@ class GameFragment : Fragment(), View.OnClickListener {
 
     private fun prepareGoalieSaved(victimView: AppCompatImageView) {
         removeAllOnClickListeners()
-        Animations.stopAllPulsingCardAnimations()
+        NewAnimations.stopAllPulsingCards()
 
         justShotAtGoalie = true
 

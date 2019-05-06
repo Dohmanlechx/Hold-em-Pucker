@@ -169,7 +169,10 @@ class GameViewModel : ViewModel() {
     * Game management functions
     * */
 
-    fun showPickedCard(doNotToggleTurn: Boolean = false) {
+    fun showPickedCard(
+        doNotToggleTurn: Boolean = false,
+        fPrepareViewsToPulse: (() -> Unit)? = null
+    ) {
         if ((!doNotToggleTurn && !restoringPlayers) || !areTeamsReadyToStartPeriod) notifyToggleTurn()
 
         if (!areTeamsReadyToStartPeriod) {
@@ -190,7 +193,7 @@ class GameViewModel : ViewModel() {
                 whoseTurn,
                 firstCardInDeck
             )
-        ) Animations.startPulsingCardsAnimation { message -> notifyMessage(message) }
+        ) fPrepareViewsToPulse?.invoke()
     }
 
     fun triggerBadCard() {
@@ -228,9 +231,9 @@ class GameViewModel : ViewModel() {
         return false // But goalie is added now
     }
 
-    private fun setPlayerInTeam(team: Array<Card?>, spotIndex: Int) {
+    private fun setPlayerInTeam(team: Array<Card?>, spotIndex: Int, fPrepareViewsToPulse: () -> Unit) {
         team[spotIndex] = firstCardInDeck
-        if (removeCardFromDeck()) showPickedCard()
+        if (removeCardFromDeck()) showPickedCard(false, fPrepareViewsToPulse)
     }
 
     private fun areTeamsReady(): Boolean {
@@ -296,17 +299,17 @@ class GameViewModel : ViewModel() {
         view.tag = Integer.valueOf(R.drawable.red_back)
     }
 
-    fun onPlayerAddedAnimationEnd(view: AppCompatImageView, team: Array<Card?>, spotIndex: Int) {
+    fun onPlayerAddedAnimationEnd(view: AppCompatImageView, team: Array<Card?>, spotIndex: Int, fPrepareViewsToPulse: () -> Unit) {
         view.setImageResource(resIdOfCard(firstCardInDeck))
         view.tag = null
-        setPlayerInTeam(team, spotIndex)
+        setPlayerInTeam(team, spotIndex, fPrepareViewsToPulse)
     }
 
-    fun onAttackedAnimationEnd(view: AppCompatImageView) {
+    fun onAttackedAnimationEnd(view: AppCompatImageView, fPrepareViewsToPulse: () -> Unit) {
         view.setImageResource(android.R.color.transparent)
         view.tag = Integer.valueOf(android.R.color.transparent)
         removeCardFromDeck()
-        showPickedCard(doNotToggleTurn = true)
+        showPickedCard(true, fPrepareViewsToPulse)
 
     }
 }
