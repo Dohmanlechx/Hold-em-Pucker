@@ -15,8 +15,6 @@ import kotlinx.android.synthetic.main.main_menu_fragment.*
 class MainMenuFragment : Fragment(), View.OnTouchListener {
     private lateinit var vm: MainMenuViewModel
 
-    private var isAlreadyCalled = false
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         vm = ViewModelProviders.of(this).get(MainMenuViewModel::class.java)
 
@@ -30,20 +28,13 @@ class MainMenuFragment : Fragment(), View.OnTouchListener {
         setGradientOnTexts()
     }
 
-    override fun onResume() {
-        super.onResume()
-        isAlreadyCalled = false
-    }
-
     private fun setGradientOnTexts() {
         tv_title.paint.shader = vm.getLinearGradient(tv_title)
     }
 
-    private fun goToGameFragment() {
-        if (!isAlreadyCalled) {
-            isAlreadyCalled = true
-            view?.let { Navigation.findNavController(it).navigate(R.id.action_mainMenuFragment_to_gameFragment) }
-        }
+    private fun navigateToGameFragment() {
+        view?.let { Navigation.findNavController(it).navigate(R.id.action_mainMenuFragment_to_gameFragment) }
+        puck_vs_friend.setOnTouchListener(null)
     }
 
     override fun onTouch(v: View?, event: MotionEvent?): Boolean {
@@ -53,7 +44,7 @@ class MainMenuFragment : Fragment(), View.OnTouchListener {
             MotionEvent.ACTION_MOVE -> {
                 val fingerX = event.rawX - (v.width / 2)
                 v.x = fingerX
-                if (fingerX >= tv_vs_friend.width.toFloat()) goToGameFragment()
+                if (fingerX >= tv_vs_friend.width.toFloat()) navigateToGameFragment()
             }
             MotionEvent.ACTION_UP -> v.performClick()
         }
