@@ -23,10 +23,8 @@ object NewAnimations {
     fun flipPlayingCard(
         flipView: EasyFlipView,
         cardsLeftText: AppCompatTextView,
-        isBadCard: Boolean,
         doNotShowMessage: Boolean = false,
-        fIsBadCard: () -> Unit,
-        fSetOnClickListeners: () -> Unit,
+        fOnFlipPlayingCardEnd: () -> Unit,
         fNotifyMessage: (message: String) -> Unit
     ) {
         cardsLeftText.apply {
@@ -39,14 +37,17 @@ object NewAnimations {
                 .translationX(60f)
                 .duration(100)
                 .onStop {
-                    flipView.flipTheView()
-                    if (!isBadCard) fSetOnClickListeners.invoke() else fIsBadCard.invoke()
-                    if (!Constants.isOngoingGame && !doNotShowMessage && !Constants.justShotAtGoalie) fNotifyMessage.invoke("Please choose a position.")
-                    if (Constants.justShotAtGoalie) Constants.justShotAtGoalie = false
+                    if (!Constants.isOngoingGame
+                        && !doNotShowMessage
+                        && !Constants.justShotAtGoalie) fNotifyMessage.invoke("Please choose a position.")
+
+                    fOnFlipPlayingCardEnd.invoke()
                 }
             .thenAnimate(cardsLeftText)
                 .scale(1.3f, 1.0f)
                 .duration(350)
             .start()
     }
+
+
 }

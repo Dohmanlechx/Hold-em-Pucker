@@ -97,7 +97,6 @@ class GameFragment : Fragment(), View.OnClickListener {
         }
 
         computer_lamp.post {
-            //Animations.startLampAnimation(computer_lamp)
             NewAnimations.animateLamp(computer_lamp)
         }
 
@@ -215,8 +214,20 @@ class GameFragment : Fragment(), View.OnClickListener {
     private fun flipNewCard(resId: Int, isBadCard: Boolean = false) {
         vm.setImagesOnFlipView(flip_view, card_deck, card_picked, resId, null, isVertical = true)
 
-//        Animations.flipPlayingCard(flip_view, cards_left, isBadCard, vm.cardDeck.size > 50, {
-        NewAnimations.flipPlayingCard(flip_view, cards_left, isBadCard, vm.cardDeck.size > 50, {
+        NewAnimations.flipPlayingCard(
+            flip_view,
+            cards_left,
+            vm.cardDeck.size > 50,
+            { onFlipPlayingCardEnd(isBadCard) },
+            { message -> vm.notifyMessage(message) })
+    }
+
+    private fun onFlipPlayingCardEnd(isBadCard: Boolean) {
+        flip_view.flipTheView()
+
+        if (!isBadCard) {
+            setOnClickListeners()
+        } else {
             // If it is bad card, this runs
             Animations.badCardOutAnimation(
                 flip_view,
@@ -228,9 +239,9 @@ class GameFragment : Fragment(), View.OnClickListener {
                 { vm.triggerBadCard() },
                 { removeAllOnClickListeners() },
                 { message -> vm.notifyMessage(message) })?.start()
-        },
-            { setOnClickListeners() },
-            { message -> vm.notifyMessage(message) })
+        }
+
+        if (justShotAtGoalie) justShotAtGoalie = false
     }
 
     private fun addGoalieView(
