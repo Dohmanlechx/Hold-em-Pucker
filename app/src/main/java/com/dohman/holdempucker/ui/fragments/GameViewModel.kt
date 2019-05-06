@@ -72,14 +72,17 @@ class GameViewModel : ViewModel() {
     * Card deck functions
     * */
 
-    fun removeCardFromDeck() {
+    fun removeCardFromDeck(): Boolean {
+        // True = Game can continue
         cardDeck.remove(firstCardInDeck)
         if (cardDeck.isEmpty()) {
             halfTime()
+            return false
         } else {
             firstCardInDeck = cardDeck.first()
             notifyPickedCard()
             cardsCountNotifier.value = cardDeck.size
+            return true
         }
     }
 
@@ -151,7 +154,7 @@ class GameViewModel : ViewModel() {
             }
 
             notifyMessage(
-                "${it.suit.toString().toLowerCase().capitalize()} $rankInterpreted\nattacks the\ngoalie..."
+                "${it.suit.toString().toLowerCase().capitalize()} $rankInterpreted attacks the goalie\n..."
             )
         }
     }
@@ -198,7 +201,7 @@ class GameViewModel : ViewModel() {
         }
 
         halfTimeNotifier.value = 1
-        if (period <= 3) notifyMessage("Not enough\ncards.\nPeriod $period\nstarted.", isNeutralMessage = true)
+        if (period <= 3) notifyMessage("Not enough cards. Period $period started.", isNeutralMessage = true)
         isOngoingGame = false
         areTeamsReadyToStartPeriod = false
     }
@@ -221,8 +224,7 @@ class GameViewModel : ViewModel() {
 
     private fun setPlayerInTeam(team: Array<Card?>, spotIndex: Int) {
         team[spotIndex] = firstCardInDeck
-        removeCardFromDeck()
-        showPickedCard()
+        if (removeCardFromDeck()) showPickedCard()
     }
 
     private fun areTeamsReady(): Boolean {

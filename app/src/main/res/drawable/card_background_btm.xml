@@ -5,8 +5,6 @@
 		android:width="1dp"
 		android:color="@color/card_border" />
 	<corners
-		android:bottomLeftRadius="6dp"
-		android:bottomRightRadius="6dp"
-		android:topLeftRadius="6dp"
-		android:topRightRadius="6dp" />
+		android:radius="4dp"
+		/>
 </shape>

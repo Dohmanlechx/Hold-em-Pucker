@@ -33,15 +33,17 @@ class MessageTextItem(
             )
         )
 
-        if (positionsList.any { it == holder.adapterPosition }) {
-            holder.itemView.txt_message.text = message
-        } else {
-            fAddPositionToList.invoke(holder.adapterPosition)
-            holder.itemView.txt_message.apply {
-                setCharacterDelay(20) // Setter, custom speed
-                animateText(message)
-            }
-        }
+        holder.itemView.txt_message.text = message
+
+//        if (positionsList.any { it == holder.adapterPosition }) {
+//            holder.itemView.txt_message.text = message
+//        } else {
+//            fAddPositionToList.invoke(holder.adapterPosition)
+//            holder.itemView.txt_message.apply {
+//                setCharacterDelay(20) // Setter, custom speed
+//                animateText(message)
+//            }
+//        }
     }
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

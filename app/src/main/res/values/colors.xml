@@ -8,9 +8,11 @@
     <color name="board">#1ACA1D</color>
     <color name="black">#000000</color>
     <color name="text_black">#CC000000</color>
-    <color name="card_border">#4D000000</color>
+    <color name="card_border">#80000000</color>
     <color name="text_background_btm">#5CD862</color>
     <color name="text_background_top">#A06DFF</color>
+    <color name="text_score_btm">#5CD862</color>
+    <color name="text_score_top">#673AB7</color>
     <color name="card_background_btm">#334CAF50</color>
     <color name="card_background_top">#33673AB7</color>
     <color name="victim">#0D3D0D</color>
