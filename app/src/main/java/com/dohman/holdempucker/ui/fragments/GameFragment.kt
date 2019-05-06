@@ -29,6 +29,7 @@ import com.dohman.holdempucker.util.Constants.Companion.teamTopScore
 import com.dohman.holdempucker.util.Constants.Companion.teamTopViews
 import com.dohman.holdempucker.util.Constants.Companion.whoseTeamStartedLastPeriod
 import com.dohman.holdempucker.util.Constants.Companion.whoseTurn
+import com.dohman.holdempucker.util.NewAnimations
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.items.AbstractItem
@@ -96,7 +97,8 @@ class GameFragment : Fragment(), View.OnClickListener {
         }
 
         computer_lamp.post {
-            Animations.startLampAnimation(computer_lamp)
+            //Animations.startLampAnimation(computer_lamp)
+            NewAnimations.animateLamp(computer_lamp)
         }
 
         setupMessageRecycler()
@@ -213,7 +215,8 @@ class GameFragment : Fragment(), View.OnClickListener {
     private fun flipNewCard(resId: Int, isBadCard: Boolean = false) {
         vm.setImagesOnFlipView(flip_view, card_deck, card_picked, resId, null, isVertical = true)
 
-        Animations.flipPlayingCard(flip_view, cards_left, isBadCard, vm.cardDeck.size > 50, {
+//        Animations.flipPlayingCard(flip_view, cards_left, isBadCard, vm.cardDeck.size > 50, {
+        NewAnimations.flipPlayingCard(flip_view, cards_left, isBadCard, vm.cardDeck.size > 50, {
             // If it is bad card, this runs
             Animations.badCardOutAnimation(
                 flip_view,
