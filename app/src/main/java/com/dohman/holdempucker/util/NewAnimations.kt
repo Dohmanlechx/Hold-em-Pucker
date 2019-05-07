@@ -129,6 +129,19 @@ object NewAnimations {
             .start()
     }
 
+    fun animateAddGoalie(flipView: View, goalie: View, xForAttacker: Float, delay: Long, fOnAddGoalieEnd: () -> Unit) {
+        ViewAnimator
+            .animate(flipView)
+                .translationX(xForAttacker - flipView.x)
+                .translationY(goalie.midHeight() - flipView.midHeight())
+                .rotation(90f)
+                .interpolator(LinearOutSlowInInterpolator())
+                .startDelay(delay)
+                .duration(500)
+                .onStop { fOnAddGoalieEnd.invoke() }
+            .start()
+    }
+
     fun animateAttackPlayer(attacker: View, target: View, screenWidth: Int, fOnAttackPlayerEnd: () -> Unit) {
         target.bringToFront()
         attacker.bringToFront()
@@ -207,7 +220,10 @@ object NewAnimations {
             .start()
     }
 
+    /* Extensions */
+
     private fun View.bottomYWithOffset() = y + (height + 8f)
+    private fun View.midHeight() = y + (height / 2).toFloat()
 }
 
 

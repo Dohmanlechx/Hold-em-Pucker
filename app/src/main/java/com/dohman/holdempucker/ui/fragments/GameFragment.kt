@@ -82,22 +82,59 @@ class GameFragment : Fragment(), View.OnClickListener {
 
         vm.updateScores(top_team_score, bm_team_score)
 
+        var width: Int = 0
+        var height: Int = 0
+
         flip_view.post {
             flip_view.bringToFront()
             flipViewOriginalX = flip_view.x
             flipViewOriginalY = flip_view.y
+
+            // Getting width and height for Goalie FlipViews
+            flip_view.apply {
+                width = this.width
+                height = this.height
+            }
         }
 
         flip_btm_goalie.post {
-            flip_btm_goalie.bringToFront()
-            flipViewBtmOriginalX = flip_btm_goalie.x
-            flipViewBtmOriginalY = flip_btm_goalie.y
+            flip_btm_goalie.apply {
+                layoutParams.width = height
+                layoutParams.height = width
+                bringToFront()
+                flipViewBtmOriginalX = this.x
+                flipViewBtmOriginalY = this.y
+            }
+
+            card_bm_goalie.apply {
+                layoutParams.width = height
+                layoutParams.height = width
+            }
+
+            background_bm_goalie.apply {
+                layoutParams.width = height
+                layoutParams.height = width
+            }
         }
 
         flip_top_goalie.post {
-            flip_top_goalie.bringToFront()
-            flipViewTopOriginalX = flip_top_goalie.x
-            flipViewTopOriginalY = flip_top_goalie.y
+            flip_top_goalie.apply {
+                layoutParams.width = height
+                layoutParams.height = width
+                bringToFront()
+                flipViewTopOriginalX = this.x
+                flipViewTopOriginalY = this.y
+            }
+
+            card_top_goalie.apply {
+                layoutParams.width = height
+                layoutParams.height = width
+            }
+
+            background_top_goalie.apply {
+                layoutParams.width = height
+                layoutParams.height = width
+            }
         }
 
         computer_lamp.post {
@@ -199,24 +236,24 @@ class GameFragment : Fragment(), View.OnClickListener {
     }
 
     private fun updateMessageBox(message: String, isNeutralMessage: Boolean = false) {
-        if (!isNeutralMessage) itemAdapter.add(
-            MessageTextItem(
-                message,
-                mikePenzPositions,
-                { pos -> mikePenzPositions.add(pos) },
-                whoseTurn == Constants.WhoseTurn.TOP
-            )
-        )
-        else itemAdapter.add(
-            MessageTextItem(
-                message,
-                mikePenzPositions,
-                { pos -> mikePenzPositions.add(pos) },
-                isNeutralMessage = true
-            )
-        )
-
-        v_recycler.adapter?.itemCount?.minus(1)?.let { v_recycler.smoothScrollToPosition(it) }
+//        if (!isNeutralMessage) itemAdapter.add(
+//            MessageTextItem(
+//                message,
+////                mikePenzPositions,
+////                { pos -> mikePenzPositions.add(pos) },
+//                whoseTurn == Constants.WhoseTurn.TOP
+//            )
+//        )
+//        else itemAdapter.add(
+//            MessageTextItem(
+//                message,
+////                mikePenzPositions,
+////                { pos -> mikePenzPositions.add(pos) },
+//                isNeutralMessage = true
+//            )
+//        )
+//
+//        v_recycler.adapter?.itemCount?.minus(1)?.let { v_recycler.smoothScrollToPosition(it) }
     }
 
     /*
@@ -307,26 +344,46 @@ class GameFragment : Fragment(), View.OnClickListener {
         card_deck.setImageResource(R.drawable.red_back_vertical)
         card_picked.setImageResource(R.drawable.red_back_vertical)
 
-        Animations.addGoalieAnimation(
-            flipView = flip_view,
-            goalieView = view,
-            flipViewOriginalX = flipViewOriginalX - 60f,
-            flipViewOriginalY = flipViewOriginalY
-        ).apply {
-            if (withStartDelay) startDelay = 1500
+//        Animations.addGoalieAnimation(
+//            flipView = flip_view,
+//            goalieView = view,
+//            flipViewOriginalX = flipViewOriginalX - 60f,
+//            flipViewOriginalY = flipViewOriginalY
+//        ).apply {
+//            if (withStartDelay) startDelay = 1500
+//
+//            doOnEnd {
+//                restoreFlipViewPosition()
+//                vm.onGoalieAddedAnimationEnd(view)
+//                if (card_top_goalie.tag != Integer.valueOf(R.drawable.red_back)) addGoalieView(bottom = false) else {
+//                    if (!doNotFlip) flipNewCard(vm.resIdOfCard(vm.firstCardInDeck))
+//                    if (doRemoveCardFromDeck) vm.removeCardFromDeck()
+//                    vm.showPickedCard()
+//                    cards_left.visibility = View.VISIBLE
+//                }
+//                isAnimationRunning = false
+//            }
+//            start()
+//        }
 
-            doOnEnd {
-                restoreFlipViewPosition()
-                vm.onGoalieAddedAnimationEnd(view)
-                if (card_top_goalie.tag != Integer.valueOf(R.drawable.red_back)) addGoalieView(bottom = false) else {
-                    if (!doNotFlip) flipNewCard(vm.resIdOfCard(vm.firstCardInDeck))
-                    if (doRemoveCardFromDeck) vm.removeCardFromDeck()
-                    vm.showPickedCard()
-                    cards_left.visibility = View.VISIBLE
-                }
-                isAnimationRunning = false
+        val delay: Long = if (withStartDelay) 1500 else 150
+
+        NewAnimations.animateAddGoalie(
+            flipView = flip_view,
+            goalie = view,
+            xForAttacker = card_bm_center.x,
+            delay = delay
+        )
+        {
+            // onStop
+            restoreFlipViewPosition()
+            vm.onGoalieAddedAnimationEnd(view)
+            if (card_top_goalie.tag != Integer.valueOf(R.drawable.red_back)) addGoalieView(bottom = false) else {
+                if (!doNotFlip) flipNewCard(vm.resIdOfCard(vm.firstCardInDeck))
+                if (doRemoveCardFromDeck) vm.removeCardFromDeck()
+                vm.showPickedCard()
+                cards_left.visibility = View.VISIBLE
             }
-            start()
         }
     }
 
