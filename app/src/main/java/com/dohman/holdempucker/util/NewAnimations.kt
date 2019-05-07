@@ -2,11 +2,10 @@ package com.dohman.holdempucker.util
 
 import android.view.View
 import android.view.animation.AnticipateInterpolator
-import androidx.appcompat.widget.AppCompatImageView
-import androidx.appcompat.widget.AppCompatTextView
+import android.view.animation.OvershootInterpolator
+import androidx.interpolator.view.animation.LinearOutSlowInInterpolator
 import com.dohman.holdempucker.util.Constants.Companion.possibleMovesIndexes
 import com.github.florent37.viewanimator.ViewAnimator
-import com.wajahatkarim3.easyflipview.EasyFlipView
 
 object NewAnimations {
 
@@ -15,6 +14,17 @@ object NewAnimations {
     /*
     * Animation functions
     * */
+
+    fun animatePuck(puck: View, team: String) {
+        val distance = if (team.toLowerCase() == "bottom") 100f else -100f
+
+        ViewAnimator
+            .animate(puck)
+                .translationY(distance)
+                .duration(300)
+                .interpolator(OvershootInterpolator(2.0f))
+            .start()
+    }
 
     fun animateLamp(lampView: View) {
         ViewAnimator
@@ -26,8 +36,8 @@ object NewAnimations {
     }
 
     fun animateFlipPlayingCard(
-        flipView: EasyFlipView,
-        cardsLeftText: AppCompatTextView,
+        flipView: View,
+        cardsLeftText: View,
         doNotShowMessage: Boolean = false,
         fOnFlipPlayingCardEnd: () -> Unit,
         fNotifyMessage: (message: String) -> Unit
@@ -56,7 +66,7 @@ object NewAnimations {
     }
 
     fun animateBadCard(
-        flipView: EasyFlipView,
+        flipView: View,
         screenWidth: Int,
         fRemoveAllOnClickListeners: () -> Unit,
         fOnBadCardEnd: () -> Unit
@@ -72,7 +82,7 @@ object NewAnimations {
             .start()
     }
 
-    fun animatePulsingCards(viewsToPulse: List<AppCompatImageView>, fNotifyMessage: (message: String) -> Unit) {
+    fun animatePulsingCards(viewsToPulse: List<View>, fNotifyMessage: (message: String) -> Unit) {
 
         val plural = if (possibleMovesIndexes.size == 1) "move" else "moves"
         val numberToText = when (possibleMovesIndexes.size) {
@@ -87,7 +97,7 @@ object NewAnimations {
             listOfPulseAnimations.add(
                 ViewAnimator
                     .animate(it)
-                        .pulse()
+                        .bounce()
                         .duration(620)
                         .repeatCount(ViewAnimator.INFINITE)
                         .onStop { it.apply {
@@ -103,6 +113,35 @@ object NewAnimations {
     fun stopAllPulsingCards() = listOfPulseAnimations.let {
         it.forEach { anim -> anim.cancel() }
         it.clear()
+    }
+
+    fun animateAddPlayer(attacker: View, target: View, fOnAddPlayerEnd: () -> Unit) {
+        ViewAnimator
+            .animate(attacker)
+                .translationX(target.x + 60f - attacker.x)
+                .translationY(target.y - attacker.y)
+                .duration(400)
+                .interpolator(LinearOutSlowInInterpolator())
+                .onStop { fOnAddPlayerEnd.invoke() }
+            .start()
+    }
+
+    fun animateAttackPlayer(attacker: View, target: View, screenWidth: Int, fOnAttackPlayerEnd: () -> Unit) {
+        target.bringToFront()
+        attacker.bringToFront()
+
+        ViewAnimator
+            .animate(attacker)
+                .translationX(target.x - attacker.x - 20f)
+                .translationY(target.y - attacker.y + 20f)
+                .duration(500)
+                .interpolator(LinearOutSlowInInterpolator())
+            .thenAnimate(attacker, target)
+                .translationX(screenWidth.toFloat())
+                .duration(500)
+                .interpolator(AnticipateInterpolator(1.5f))
+                .onStop { fOnAttackPlayerEnd.invoke() }
+            .start()
     }
 }
 

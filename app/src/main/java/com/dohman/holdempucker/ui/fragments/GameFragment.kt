@@ -63,7 +63,7 @@ class GameFragment : Fragment(), View.OnClickListener {
         vm.halfTimeNotifier.observe(this, Observer {
             if (isNextPeriodReady(it)) addGoalieView(true, withStartDelay = true)
         })
-        vm.whoseTurnNotifier.observe(this, Observer { Animations.togglePuckAnimation(puck, it)?.start() })
+        vm.whoseTurnNotifier.observe(this, Observer { NewAnimations.animatePuck(puck, it) })
         vm.pickedCardNotifier.observe(this, Observer { flipNewCard(it) })
         vm.cardsCountNotifier.observe(this, Observer { cards_left.text = it.toString() })
         vm.badCardNotifier.observe(
@@ -130,8 +130,8 @@ class GameFragment : Fragment(), View.OnClickListener {
         setOnClickListeners()
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onPause() {
+        super.onPause()
         clearListsOfViews()
     }
 
@@ -332,19 +332,11 @@ class GameFragment : Fragment(), View.OnClickListener {
 
     private fun animateAddPlayer(targetView: AppCompatImageView, team: Array<Card?>, spotIndex: Int) {
         removeAllOnClickListeners()
-        Animations.addPlayerAnimation(
-            flipView = flip_view,
-            targetView = targetView
-        ).apply {
-            doOnEnd {
-                restoreFlipViewPosition()
-                vm.onPlayerAddedAnimationEnd(targetView, team, spotIndex) { prepareViewsToPulse() }
-                isAnimationRunning = false
-            }
-
-            start()
+        NewAnimations.animateAddPlayer(flip_view, targetView) {
+            // OnStop
+            restoreFlipViewPosition()
+            vm.onPlayerAddedAnimationEnd(targetView, team, spotIndex) { prepareViewsToPulse() }
         }
-
     }
 
     private fun animateAttack(targetView: AppCompatImageView) {
@@ -354,25 +346,33 @@ class GameFragment : Fragment(), View.OnClickListener {
         val victimX = targetView.x
         val victimY = targetView.y
 
-        Animations.attackAnimation(flipView = flip_view, targetView = targetView, isAttacking = true).apply {
-            doOnEnd {
-                targetView.bringToFront()
-                flip_view.bringToFront()
-
-                Animations.attackAnimation(flipView = flip_view, targetView = targetView, isAttacking = false)
-                    .apply {
-                        doOnEnd {
-                            targetView.x = victimX
-                            targetView.y = victimY
-                            restoreFlipViewPosition()
-                            vm.onAttackedAnimationEnd(targetView) { prepareViewsToPulse() }
-                            isAnimationRunning = false
-                        }
-                        start()
-                    }
-            }
-            start()
+        NewAnimations.animateAttackPlayer(flip_view, targetView, vm.getScreenWidth()) {
+            // OnStop
+            targetView.x = victimX
+            targetView.y = victimY
+            restoreFlipViewPosition()
+            vm.onAttackedAnimationEnd(targetView) { prepareViewsToPulse() }
         }
+
+//        Animations.attackAnimation(flipView = flip_view, targetView = targetView, isAttacking = true).apply {
+//            doOnEnd {
+//                targetView.bringToFront()
+//                flip_view.bringToFront()
+//
+//                Animations.attackAnimation(flipView = flip_view, targetView = targetView, isAttacking = false)
+//                    .apply {
+//                        doOnEnd {
+//                            targetView.x = victimX
+//                            targetView.y = victimY
+//                            restoreFlipViewPosition()
+//                            vm.onAttackedAnimationEnd(targetView) { prepareViewsToPulse() }
+//                            isAnimationRunning = false
+//                        }
+//                        start()
+//                    }
+//            }
+//            start()
+//        }
     }
 
     private fun prepareAttackPlayer(victimTeam: Array<Card?>, spotIndex: Int, victimView: AppCompatImageView) {
