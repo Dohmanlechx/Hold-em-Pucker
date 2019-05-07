@@ -463,16 +463,31 @@ class GameFragment : Fragment(), View.OnClickListener {
             victimView.setImageResource(android.R.color.transparent)
             victimView.tag = Integer.valueOf(android.R.color.transparent)
 
-            Animations.goalieSavedAnimation(
+//            Animations.goalieSavedAnimation(
+//                flip_view,
+//                flip_top_goalie,
+//                tempGoalieCard,
+//                teamTop,
+//                { vm.notifyToggleTurn() },
+//                { restoreFlipViewPosition() },
+//                { addGoalieView(bottom = false, doNotFlip = true, doRemoveCardFromDeck = true) },
+//                { message -> vm.notifyMessage(message) }
+//            ).start()
+
+            NewAnimations.animateGoalieSaved(
+                fading_view,
                 flip_view,
                 flip_top_goalie,
+                vm.getScreenWidth(),
+                card_top_center.x,
                 tempGoalieCard,
-                teamTop,
-                { vm.notifyToggleTurn() },
-                { restoreFlipViewPosition() },
-                { addGoalieView(bottom = false, doNotFlip = true, doRemoveCardFromDeck = true) },
-                { message -> vm.notifyMessage(message) }
-            ).start()
+                { message -> updateMessageBox(message) },
+                {
+                    // OnStop
+                    onGoalieActionEnd(flip_top_goalie, false, teamTop)
+                    addGoalieView(bottom = false, doNotFlip = true, doRemoveCardFromDeck = true)
+                }
+            )
 
         } else {
             vm.setImagesOnFlipView(
@@ -487,17 +502,47 @@ class GameFragment : Fragment(), View.OnClickListener {
             victimView.setImageResource(android.R.color.transparent)
             victimView.tag = Integer.valueOf(android.R.color.transparent)
 
-            Animations.goalieSavedAnimation(
+//            Animations.goalieSavedAnimation(
+//                flip_view,
+//                flip_btm_goalie,
+//                tempGoalieCard,
+//                teamBottom,
+//                { vm.notifyToggleTurn() },
+//                { restoreFlipViewPosition() },
+//                { addGoalieView(bottom = true, doNotFlip = true, doRemoveCardFromDeck = true) },
+//                { message -> vm.notifyMessage(message) }
+//            ).start()
+
+            NewAnimations.animateGoalieSaved(
+                fading_view,
                 flip_view,
                 flip_btm_goalie,
+                vm.getScreenWidth(),
+                card_bm_center.x,
                 tempGoalieCard,
-                teamBottom,
-                { vm.notifyToggleTurn() },
-                { restoreFlipViewPosition() },
-                { addGoalieView(bottom = true, doNotFlip = true, doRemoveCardFromDeck = true) },
-                { message -> vm.notifyMessage(message) }
-            ).start()
+                { message -> updateMessageBox(message) },
+                {
+                    // OnStop
+                    onGoalieActionEnd(flip_btm_goalie, false, teamBottom)
+                    addGoalieView(bottom = true, doNotFlip = true, doRemoveCardFromDeck = true)
+                }
+            )
         }
+    }
+
+    private fun onGoalieActionEnd(view: View, isGoal: Boolean = false, team: Array<Card?>) {
+        fading_view.visibility = View.GONE
+        view.visibility = View.GONE
+        isOngoingGame = false
+        restoringPlayers = true
+
+        if (isGoal) {
+            if (whoseTurn == Constants.WhoseTurn.BOTTOM) teamBottomScore++ else teamTopScore++
+        }
+
+        team[5] = null
+        vm.notifyToggleTurn()
+        restoreFlipViewPosition()
     }
 
     /*

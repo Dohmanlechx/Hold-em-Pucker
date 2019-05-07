@@ -4,8 +4,11 @@ import android.view.View
 import android.view.animation.AnticipateInterpolator
 import android.view.animation.OvershootInterpolator
 import androidx.interpolator.view.animation.LinearOutSlowInInterpolator
+import com.dohman.holdempucker.cards.Card
 import com.dohman.holdempucker.util.Constants.Companion.possibleMovesIndexes
+import com.dohman.holdempucker.util.Constants.Companion.whoseTurn
 import com.github.florent37.viewanimator.ViewAnimator
+import com.wajahatkarim3.easyflipview.EasyFlipView
 
 object NewAnimations {
 
@@ -16,11 +19,11 @@ object NewAnimations {
     * */
 
     fun animatePuck(puck: View, team: String) {
-        val distance = if (team.toLowerCase() == "bottom") 100f else -100f
+        val vector = if (team.toLowerCase() == "bottom") 100f else -100f
 
         ViewAnimator
             .animate(puck)
-                .translationY(distance)
+                .translationY(vector)
                 .duration(300)
                 .interpolator(OvershootInterpolator(2.0f))
             .start()
@@ -97,7 +100,7 @@ object NewAnimations {
             listOfPulseAnimations.add(
                 ViewAnimator
                     .animate(it)
-                        .bounce()
+                        .pulse()
                         .duration(620)
                         .repeatCount(ViewAnimator.INFINITE)
                         .onStop { it.apply {
@@ -139,10 +142,72 @@ object NewAnimations {
             .thenAnimate(attacker, target)
                 .translationX(screenWidth.toFloat())
                 .duration(500)
-                .interpolator(AnticipateInterpolator(1.5f))
+                .interpolator(AnticipateInterpolator(1.0f))
                 .onStop { fOnAttackPlayerEnd.invoke() }
             .start()
     }
+
+    fun animateGoalieSaved(
+        fadingScreen: View,
+        attacker: View,
+        goalie: EasyFlipView,
+        screenWidth: Int,
+        xForAttacker: Float,
+        goalieCard: Card?,
+        fNotifyMessage: (message: String) -> Unit,
+        fOnGoalieSavedEnd: () -> Unit
+        ) {
+
+        fadingScreen.visibility = View.VISIBLE
+        fadingScreen.bringToFront()
+        attacker.bringToFront()
+        goalie.bringToFront()
+
+        val vector = when (whoseTurn) {
+            Constants.WhoseTurn.BOTTOM -> goalie.bottomYWithOffset() - attacker.y
+            else -> goalie.y - attacker.bottomYWithOffset()
+        }
+
+        ViewAnimator
+            .animate(fadingScreen)
+                .alpha(0.0f, 0.3f)
+            .andAnimate(attacker)
+                .translationX(xForAttacker + 60f - attacker.x)
+                .translationY(vector)
+                .startDelay(1500)
+                .duration(1500)
+                .interpolator(LinearOutSlowInInterpolator())
+            .thenAnimate(goalie)
+                .tada()
+                .duration(500)
+                .onStop { goalie.flipTheView() }
+            .thenAnimate(attacker)
+                .swing()
+                .startDelay(1000)
+                .duration(500)
+            .thenAnimate(fadingScreen)
+                .alpha(0.3f, 0.0f)
+                .duration(1000)
+            .onStart {
+                val rankInterpreted = when (goalieCard?.rank) {
+                    11 -> "Jack"
+                    12 -> "Queen"
+                    13 -> "King"
+                    14 -> "Ace"
+                    else -> goalieCard?.rank.toString()
+                }
+                fNotifyMessage.invoke("...\nof rank $rankInterpreted and the goalie SAVED!")
+            }
+            .thenAnimate(attacker, goalie)
+                .translationX(screenWidth.toFloat())
+                .startDelay(500)
+                .duration(500)
+                .interpolator(AnticipateInterpolator(1.0f))
+                .onStop { fOnGoalieSavedEnd.invoke() }
+            .start()
+    }
+
+    private fun View.bottomYWithOffset() = y + (height + 8f)
 }
 
 
