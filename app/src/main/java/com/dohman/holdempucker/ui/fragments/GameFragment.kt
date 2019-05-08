@@ -1,7 +1,6 @@
 package com.dohman.holdempucker.ui.fragments
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -28,7 +27,7 @@ import com.dohman.holdempucker.util.Constants.Companion.teamTopScore
 import com.dohman.holdempucker.util.Constants.Companion.whoseTeamStartedLastPeriod
 import com.dohman.holdempucker.util.Constants.Companion.whoseTurn
 import com.dohman.holdempucker.util.GameLogic
-import com.dohman.holdempucker.util.NewAnimations
+import com.dohman.holdempucker.util.Animations
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.items.AbstractItem
@@ -61,7 +60,7 @@ class GameFragment : Fragment(), View.OnClickListener {
         vm.halfTimeNotifier.observe(this, Observer {
             if (isNextPeriodReady(it)) addGoalieView(true, withStartDelay = true)
         })
-        vm.whoseTurnNotifier.observe(this, Observer { NewAnimations.animatePuck(puck, it) })
+        vm.whoseTurnNotifier.observe(this, Observer { Animations.animatePuck(puck, it) })
         vm.pickedCardNotifier.observe(this, Observer { flipNewCard(it) })
         vm.cardsCountNotifier.observe(this, Observer { cards_left.text = it.toString() })
         vm.badCardNotifier.observe(
@@ -133,7 +132,7 @@ class GameFragment : Fragment(), View.OnClickListener {
         }
 
         computer_lamp.post {
-            NewAnimations.animateLamp(computer_lamp)
+            Animations.animateLamp(computer_lamp)
         }
 
         setupMessageRecycler()
@@ -257,7 +256,7 @@ class GameFragment : Fragment(), View.OnClickListener {
     private fun flipNewCard(resId: Int, isBadCard: Boolean = false) {
         vm.setImagesOnFlipView(flip_view, card_deck, card_picked, resId, null, isVertical = true)
 
-        NewAnimations.animateFlipPlayingCard(
+        Animations.animateFlipPlayingCard(
             flip_view,
             cards_left,
             vm.cardDeck.size > 50,
@@ -272,17 +271,7 @@ class GameFragment : Fragment(), View.OnClickListener {
             setOnClickListeners()
         } else {
             // If it is bad card, this runs
-//            Animations.badCardOutAnimation(
-//                flip_view,
-//                { vm.firstCardInDeck },
-//                { vm.notifyToggleTurn() },
-//                { restoreFlipViewPosition() },
-//                { vm.removeCardFromDeck() },
-//                { vm.isThisTeamReady() },
-//                { vm.triggerBadCard() },
-//                { removeAllOnClickListeners() },
-//                { message -> vm.notifyMessage(message) })?.start()
-            NewAnimations.animateBadCard(
+            Animations.animateBadCard(
                 flip_view,
                 vm.getScreenWidth(),
                 { removeAllOnClickListeners() },
@@ -317,7 +306,7 @@ class GameFragment : Fragment(), View.OnClickListener {
             viewsToPulse.add(teamToPulse[it])
         }
 
-        NewAnimations.animatePulsingCards(viewsToPulse as List<AppCompatImageView>) { message ->
+        Animations.animatePulsingCards(viewsToPulse as List<AppCompatImageView>) { message ->
             updateMessageBox(
                 message
             )
@@ -345,31 +334,9 @@ class GameFragment : Fragment(), View.OnClickListener {
         card_deck.setImageResource(R.drawable.red_back_vertical)
         card_picked.setImageResource(R.drawable.red_back_vertical)
 
-//        Animations.addGoalieAnimation(
-//            flipView = flip_view,
-//            goalieView = view,
-//            fvMainX = fvMainX - 60f,
-//            fvMainY = fvMainY
-//        ).apply {
-//            if (withStartDelay) startDelay = 1500
-//
-//            doOnEnd {
-//                restoreFlipViewPosition()
-//                vm.onGoalieAddedAnimationEnd(view)
-//                if (card_top_goalie.tag != Integer.valueOf(R.drawable.red_back)) addGoalieView(bottom = false) else {
-//                    if (!doNotFlip) flipNewCard(vm.resIdOfCard(vm.firstCardInDeck))
-//                    if (doRemoveCardFromDeck) vm.removeCardFromDeck()
-//                    vm.showPickedCard()
-//                    cards_left.visibility = View.VISIBLE
-//                }
-//                isAnimationRunning = false
-//            }
-//            start()
-//        }
-
         val delay: Long = if (withStartDelay) 1500 else 150
 
-        NewAnimations.animateAddGoalie(
+        Animations.animateAddGoalie(
             flipView = flip_view,
             goalie = view,
             xForAttacker = card_bm_center.x,
@@ -390,7 +357,7 @@ class GameFragment : Fragment(), View.OnClickListener {
 
     private fun animateAddPlayer(targetView: AppCompatImageView, team: Array<Card?>, spotIndex: Int) {
         removeAllOnClickListeners()
-        NewAnimations.animateAddPlayer(flip_view, targetView) {
+        Animations.animateAddPlayer(flip_view, targetView) {
             // OnStop
             restoreFlipViewPosition()
             vm.onPlayerAddedAnimationEnd(targetView, team, spotIndex) { prepareViewsToPulse() }
@@ -399,38 +366,18 @@ class GameFragment : Fragment(), View.OnClickListener {
 
     private fun animateAttack(targetView: AppCompatImageView) {
         removeAllOnClickListeners()
-        NewAnimations.stopAllPulsingCards()
+        Animations.stopAllPulsingCards()
 
         val victimX = targetView.x
         val victimY = targetView.y
 
-        NewAnimations.animateAttackPlayer(flip_view, targetView, vm.getScreenWidth()) {
+        Animations.animateAttackPlayer(flip_view, targetView, vm.getScreenWidth()) {
             // OnStop
             targetView.x = victimX
             targetView.y = victimY
             restoreFlipViewPosition()
             vm.onAttackedAnimationEnd(targetView) { prepareViewsToPulse() }
         }
-
-//        Animations.attackAnimation(flipView = flip_view, targetView = targetView, isAttacking = true).apply {
-//            doOnEnd {
-//                targetView.bringToFront()
-//                flip_view.bringToFront()
-//
-//                Animations.attackAnimation(flipView = flip_view, targetView = targetView, isAttacking = false)
-//                    .apply {
-//                        doOnEnd {
-//                            targetView.x = victimX
-//                            targetView.y = victimY
-//                            restoreFlipViewPosition()
-//                            vm.onAttackedAnimationEnd(targetView) { prepareViewsToPulse() }
-//                            isAnimationRunning = false
-//                        }
-//                        start()
-//                    }
-//            }
-//            start()
-//        }
     }
 
     private fun prepareAttackPlayer(victimTeam: Array<Card?>, spotIndex: Int, victimView: AppCompatImageView) {
@@ -440,7 +387,7 @@ class GameFragment : Fragment(), View.OnClickListener {
 
             if (vm.canAttack(victimTeam, spotIndex, victimView)) {
                 removeAllOnClickListeners()
-                NewAnimations.stopAllPulsingCards()
+                Animations.stopAllPulsingCards()
 
                 vm.notifyMessageAttackingGoalie()
 
@@ -457,18 +404,7 @@ class GameFragment : Fragment(), View.OnClickListener {
                     victimView.setImageResource(android.R.color.transparent)
                     victimView.tag = Integer.valueOf(android.R.color.transparent)
 
-//                    Animations.scoredAtGoalieAnimation(
-//                        flip_view,
-//                        flip_top_goalie,
-//                        tempGoalieCard,
-//                        { vm.notifyToggleTurn() },
-//                        { restoreFlipViewPosition() },
-//                        { addGoalieView(bottom = false, doNotFlip = true, doRemoveCardFromDeck = true) },
-//                        { vm.updateScores(top_team_score, bm_team_score) },
-//                        { message -> vm.notifyMessage(message) }
-//                    ).start()
-
-                    NewAnimations.animateScoredAtGoalie(
+                    Animations.animateScoredAtGoalie(
                         fading_view,
                         flip_view,
                         flip_top_goalie,
@@ -499,18 +435,7 @@ class GameFragment : Fragment(), View.OnClickListener {
                     victimView.setImageResource(android.R.color.transparent)
                     victimView.tag = Integer.valueOf(android.R.color.transparent)
 
-//                    Animations.scoredAtGoalieAnimation(
-//                        flip_view,
-//                        flip_btm_goalie,
-//                        tempGoalieCard,
-//                        { vm.notifyToggleTurn() },
-//                        { restoreFlipViewPosition() },
-//                        { addGoalieView(bottom = true, doNotFlip = true, doRemoveCardFromDeck = true) },
-//                        { vm.updateScores(top_team_score, bm_team_score) },
-//                        { message -> vm.notifyMessage(message) }
-//                    ).start()
-
-                    NewAnimations.animateScoredAtGoalie(
+                    Animations.animateScoredAtGoalie(
                         fading_view,
                         flip_view,
                         flip_btm_goalie,
@@ -538,7 +463,7 @@ class GameFragment : Fragment(), View.OnClickListener {
 
     private fun prepareGoalieSaved(victimView: AppCompatImageView) {
         removeAllOnClickListeners()
-        NewAnimations.stopAllPulsingCards()
+        Animations.stopAllPulsingCards()
 
         justShotAtGoalie = true
 
@@ -557,18 +482,7 @@ class GameFragment : Fragment(), View.OnClickListener {
             victimView.setImageResource(android.R.color.transparent)
             victimView.tag = Integer.valueOf(android.R.color.transparent)
 
-//            Animations.goalieSavedAnimation(
-//                flip_view,
-//                flip_top_goalie,
-//                tempGoalieCard,
-//                teamTop,
-//                { vm.notifyToggleTurn() },
-//                { restoreFlipViewPosition() },
-//                { addGoalieView(bottom = false, doNotFlip = true, doRemoveCardFromDeck = true) },
-//                { message -> vm.notifyMessage(message) }
-//            ).start()
-
-            NewAnimations.animateGoalieSaved(
+            Animations.animateGoalieSaved(
                 fading_view,
                 flip_view,
                 flip_top_goalie,
@@ -596,18 +510,7 @@ class GameFragment : Fragment(), View.OnClickListener {
             victimView.setImageResource(android.R.color.transparent)
             victimView.tag = Integer.valueOf(android.R.color.transparent)
 
-//            Animations.goalieSavedAnimation(
-//                flip_view,
-//                flip_btm_goalie,
-//                tempGoalieCard,
-//                teamBottom,
-//                { vm.notifyToggleTurn() },
-//                { restoreFlipViewPosition() },
-//                { addGoalieView(bottom = true, doNotFlip = true, doRemoveCardFromDeck = true) },
-//                { message -> vm.notifyMessage(message) }
-//            ).start()
-
-            NewAnimations.animateGoalieSaved(
+            Animations.animateGoalieSaved(
                 fading_view,
                 flip_view,
                 flip_btm_goalie,

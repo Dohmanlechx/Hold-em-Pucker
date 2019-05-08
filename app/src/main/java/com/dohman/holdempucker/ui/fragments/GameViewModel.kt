@@ -13,7 +13,6 @@ import com.dohman.holdempucker.cards.Card
 import com.dohman.holdempucker.dagger.RepositoryComponent
 import com.dohman.holdempucker.repositories.CardRepository
 import com.dohman.holdempucker.repositories.ResourceRepository
-import com.dohman.holdempucker.util.Animations
 import com.dohman.holdempucker.util.Constants
 import com.dohman.holdempucker.util.Constants.Companion.areTeamsReadyToStartPeriod
 import com.dohman.holdempucker.util.Constants.Companion.isOngoingGame
