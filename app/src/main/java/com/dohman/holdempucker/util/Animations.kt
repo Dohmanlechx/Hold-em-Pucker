@@ -57,7 +57,7 @@ object Animations {
                 .onStop {
                     if (!Constants.isOngoingGame
                         && !doNotShowMessage
-                        && !Constants.justShotAtGoalie
+                        && !Constants.isJustShotAtGoalie
                     ) fNotifyMessage.invoke("Please choose a position.")
 
                 fOnFlipPlayingCardEnd.invoke()

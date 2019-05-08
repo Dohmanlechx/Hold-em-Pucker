@@ -10,6 +10,8 @@ import android.view.ViewGroup
 import androidx.navigation.Navigation
 
 import com.dohman.holdempucker.R
+import com.dohman.holdempucker.util.Constants
+import com.dohman.holdempucker.util.Constants.Companion.currentGameMode
 import kotlinx.android.synthetic.main.main_menu_fragment.*
 
 class MainMenuFragment : Fragment(), View.OnTouchListener {
@@ -26,6 +28,11 @@ class MainMenuFragment : Fragment(), View.OnTouchListener {
 
         setOnTouchListeners()
         setGradientOnTexts()
+
+        tv_ai_random.setOnClickListener {
+            currentGameMode = Constants.GameMode.RANDOM
+            navigateToGameFragment()
+        }
     }
 
     private fun setGradientOnTexts() {
@@ -44,7 +51,10 @@ class MainMenuFragment : Fragment(), View.OnTouchListener {
             MotionEvent.ACTION_MOVE -> {
                 val fingerX = event.rawX - (v.width / 2)
                 v.x = fingerX
-                if (fingerX >= tv_vs_friend.width.toFloat()) navigateToGameFragment()
+                if (fingerX >= tv_vs_friend.width.toFloat()) {
+                    currentGameMode = Constants.GameMode.FRIEND
+                    navigateToGameFragment()
+                }
             }
             MotionEvent.ACTION_UP -> v.performClick()
         }
