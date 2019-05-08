@@ -141,8 +141,8 @@ class GameViewModel : ViewModel() {
 
         val scaledBitmap = Bitmap.createScaledBitmap(
             BitmapFactory.decodeResource(appRepo.resources, resIdOfCard(card)),
-            691,
-            1056,
+            173,
+            264,
             true
         )
 

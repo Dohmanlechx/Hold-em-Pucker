@@ -419,7 +419,7 @@ object Animations {
                         whoseTurn,
                         fGetFirstCardInDeck.invoke()
                     )
-                ) startPulsingCardsAnimation { message -> fNotifyMessage.invoke(message) }
+                ) //startPulsingCardsAnimation { message -> fNotifyMessage.invoke(message) }
 
                 isAnimationRunning = false
             }

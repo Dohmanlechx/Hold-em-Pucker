@@ -1,11 +1,11 @@
 package com.dohman.holdempucker.ui.fragments
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.AppCompatImageView
-import androidx.core.animation.doOnEnd
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -14,12 +14,10 @@ import com.dohman.holdempucker.R
 import com.dohman.holdempucker.cards.Card
 import com.dohman.holdempucker.ui.MessageTextItem
 import com.dohman.holdempucker.ui.overrides.SpeedyLinearLayoutManager
-import com.dohman.holdempucker.util.Animations
 import com.dohman.holdempucker.util.Constants
 import com.dohman.holdempucker.util.Constants.Companion.isAnimationRunning
 import com.dohman.holdempucker.util.Constants.Companion.isOngoingGame
 import com.dohman.holdempucker.util.Constants.Companion.justShotAtGoalie
-import com.dohman.holdempucker.util.Constants.Companion.mikePenzPositions
 import com.dohman.holdempucker.util.Constants.Companion.period
 import com.dohman.holdempucker.util.Constants.Companion.possibleMovesIndexes
 import com.dohman.holdempucker.util.Constants.Companion.restoringPlayers
@@ -43,12 +41,12 @@ class GameFragment : Fragment(), View.OnClickListener {
     private val itemAdapter = ItemAdapter<AbstractItem<*, *>>()
     private val fastAdapter = FastAdapter.with<AbstractItem<*, *>, ItemAdapter<AbstractItem<*, *>>>(itemAdapter)
 
-    private var flipViewOriginalX: Float = 0f
-    private var flipViewOriginalY: Float = 0f
-    private var flipViewBtmOriginalX: Float = 0f
-    private var flipViewBtmOriginalY: Float = 0f
-    private var flipViewTopOriginalX: Float = 0f
-    private var flipViewTopOriginalY: Float = 0f
+    private var fvMainX: Float = 0f
+    private var fvMainY: Float = 0f
+    private var fvGoalieBtmX: Float = 0f
+    private var fvGoalieBtmY: Float = 0f
+    private var fvGoalieTopX: Float = 0f
+    private var fvGoalieTopY: Float = 0f
 
     private var teamBottomViews = mutableListOf<AppCompatImageView>()
     private var teamTopViews = mutableListOf<AppCompatImageView>()
@@ -82,13 +80,13 @@ class GameFragment : Fragment(), View.OnClickListener {
 
         vm.updateScores(top_team_score, bm_team_score)
 
-        var width: Int = 0
-        var height: Int = 0
+        var width = 0
+        var height = 0
 
         flip_view.post {
             flip_view.bringToFront()
-            flipViewOriginalX = flip_view.x
-            flipViewOriginalY = flip_view.y
+            fvMainX = flip_view.x
+            fvMainY = flip_view.y
 
             // Getting width and height for Goalie FlipViews
             flip_view.apply {
@@ -98,14 +96,6 @@ class GameFragment : Fragment(), View.OnClickListener {
         }
 
         flip_btm_goalie.post {
-            flip_btm_goalie.apply {
-                layoutParams.width = height
-                layoutParams.height = width
-                bringToFront()
-                flipViewBtmOriginalX = this.x
-                flipViewBtmOriginalY = this.y
-            }
-
             card_bm_goalie.apply {
                 layoutParams.width = height
                 layoutParams.height = width
@@ -115,17 +105,15 @@ class GameFragment : Fragment(), View.OnClickListener {
                 layoutParams.width = height
                 layoutParams.height = width
             }
-        }
 
-        flip_top_goalie.post {
-            flip_top_goalie.apply {
+            flip_btm_goalie.apply {
                 layoutParams.width = height
                 layoutParams.height = width
                 bringToFront()
-                flipViewTopOriginalX = this.x
-                flipViewTopOriginalY = this.y
             }
+        }
 
+        flip_top_goalie.post {
             card_top_goalie.apply {
                 layoutParams.width = height
                 layoutParams.height = width
@@ -135,6 +123,13 @@ class GameFragment : Fragment(), View.OnClickListener {
                 layoutParams.width = height
                 layoutParams.height = width
             }
+
+            flip_top_goalie.apply {
+                layoutParams.width = height
+                layoutParams.height = width
+                bringToFront()
+            }
+
         }
 
         computer_lamp.post {
@@ -161,7 +156,7 @@ class GameFragment : Fragment(), View.OnClickListener {
         }
     }
 
-    override fun onResume() { // FIXME Buggigt
+    override fun onResume() {
         super.onResume()
         storeAllViews()
         setOnClickListeners()
@@ -178,13 +173,12 @@ class GameFragment : Fragment(), View.OnClickListener {
 
     private fun restoreFlipViewPosition() {
         flip_view.rotation = 0f
-        flip_view.x = flipViewOriginalX
-        flip_view.y = flipViewOriginalY
-        flip_view.scaleX = 1f // FIXME: Use another animation?
-        flip_btm_goalie.x = flipViewBtmOriginalX
-        flip_btm_goalie.y = flipViewBtmOriginalY
-        flip_top_goalie.x = flipViewTopOriginalX
-        flip_top_goalie.y = flipViewTopOriginalY
+        flip_view.x = fvMainX
+        flip_view.y = fvMainY
+        flip_btm_goalie.x = fvGoalieBtmX
+        flip_btm_goalie.y = fvGoalieBtmY
+        flip_top_goalie.x = fvGoalieTopX
+        flip_top_goalie.y = fvGoalieTopY
     }
 
     private fun storeAllViews() {
@@ -236,24 +230,24 @@ class GameFragment : Fragment(), View.OnClickListener {
     }
 
     private fun updateMessageBox(message: String, isNeutralMessage: Boolean = false) {
-//        if (!isNeutralMessage) itemAdapter.add(
-//            MessageTextItem(
-//                message,
-////                mikePenzPositions,
-////                { pos -> mikePenzPositions.add(pos) },
-//                whoseTurn == Constants.WhoseTurn.TOP
-//            )
-//        )
-//        else itemAdapter.add(
-//            MessageTextItem(
-//                message,
-////                mikePenzPositions,
-////                { pos -> mikePenzPositions.add(pos) },
-//                isNeutralMessage = true
-//            )
-//        )
-//
-//        v_recycler.adapter?.itemCount?.minus(1)?.let { v_recycler.smoothScrollToPosition(it) }
+        if (!isNeutralMessage) itemAdapter.add(
+            MessageTextItem(
+                message,
+//                mikePenzPositions,
+//                { pos -> mikePenzPositions.add(pos) },
+                whoseTurn == Constants.WhoseTurn.TOP
+            )
+        )
+        else itemAdapter.add(
+            MessageTextItem(
+                message,
+//                mikePenzPositions,
+//                { pos -> mikePenzPositions.add(pos) },
+                isNeutralMessage = true
+            )
+        )
+
+        v_recycler.adapter?.itemCount?.minus(1)?.let { v_recycler.smoothScrollToPosition(it) }
     }
 
     /*
@@ -336,6 +330,13 @@ class GameFragment : Fragment(), View.OnClickListener {
         doRemoveCardFromDeck: Boolean = false,
         withStartDelay: Boolean = false
     ) {
+        if (fvGoalieBtmX == 0f) {
+            fvGoalieBtmX = flip_btm_goalie.x
+            fvGoalieBtmY = flip_btm_goalie.y
+            fvGoalieTopX = flip_top_goalie.x
+            fvGoalieTopY = flip_top_goalie.y
+        }
+
         // ONLY adding view. No real goalie card is assigning to that team by this function.
         removeAllOnClickListeners()
 
@@ -347,8 +348,8 @@ class GameFragment : Fragment(), View.OnClickListener {
 //        Animations.addGoalieAnimation(
 //            flipView = flip_view,
 //            goalieView = view,
-//            flipViewOriginalX = flipViewOriginalX - 60f,
-//            flipViewOriginalY = flipViewOriginalY
+//            fvMainX = fvMainX - 60f,
+//            fvMainY = fvMainY
 //        ).apply {
 //            if (withStartDelay) startDelay = 1500
 //
@@ -456,16 +457,34 @@ class GameFragment : Fragment(), View.OnClickListener {
                     victimView.setImageResource(android.R.color.transparent)
                     victimView.tag = Integer.valueOf(android.R.color.transparent)
 
-                    Animations.scoredAtGoalieAnimation(
+//                    Animations.scoredAtGoalieAnimation(
+//                        flip_view,
+//                        flip_top_goalie,
+//                        tempGoalieCard,
+//                        { vm.notifyToggleTurn() },
+//                        { restoreFlipViewPosition() },
+//                        { addGoalieView(bottom = false, doNotFlip = true, doRemoveCardFromDeck = true) },
+//                        { vm.updateScores(top_team_score, bm_team_score) },
+//                        { message -> vm.notifyMessage(message) }
+//                    ).start()
+
+                    NewAnimations.animateScoredAtGoalie(
+                        fading_view,
                         flip_view,
                         flip_top_goalie,
+                        vm.getScreenWidth(),
+                        card_top_center.x,
                         tempGoalieCard,
-                        { vm.notifyToggleTurn() },
-                        { restoreFlipViewPosition() },
-                        { addGoalieView(bottom = false, doNotFlip = true, doRemoveCardFromDeck = true) },
-                        { vm.updateScores(top_team_score, bm_team_score) },
-                        { message -> vm.notifyMessage(message) }
-                    ).start()
+                        { message -> updateMessageBox(message) },
+                        {
+                            // OnStop
+                            onGoalieActionEnd(flip_top_goalie, true, teamTop)
+                            vm.updateScores(top_team_score, bm_team_score)
+                            vm.notifyToggleTurn()
+                            restoreFlipViewPosition()
+                            addGoalieView(bottom = false, doNotFlip = true, doRemoveCardFromDeck = true)
+                        }
+                    )
 
                 } else {
                     vm.setImagesOnFlipView(
@@ -480,16 +499,34 @@ class GameFragment : Fragment(), View.OnClickListener {
                     victimView.setImageResource(android.R.color.transparent)
                     victimView.tag = Integer.valueOf(android.R.color.transparent)
 
-                    Animations.scoredAtGoalieAnimation(
+//                    Animations.scoredAtGoalieAnimation(
+//                        flip_view,
+//                        flip_btm_goalie,
+//                        tempGoalieCard,
+//                        { vm.notifyToggleTurn() },
+//                        { restoreFlipViewPosition() },
+//                        { addGoalieView(bottom = true, doNotFlip = true, doRemoveCardFromDeck = true) },
+//                        { vm.updateScores(top_team_score, bm_team_score) },
+//                        { message -> vm.notifyMessage(message) }
+//                    ).start()
+
+                    NewAnimations.animateScoredAtGoalie(
+                        fading_view,
                         flip_view,
                         flip_btm_goalie,
+                        vm.getScreenWidth(),
+                        card_bm_center.x,
                         tempGoalieCard,
-                        { vm.notifyToggleTurn() },
-                        { restoreFlipViewPosition() },
-                        { addGoalieView(bottom = true, doNotFlip = true, doRemoveCardFromDeck = true) },
-                        { vm.updateScores(top_team_score, bm_team_score) },
-                        { message -> vm.notifyMessage(message) }
-                    ).start()
+                        { message -> updateMessageBox(message) },
+                        {
+                            // OnStop
+                            onGoalieActionEnd(flip_btm_goalie, true, teamBottom)
+                            vm.updateScores(top_team_score, bm_team_score)
+                            vm.notifyToggleTurn()
+                            restoreFlipViewPosition()
+                            addGoalieView(bottom = true, doNotFlip = true, doRemoveCardFromDeck = true)
+                        }
+                    )
                 }
             }
         } else {
@@ -608,7 +645,7 @@ class GameFragment : Fragment(), View.OnClickListener {
 
     private fun isNextPeriodReady(nextPeriod: Int): Boolean {
         cards_left.visibility = View.GONE
-
+        restoreFlipViewPosition()
         period += nextPeriod
 
         if (period > 3 && (teamBottomScore != teamTopScore)) {
