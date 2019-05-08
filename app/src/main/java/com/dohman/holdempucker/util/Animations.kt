@@ -119,7 +119,7 @@ object Animations {
     }
 
     fun animateAddPlayer(attacker: View, target: View, isBotMove: Boolean, fOnAddPlayerEnd: () -> Unit) {
-        val delay: Long = if (isBotMove) 750 else 0
+        val delay: Long = if (isBotMove) 500 else 0
 
         ViewAnimator
             .animate(attacker)
@@ -195,6 +195,7 @@ object Animations {
                 .interpolator(LinearOutSlowInInterpolator())
             .thenAnimate(goalie)
                 .tada()
+                .startDelay(1000)
                 .duration(500)
                 .onStop { goalie.flipTheView() }
             .thenAnimate(attacker)
@@ -254,6 +255,7 @@ object Animations {
                 .interpolator(LinearOutSlowInInterpolator())
             .thenAnimate(goalie)
                 .rubber()
+                .startDelay(1000)
                 .duration(500)
                 .onStop { goalie.flipTheView() }
             .thenAnimate(attacker)

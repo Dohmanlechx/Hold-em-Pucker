@@ -29,6 +29,7 @@ import com.dohman.holdempucker.util.Constants.Companion.whoseTurn
 import com.dohman.holdempucker.util.GameLogic
 import com.dohman.holdempucker.util.Animations
 import com.dohman.holdempucker.util.Constants.Companion.TAG_GAMEACTIVITY
+import com.dohman.holdempucker.util.Constants.Companion.areTeamsReadyToStartPeriod
 import com.dohman.holdempucker.util.Constants.Companion.isVsBot
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
@@ -146,14 +147,13 @@ class GameFragment : Fragment(), View.OnClickListener {
             top_team_score.text = teamTopScore.toString()
             period = 1
 
-            teamBottomViews.forEach { view ->
-                view.setImageResource(android.R.color.transparent)
-                view.tag = Integer.valueOf(android.R.color.transparent)
-            }
-            teamTopViews.forEach { view ->
-                view.setImageResource(android.R.color.transparent)
-                view.tag = Integer.valueOf(android.R.color.transparent)
-            }
+            isOngoingGame = false
+            isRestoringPlayers = true
+            areTeamsReadyToStartPeriod = false
+            isJustShotAtGoalie = false
+
+            resetAllCards(teamBottomViews)
+            resetAllCards(teamTopViews)
 
             card_top_goalie.tag = null
             card_bm_goalie.tag = null
@@ -209,6 +209,13 @@ class GameFragment : Fragment(), View.OnClickListener {
                 add(card_top_defender_right)
                 add(card_top_goalie)
             }
+        }
+    }
+
+    private fun resetAllCards(list: List<AppCompatImageView>) {
+        list.forEach {
+            it.setImageResource(android.R.color.transparent)
+            it.tag = Integer.valueOf(android.R.color.transparent)
         }
     }
 
@@ -322,15 +329,20 @@ class GameFragment : Fragment(), View.OnClickListener {
             restoreFlipViewPosition()
             vm.onGoalieAddedAnimationEnd(view)
             if (card_top_goalie.tag != Integer.valueOf(R.drawable.red_back)) addGoalieView(bottom = false) else {
-                if (!doNotFlip) flipNewCard(vm.resIdOfCard(vm.firstCardInDeck))
-                if (doRemoveCardFromDeck) vm.removeCardFromDeck()
-                vm.showPickedCard()
+                if (!doNotFlip) flipNewCard(vm.resIdOfCard(vm.firstCardInDeck)) // FIXME
+                if (doRemoveCardFromDeck) vm.removeCardFromDeck(doNotNotify = true)
+                vm.gameManager()
                 cards_left.visibility = View.VISIBLE
             }
         }
     }
 
-    private fun animateAddPlayer(targetView: AppCompatImageView, team: Array<Card?>, spotIndex: Int, isBotMove: Boolean = false) {
+    private fun animateAddPlayer(
+        targetView: AppCompatImageView,
+        team: Array<Card?>,
+        spotIndex: Int,
+        isBotMove: Boolean = false
+    ) {
         removeAllOnClickListeners()
         Animations.animateAddPlayer(flip_view, targetView, isBotMove) {
             // OnStop
@@ -510,10 +522,10 @@ class GameFragment : Fragment(), View.OnClickListener {
         flip_view.flipTheView()
 
         // Bot's turn
-        if (isVsBot && whoseTurn == Constants.WhoseTurn.TOP && !isBadCard) {
+        if (Constants.GameMode.isBotsTurn() && isRestoringPlayers && !isBadCard) {
             vm.botChooseEmptySpot(getEmptySpots()) {
                 // Trigger the bot's move
-                animateAddPlayer(teamTopViews[it], teamTop, it, isBotMove = true)
+                if (it != -1) animateAddPlayer(teamTopViews[it], teamTop, it, isBotMove = true)
             }
 
         } else {
@@ -571,6 +583,7 @@ class GameFragment : Fragment(), View.OnClickListener {
         cards_left.visibility = View.GONE
         restoreFlipViewPosition()
         period += nextPeriod
+        isRestoringPlayers = true
 
         if (period > 3 && (teamBottomScore != teamTopScore)) {
             when {
@@ -596,8 +609,8 @@ class GameFragment : Fragment(), View.OnClickListener {
             whoseTurn =
                 if (whoseTeamStartedLastPeriod == Constants.WhoseTurn.BOTTOM) Constants.WhoseTurn.TOP else Constants.WhoseTurn.BOTTOM
 
-            teamBottomViews.forEach { it.setImageResource(android.R.color.transparent) }
-            teamTopViews.forEach { it.setImageResource(android.R.color.transparent) }
+            resetAllCards(teamBottomViews)
+            resetAllCards(teamTopViews)
 
             card_top_goalie.tag = null
             card_bm_goalie.tag = null

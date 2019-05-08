@@ -9,9 +9,9 @@ class BotRepository @Inject constructor(
     // Placeholder for other Repositories.
 ) {
 
-    fun triggerMove(mode: Enum<Constants.GameMode>, possibleMoves: List<Int>): Int {
+    fun getMoveIndex(mode: Enum<Constants.GameMode>, possibleMoves: List<Int>): Int {
         return when (mode) {
-            Constants.GameMode.RANDOM -> possibleMoves.random()
+            Constants.GameMode.RANDOM -> if (possibleMoves.isNotEmpty()) possibleMoves.random() else -1
             else -> { -1 }
         }
     }

@@ -13,7 +13,7 @@ class Constants {
         // Booleans
         var isVsBot = false
         var isOngoingGame = false // Set to true when all cards are laid out
-        var isRestoringPlayers = false // Set to true when a team need to lay out new cards to fulfill
+        var isRestoringPlayers = true // Set to true when a team need to lay out new cards to fulfill
         var areTeamsReadyToStartPeriod = false // Set to true as soon as both teams are full in the very beginning
         var isJustShotAtGoalie = false // To prevent duplicate message
 
@@ -75,5 +75,11 @@ class Constants {
 
     enum class GameMode {
         NONE, RANDOM, DEVELOPER, FRIEND;
+
+        companion object {
+            fun isBotsTurn(): Boolean {
+                return isVsBot && whoseTurn == WhoseTurn.TOP
+            }
+        }
     }
 }

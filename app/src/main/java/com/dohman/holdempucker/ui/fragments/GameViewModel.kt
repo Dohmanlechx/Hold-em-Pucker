@@ -10,7 +10,6 @@ import androidx.appcompat.widget.AppCompatTextView
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.dohman.holdempucker.R
-import com.dohman.holdempucker.bots.AIRandom
 import com.dohman.holdempucker.cards.Card
 import com.dohman.holdempucker.dagger.RepositoryComponent
 import com.dohman.holdempucker.repositories.BotRepository
@@ -104,7 +103,7 @@ class GameViewModel : ViewModel() {
     * Card deck functions
     * */
 
-    fun removeCardFromDeck(): Boolean {
+    fun removeCardFromDeck(doNotNotify: Boolean = false): Boolean {
         // True = Game can continue
         cardDeck.remove(firstCardInDeck)
         return if (cardDeck.isEmpty()) {
@@ -112,7 +111,7 @@ class GameViewModel : ViewModel() {
             false
         } else {
             firstCardInDeck = cardDeck.first()
-            notifyPickedCard()
+            if (!doNotNotify) notifyPickedCard()
             cardsCountNotifier.value = cardDeck.size
             true
         }
@@ -195,7 +194,7 @@ class GameViewModel : ViewModel() {
     * Game management functions
     * */
 
-    fun showPickedCard(
+    fun gameManager(
         doNotToggleTurn: Boolean = false,
         fPrepareViewsToPulse: (() -> Unit)? = null
     ) {
@@ -210,7 +209,7 @@ class GameViewModel : ViewModel() {
         }
 
         if (!isGoalieThereOrAdd(firstCardInDeck)) { // If returned false, goalie is added
-            showPickedCard()
+            gameManager()
             return
         }
 
@@ -259,7 +258,7 @@ class GameViewModel : ViewModel() {
 
     private fun setPlayerInTeam(team: Array<Card?>, spotIndex: Int, fPrepareViewsToPulse: () -> Unit) {
         team[spotIndex] = firstCardInDeck
-        if (removeCardFromDeck()) showPickedCard(false, fPrepareViewsToPulse)
+        if (removeCardFromDeck()) gameManager(false, fPrepareViewsToPulse)
     }
 
     private fun areTeamsReady(): Boolean {
@@ -268,6 +267,7 @@ class GameViewModel : ViewModel() {
 
         isOngoingGame = true
         areTeamsReadyToStartPeriod = true
+        isRestoringPlayers = false
         return true
     }
 
@@ -321,7 +321,7 @@ class GameViewModel : ViewModel() {
     * */
 
     fun botChooseEmptySpot(possibleMoves: List<Int>, fTriggerBotMove: (Int) -> Unit) {
-        fTriggerBotMove.invoke(botRepo.triggerMove(currentGameMode, possibleMoves))
+        fTriggerBotMove.invoke(botRepo.getMoveIndex(currentGameMode, possibleMoves))
     }
 
     /*
@@ -348,6 +348,6 @@ class GameViewModel : ViewModel() {
         view.setImageResource(android.R.color.transparent)
         view.tag = Integer.valueOf(android.R.color.transparent)
         removeCardFromDeck()
-        showPickedCard(true, fPrepareViewsToPulse)
+        gameManager(true, fPrepareViewsToPulse)
     }
 }
