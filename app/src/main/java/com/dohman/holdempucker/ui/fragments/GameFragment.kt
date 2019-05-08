@@ -219,7 +219,6 @@ class GameFragment : Fragment(), View.OnClickListener {
         }
     }
 
-    // FIXME! This fun is only temporary. Leading into crashes. Cuz Constant storage of views... remove later!
     private fun clearListsOfViews() {
         teamBottomViews.clear()
         teamTopViews.clear()
