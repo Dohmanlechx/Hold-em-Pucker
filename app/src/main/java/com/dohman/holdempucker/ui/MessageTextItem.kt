@@ -10,8 +10,8 @@ import kotlinx.android.synthetic.main.message_box_item.view.*
 
 class MessageTextItem(
     private val message: String,
-    private val positionsList: List<Int>,
-    private val fAddPositionToList: (Int) -> Unit,
+//    private val positionsList: List<Int>,
+//    private val fAddPositionToList: (Int) -> Unit,
     private val isTeamTop: Boolean = false,
     private val isNeutralMessage: Boolean = false
 ) : AbstractItem<MessageTextItem, MessageTextItem.ViewHolder>() {

@@ -39,10 +39,6 @@ class Constants {
         var whoseTurn = WhoseTurn.TOP
         var whoseTeamStartedLastPeriod = WhoseTurn.BOTTOM
 
-        // Views
-        val teamBottomViews = mutableListOf<AppCompatImageView>()
-        val teamTopViews = mutableListOf<AppCompatImageView>()
-
         // Cases
         val cases = mutableListOf<List<Int>>().apply {
             add(0, listOf(0, 1, 2, 3, 4, 5)) // ( 0, 1, 2)

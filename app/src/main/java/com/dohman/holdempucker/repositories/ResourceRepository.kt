@@ -15,4 +15,11 @@ class ResourceRepository @Inject constructor(
 
     val resources: Resources
         get() = this.application.resources
+
+    fun getScreenWidth(): Int {
+        val width = context.resources.displayMetrics.widthPixels
+        val height = context.resources.displayMetrics.heightPixels
+
+        return Math.min(width, height)
+    }
 }
