@@ -118,11 +118,14 @@ object Animations {
         it.clear()
     }
 
-    fun animateAddPlayer(attacker: View, target: View, fOnAddPlayerEnd: () -> Unit) {
+    fun animateAddPlayer(attacker: View, target: View, isBotMove: Boolean, fOnAddPlayerEnd: () -> Unit) {
+        val delay: Long = if (isBotMove) 750 else 0
+
         ViewAnimator
             .animate(attacker)
                 .translationX(target.x + 60f - attacker.x)
                 .translationY(target.y - attacker.y)
+                .startDelay(delay)
                 .duration(400)
                 .interpolator(LinearOutSlowInInterpolator())
                 .onStop { fOnAddPlayerEnd.invoke() }

@@ -1,6 +1,7 @@
 package com.dohman.holdempucker.ui.fragments
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -27,6 +28,7 @@ import com.dohman.holdempucker.util.Constants.Companion.whoseTeamStartedLastPeri
 import com.dohman.holdempucker.util.Constants.Companion.whoseTurn
 import com.dohman.holdempucker.util.GameLogic
 import com.dohman.holdempucker.util.Animations
+import com.dohman.holdempucker.util.Constants.Companion.TAG_GAMEACTIVITY
 import com.dohman.holdempucker.util.Constants.Companion.isVsBot
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
@@ -144,8 +146,14 @@ class GameFragment : Fragment(), View.OnClickListener {
             top_team_score.text = teamTopScore.toString()
             period = 1
 
-            teamBottomViews.forEach { view -> view.setImageResource(android.R.color.transparent) }
-            teamTopViews.forEach { view -> view.setImageResource(android.R.color.transparent) }
+            teamBottomViews.forEach { view ->
+                view.setImageResource(android.R.color.transparent)
+                view.tag = Integer.valueOf(android.R.color.transparent)
+            }
+            teamTopViews.forEach { view ->
+                view.setImageResource(android.R.color.transparent)
+                view.tag = Integer.valueOf(android.R.color.transparent)
+            }
 
             card_top_goalie.tag = null
             card_bm_goalie.tag = null
@@ -262,41 +270,6 @@ class GameFragment : Fragment(), View.OnClickListener {
             vm.cardDeck.size > 50,
             { onFlipPlayingCardEnd(isBadCard) },
             { message -> vm.notifyMessage(message) })
-
-        // FIXME if (isVsBot)
-    }
-
-    private fun onFlipPlayingCardEnd(isBadCard: Boolean) {
-        flip_view.flipTheView()
-
-        if (!isBadCard) {
-            setOnClickListeners()
-        } else {
-            // If it is bad card, this runs
-            Animations.animateBadCard(
-                flip_view,
-                vm.getScreenWidth(),
-                { removeAllOnClickListeners() },
-                {
-                    // OnStop
-                    vm.notifyToggleTurn()
-                    restoreFlipViewPosition()
-                    vm.removeCardFromDeck()
-
-                    if (!vm.isThisTeamReady()) {
-                        isOngoingGame = false
-                        isRestoringPlayers = true
-                    }
-
-                    if (isOngoingGame && !GameLogic.isTherePossibleMove(whoseTurn, vm.firstCardInDeck)) {
-                        vm.triggerBadCard()
-                    } else if (isOngoingGame && GameLogic.isTherePossibleMove(whoseTurn, vm.firstCardInDeck)) {
-                        prepareViewsToPulse()
-                    }
-                })
-        }
-
-        if (isJustShotAtGoalie) isJustShotAtGoalie = false
     }
 
     private fun prepareViewsToPulse() {
@@ -357,9 +330,9 @@ class GameFragment : Fragment(), View.OnClickListener {
         }
     }
 
-    private fun animateAddPlayer(targetView: AppCompatImageView, team: Array<Card?>, spotIndex: Int) {
+    private fun animateAddPlayer(targetView: AppCompatImageView, team: Array<Card?>, spotIndex: Int, isBotMove: Boolean = false) {
         removeAllOnClickListeners()
-        Animations.animateAddPlayer(flip_view, targetView) {
+        Animations.animateAddPlayer(flip_view, targetView, isBotMove) {
             // OnStop
             restoreFlipViewPosition()
             vm.onPlayerAddedAnimationEnd(targetView, team, spotIndex) { prepareViewsToPulse() }
@@ -529,6 +502,52 @@ class GameFragment : Fragment(), View.OnClickListener {
         }
     }
 
+    /*
+    * On Animation Ends
+    * */
+
+    private fun onFlipPlayingCardEnd(isBadCard: Boolean) {
+        flip_view.flipTheView()
+
+        // Bot's turn
+        if (isVsBot && whoseTurn == Constants.WhoseTurn.TOP && !isBadCard) {
+            vm.botChooseEmptySpot(getEmptySpots()) {
+                // Trigger the bot's move
+                animateAddPlayer(teamTopViews[it], teamTop, it, isBotMove = true)
+            }
+
+        } else {
+            if (!isBadCard) {
+                setOnClickListeners()
+            } else {
+                // If it is bad card, this runs
+                Animations.animateBadCard(
+                    flip_view,
+                    vm.getScreenWidth(),
+                    { removeAllOnClickListeners() },
+                    {
+                        // OnStop
+                        vm.notifyToggleTurn()
+                        restoreFlipViewPosition()
+                        vm.removeCardFromDeck()
+
+                        if (!vm.isThisTeamReady()) {
+                            isOngoingGame = false
+                            isRestoringPlayers = true
+                        }
+
+                        if (isOngoingGame && !GameLogic.isTherePossibleMove(whoseTurn, vm.firstCardInDeck)) {
+                            vm.triggerBadCard()
+                        } else if (isOngoingGame && GameLogic.isTherePossibleMove(whoseTurn, vm.firstCardInDeck)) {
+                            prepareViewsToPulse()
+                        }
+                    })
+            }
+        }
+
+        if (isJustShotAtGoalie) isJustShotAtGoalie = false
+    }
+
     private fun onGoalieActionEnd(view: View, isGoal: Boolean = false, team: Array<Card?>) {
         fading_view.visibility = View.GONE
         view.visibility = View.GONE
@@ -585,6 +604,18 @@ class GameFragment : Fragment(), View.OnClickListener {
 
             return true
         }
+    }
+
+    private fun getEmptySpots(): List<Int> {
+        val list = mutableListOf<Int>()
+
+        teamTopViews.minus(teamTopViews.last()).forEachIndexed { index, view ->
+            if (view.tag == Integer.valueOf(android.R.color.transparent)) list.add(index)
+        }
+
+        Log.d(TAG_GAMEACTIVITY, "$list")
+
+        return list
     }
 
     /*

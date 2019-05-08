@@ -13,6 +13,7 @@ import com.dohman.holdempucker.R
 import com.dohman.holdempucker.bots.AIRandom
 import com.dohman.holdempucker.cards.Card
 import com.dohman.holdempucker.dagger.RepositoryComponent
+import com.dohman.holdempucker.repositories.BotRepository
 import com.dohman.holdempucker.repositories.CardRepository
 import com.dohman.holdempucker.repositories.ResourceRepository
 import com.dohman.holdempucker.util.Constants
@@ -37,8 +38,8 @@ class GameViewModel : ViewModel() {
     lateinit var appRepo: ResourceRepository
     @Inject
     lateinit var cardRepo: CardRepository
-
-    var bot: Any? = null
+    @Inject
+    lateinit var botRepo: BotRepository
 
     var cardDeck = mutableListOf<Card>()
     var firstCardInDeck: Card
@@ -58,7 +59,6 @@ class GameViewModel : ViewModel() {
             Constants.GameMode.RANDOM -> {
                 Log.d(TAG_GAMEVIEWMODEL, "Game Mode: $currentGameMode")
                 isVsBot = true
-                bot = AIRandom()
             }
             Constants.GameMode.DEVELOPER -> {
                 Log.d(TAG_GAMEVIEWMODEL, "Game Mode: $currentGameMode")
@@ -317,6 +317,14 @@ class GameViewModel : ViewModel() {
     }
 
     /*
+    * Bot actions
+    * */
+
+    fun botChooseEmptySpot(possibleMoves: List<Int>, fTriggerBotMove: (Int) -> Unit) {
+        fTriggerBotMove.invoke(botRepo.triggerMove(currentGameMode, possibleMoves))
+    }
+
+    /*
     * On animation ends
     * */
 
@@ -341,6 +349,5 @@ class GameViewModel : ViewModel() {
         view.tag = Integer.valueOf(android.R.color.transparent)
         removeCardFromDeck()
         showPickedCard(true, fPrepareViewsToPulse)
-
     }
 }
