@@ -11,7 +11,7 @@
 		android:right="20dp"
 		android:left="20dp">
 		<shape>
-			<solid android:color="@color/md_red_500" />
+			<solid android:color="@color/black" />
 			<corners android:radius="8dp" />
 		</shape>
 	</item>

@@ -645,7 +645,7 @@
         android:fontFamily="@font/faster_one"
         android:gravity="center"
         android:textAlignment="center"
-        android:textColor="@color/red"
+        android:textColor="@color/darker_red"
         android:textSize="22sp"
         app:layout_constraintBottom_toTopOf="@id/flip_view"
         app:layout_constraintEnd_toEndOf="@id/card_background"
