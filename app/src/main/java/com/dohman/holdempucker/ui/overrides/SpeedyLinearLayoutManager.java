@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 public class SpeedyLinearLayoutManager extends LinearLayoutManager {
 
-    private static final float MILLISECONDS_PER_INCH = 150f; // Default is 25f (bigger = slower)
+    private static final float MILLISECONDS_PER_INCH = 100f; // Default is 25f (bigger = slower)
 
     public SpeedyLinearLayoutManager(Context context, int orientation, boolean reverseLayout) {
         super(context, orientation, reverseLayout);

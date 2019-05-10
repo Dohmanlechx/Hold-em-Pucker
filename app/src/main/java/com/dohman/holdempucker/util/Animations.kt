@@ -54,14 +54,13 @@ object Animations {
             .animate(flipView)
                 .translationX(60f)
                 .duration(100)
-                .onStop {
+                .onStart {
                     if (!Constants.isOngoingGame
                         && !doNotShowMessage
                         && !Constants.isJustShotAtGoalie
                     ) fNotifyMessage.invoke("Please choose a position.")
-
-                fOnFlipPlayingCardEnd.invoke()
                 }
+                .onStop { fOnFlipPlayingCardEnd.invoke() }
             .thenAnimate(cardsLeftText)
                 .scale(1.3f, 1.0f)
                 .duration(350)
