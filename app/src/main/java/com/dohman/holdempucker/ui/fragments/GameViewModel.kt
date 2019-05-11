@@ -324,6 +324,8 @@ class GameViewModel : ViewModel() {
         fTriggerBotMove.invoke(botRepo.getMoveIndex(currentGameMode, possibleMoves))
     }
 
+    fun botChooseIndexToAttack(indexes: List<Int>): Int = botRepo.getMoveIndex(currentGameMode, indexes)
+
     /*
     * On animation ends
     * */

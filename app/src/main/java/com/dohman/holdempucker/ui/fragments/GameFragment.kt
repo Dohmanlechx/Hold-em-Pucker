@@ -30,7 +30,7 @@ import com.dohman.holdempucker.util.GameLogic
 import com.dohman.holdempucker.util.Animations
 import com.dohman.holdempucker.util.Constants.Companion.TAG_GAMEACTIVITY
 import com.dohman.holdempucker.util.Constants.Companion.areTeamsReadyToStartPeriod
-import com.dohman.holdempucker.util.Constants.Companion.isVsBot
+import com.dohman.holdempucker.util.Constants.Companion.isBotMoving
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.items.AbstractItem
@@ -243,24 +243,28 @@ class GameFragment : Fragment(), View.OnClickListener {
     }
 
     private fun updateMessageBox(message: String, isNeutralMessage: Boolean = false) {
-        if (!isNeutralMessage) itemAdapter.add(
-            MessageTextItem(
-                message,
-//                mikePenzPositions,
-//                { pos -> mikePenzPositions.add(pos) },
-                whoseTurn == Constants.WhoseTurn.TOP
-            )
-        )
-        else itemAdapter.add(
-            MessageTextItem(
-                message,
-//                mikePenzPositions,
-//                { pos -> mikePenzPositions.add(pos) },
-                isNeutralMessage = true
-            )
-        )
+        itemAdapter.clear()
 
-        v_recycler.adapter?.itemCount?.minus(1)?.let { v_recycler.smoothScrollToPosition(it) }
+        if (!isNeutralMessage) {
+            itemAdapter.add(
+                MessageTextItem(
+                    message
+//                mikePenzPositions,
+//                { pos -> mikePenzPositions.add(pos) },
+                )
+            )
+        } else {
+            itemAdapter.add(
+                MessageTextItem(
+                    message,
+//                mikePenzPositions,
+//                { pos -> mikePenzPositions.add(pos) },
+                    isNeutralMessage = true
+                )
+            )
+        }
+
+        v_recycler.adapter?.itemCount?.minus(1)?.let { v_recycler.scrollToPosition(it) }
     }
 
     /*
@@ -288,9 +292,7 @@ class GameFragment : Fragment(), View.OnClickListener {
         }
 
         Animations.animatePulsingCards(viewsToPulse as List<AppCompatImageView>) { message ->
-            updateMessageBox(
-                message
-            )
+            updateMessageBox(message)
         }
     }
 
@@ -339,11 +341,9 @@ class GameFragment : Fragment(), View.OnClickListener {
     private fun animateAddPlayer(
         targetView: AppCompatImageView,
         team: Array<Card?>,
-        spotIndex: Int,
-        isBotMove: Boolean = false
+        spotIndex: Int
     ) {
-        removeAllOnClickListeners()
-        Animations.animateAddPlayer(flip_view, targetView, isBotMove) {
+        Animations.animateAddPlayer(flip_view, targetView) {
             // OnStop
             restoreFlipViewPosition()
             vm.onPlayerAddedAnimationEnd(targetView, team, spotIndex) { prepareViewsToPulse() }
@@ -402,8 +402,6 @@ class GameFragment : Fragment(), View.OnClickListener {
                             // OnStop
                             onGoalieActionEnd(flip_top_goalie, true, teamTop)
                             vm.updateScores(top_team_score, bm_team_score)
-//                            vm.notifyToggleTurn()
-//                            restoreFlipViewPosition()
                             addGoalieView(bottom = false, doNotFlip = true, doRemoveCardFromDeck = true)
                         }
                     )
@@ -433,8 +431,6 @@ class GameFragment : Fragment(), View.OnClickListener {
                             // OnStop
                             onGoalieActionEnd(flip_btm_goalie, true, teamBottom)
                             vm.updateScores(top_team_score, bm_team_score)
-//                            vm.notifyToggleTurn()
-//                            restoreFlipViewPosition()
                             addGoalieView(bottom = true, doNotFlip = true, doRemoveCardFromDeck = true)
                         }
                     )
@@ -521,39 +517,61 @@ class GameFragment : Fragment(), View.OnClickListener {
         flip_view.flipTheView()
 
         // Bot's turn
-        if (Constants.GameMode.isBotsTurn() && isRestoringPlayers && !isBadCard) {
-            vm.botChooseEmptySpot(getEmptySpots()) {
-                // Trigger the bot's move
-                if (it != -1) animateAddPlayer(teamTopViews[it], teamTop, it, isBotMove = true)
-            }
-
-        } else {
-            if (!isBadCard) {
-                setOnClickListeners()
+        if (isBotMoving && !isBadCard) {
+            // Adding player
+            if (isRestoringPlayers) {
+                vm.botChooseEmptySpot(getEmptySpots()) {
+                    // Trigger the bot's move
+                    if (it != -1) animateAddPlayer(teamTopViews[it], teamTop, it)
+                }
+                // Attacking player
             } else {
-                // If it is bad card, this runs
-                Animations.animateBadCard(
-                    flip_view,
-                    vm.getScreenWidth(),
-                    { removeAllOnClickListeners() },
-                    {
-                        // OnStop
-                        vm.notifyToggleTurn()
-                        restoreFlipViewPosition()
-                        vm.removeCardFromDeck()
+                val chosenIndex = vm.botChooseIndexToAttack(possibleMovesIndexes)
+                Log.d(TAG_GAMEACTIVITY, chosenIndex.toString())
 
-                        if (!vm.isThisTeamReady()) {
-                            isOngoingGame = false
-                            isRestoringPlayers = true
-                        }
-
-                        if (isOngoingGame && !GameLogic.isTherePossibleMove(whoseTurn, vm.firstCardInDeck)) {
-                            vm.triggerBadCard()
-                        } else if (isOngoingGame && GameLogic.isTherePossibleMove(whoseTurn, vm.firstCardInDeck)) {
-                            prepareViewsToPulse()
-                        }
-                    })
+                when (chosenIndex) {
+                    -1 -> { /* Do nothing */
+                    }
+                    5 -> {
+                        tempGoalieCard = teamBottom[5]
+                        if (vm.canAttack(teamBottom, 5, card_bm_goalie)) prepareAttackPlayer(
+                            teamBottom,
+                            5,
+                            card_bm_goalie
+                        )
+                        else prepareGoalieSaved(card_bm_goalie)
+                    }
+                    else -> prepareAttackPlayer(teamBottom, chosenIndex, teamBottomViews[chosenIndex])
+                }
             }
+        }
+
+        if (!isBadCard) {
+            setOnClickListeners()
+        } else {
+            // If it is bad card, this runs
+            Animations.animateBadCard(
+                flip_view,
+                vm.getScreenWidth(),
+                { removeAllOnClickListeners() },
+                {
+                    // OnStop
+                    vm.notifyToggleTurn()
+                    restoreFlipViewPosition()
+                    vm.removeCardFromDeck()
+
+                    if (!vm.isThisTeamReady()) {
+                        updateMessageBox("Please choose a position.")
+                        isOngoingGame = false
+                        isRestoringPlayers = true
+                    }
+
+                    if (isOngoingGame && !GameLogic.isTherePossibleMove(whoseTurn, vm.firstCardInDeck)) {
+                        vm.triggerBadCard()
+                    } else if (isOngoingGame && GameLogic.isTherePossibleMove(whoseTurn, vm.firstCardInDeck)) {
+                        prepareViewsToPulse()
+                    }
+                })
         }
 
         if (isJustShotAtGoalie) isJustShotAtGoalie = false
@@ -572,6 +590,7 @@ class GameFragment : Fragment(), View.OnClickListener {
         team[5] = null
         vm.notifyToggleTurn()
         restoreFlipViewPosition()
+        updateMessageBox("Please choose a position.")
     }
 
     /*
@@ -645,6 +664,8 @@ class GameFragment : Fragment(), View.OnClickListener {
     }
 
     override fun onClick(v: View) {
+        if (isBotMoving) return
+
         val spotIndex: Int
         if (isOngoingGame) {
             if (v.tag == Integer.valueOf(android.R.color.transparent)) return
@@ -736,8 +757,10 @@ class GameFragment : Fragment(), View.OnClickListener {
             val team = if (whoseTurn == Constants.WhoseTurn.BOTTOM) teamBottom else teamTop
 
             view?.let {
-                if (vm.canAddPlayerView(view, team, spotIndex))
+                if (vm.canAddPlayerView(view, team, spotIndex)) {
+                    removeAllOnClickListeners()
                     animateAddPlayer(view, team, spotIndex)
+                }
             }
         }
     }

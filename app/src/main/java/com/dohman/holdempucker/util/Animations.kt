@@ -5,6 +5,7 @@ import android.view.animation.AnticipateInterpolator
 import android.view.animation.OvershootInterpolator
 import androidx.interpolator.view.animation.LinearOutSlowInInterpolator
 import com.dohman.holdempucker.cards.Card
+import com.dohman.holdempucker.util.Constants.Companion.isBotMoving
 import com.dohman.holdempucker.util.Constants.Companion.possibleMovesIndexes
 import com.dohman.holdempucker.util.Constants.Companion.whoseTurn
 import com.github.florent37.viewanimator.ViewAnimator
@@ -13,6 +14,8 @@ import com.wajahatkarim3.easyflipview.EasyFlipView
 object Animations {
 
     private val listOfPulseAnimations = mutableListOf<ViewAnimator>()
+
+    private fun getDelay(): Long = if (isBotMoving) 1000 else 0
 
     /*
     * Animation functions
@@ -26,6 +29,14 @@ object Animations {
                 .translationY(vector)
                 .duration(300)
                 .interpolator(OvershootInterpolator(2.0f))
+            .start()
+    }
+
+    fun animateComputerText(textView: View) {
+        ViewAnimator
+            .animate(textView)
+                .newsPaper()
+                .duration(50)
             .start()
     }
 
@@ -55,7 +66,7 @@ object Animations {
                 .translationX(60f)
                 .duration(100)
                 .onStart {
-                    if (!Constants.isOngoingGame
+                    if (Constants.isRestoringPlayers
                         && !doNotShowMessage
                         && !Constants.isJustShotAtGoalie
                     ) fNotifyMessage.invoke("Please choose a position.")
@@ -95,6 +106,8 @@ object Animations {
         }
         fNotifyMessage.invoke("$numberToText possible $plural. Go Attack!")
 
+        if (isBotMoving) return
+
         viewsToPulse.forEach {
             listOfPulseAnimations.add(
                 ViewAnimator
@@ -117,14 +130,12 @@ object Animations {
         it.clear()
     }
 
-    fun animateAddPlayer(attacker: View, target: View, isBotMove: Boolean, fOnAddPlayerEnd: () -> Unit) {
-        val delay: Long = if (isBotMove) 500 else 0
-
+    fun animateAddPlayer(attacker: View, target: View, fOnAddPlayerEnd: () -> Unit) {
         ViewAnimator
             .animate(attacker)
                 .translationX(target.x + 60f - attacker.x)
                 .translationY(target.y - attacker.y)
-                .startDelay(delay)
+                .startDelay(getDelay())
                 .duration(400)
                 .interpolator(LinearOutSlowInInterpolator())
                 .onStop { fOnAddPlayerEnd.invoke() }
@@ -152,6 +163,7 @@ object Animations {
             .animate(attacker)
                 .translationX(target.x - attacker.x - 20f)
                 .translationY(target.y - attacker.y + 20f)
+                .startDelay(getDelay())
                 .duration(500)
                 .interpolator(LinearOutSlowInInterpolator())
             .thenAnimate(attacker, target)
