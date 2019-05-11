@@ -43,7 +43,6 @@ class GameViewModel : ViewModel() {
     var cardDeck = mutableListOf<Card>()
     var firstCardInDeck: Card
 
-    val botMoveNotifier = MutableLiveData<Int>()
     val messageNotifier = MutableLiveData<Pair<String, Boolean>>()
     val halfTimeNotifier = MutableLiveData<Int>()
     val whoseTurnNotifier = MutableLiveData<String>()
@@ -54,6 +53,17 @@ class GameViewModel : ViewModel() {
     init {
         RepositoryComponent.inject(this)
 
+        cardDeck = cardRepo.createCards() as MutableList<Card>
+        firstCardInDeck = cardDeck.first()
+    }
+
+    /*
+    * General functions
+    * */
+
+    fun getScreenWidth() = appRepo.getScreenWidth()
+
+    fun setGameMode() {
         when (currentGameMode) {
             Constants.GameMode.RANDOM -> {
                 Log.d(TAG_GAMEVIEWMODEL, "Game Mode: $currentGameMode")
@@ -71,16 +81,7 @@ class GameViewModel : ViewModel() {
                 Log.d(TAG_GAMEVIEWMODEL, "Game Mode: $currentGameMode")
             }
         }
-
-        cardDeck = cardRepo.createCards() as MutableList<Card>
-        firstCardInDeck = cardDeck.first()
     }
-
-    /*
-    * General functions
-    * */
-
-    fun getScreenWidth() = appRepo.getScreenWidth()
 
     /*
     * Notify functions

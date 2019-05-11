@@ -15,7 +15,14 @@ object Animations {
 
     private val listOfPulseAnimations = mutableListOf<ViewAnimator>()
 
-    private fun getDelay(): Long = if (isBotMoving) 1000 else 0
+    private fun getDelay(): Long {
+        return if (isBotMoving) {
+            val delays = listOf<Long>(1250, 1000, 750, 500)
+            delays.random()
+        } else {
+            0
+        }
+    }
 
     /*
     * Animation functions
@@ -36,7 +43,7 @@ object Animations {
         ViewAnimator
             .animate(textView)
                 .newsPaper()
-                .duration(50)
+                .duration(100)
             .start()
     }
 

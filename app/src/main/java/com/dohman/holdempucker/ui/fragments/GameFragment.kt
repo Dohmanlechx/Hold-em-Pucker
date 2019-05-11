@@ -165,13 +165,9 @@ class GameFragment : Fragment(), View.OnClickListener {
 
     override fun onResume() {
         super.onResume()
+        vm.setGameMode()
         storeAllViews()
         setOnClickListeners()
-    }
-
-    override fun onPause() {
-        super.onPause()
-        clearListsOfViews()
     }
 
     /*
@@ -189,26 +185,29 @@ class GameFragment : Fragment(), View.OnClickListener {
     }
 
     private fun storeAllViews() {
-        if (teamBottomViews.isEmpty()) {
-            teamBottomViews.apply {
-                add(card_bm_forward_left)
-                add(card_bm_center)
-                add(card_bm_forward_right)
-                add(card_bm_defender_left)
-                add(card_bm_defender_right)
-                add(card_bm_goalie)
-            }
-        }
+        teamBottomViews.clear()
+        teamTopViews.clear()
 
-        if (teamTopViews.isEmpty()) {
-            teamTopViews.apply {
-                add(card_top_forward_left)
-                add(card_top_center)
-                add(card_top_forward_right)
-                add(card_top_defender_left)
-                add(card_top_defender_right)
-                add(card_top_goalie)
-            }
+//        if (teamBottomViews.isEmpty()) {
+        teamBottomViews.apply {
+            add(card_bm_forward_left)
+            add(card_bm_center)
+            add(card_bm_forward_right)
+            add(card_bm_defender_left)
+            add(card_bm_defender_right)
+            add(card_bm_goalie)
+        }
+//        }
+
+//        if (teamTopViews.isEmpty()) {
+        teamTopViews.apply {
+            add(card_top_forward_left)
+            add(card_top_center)
+            add(card_top_forward_right)
+            add(card_top_defender_left)
+            add(card_top_defender_right)
+            add(card_top_goalie)
+//            }
         }
     }
 
@@ -544,34 +543,34 @@ class GameFragment : Fragment(), View.OnClickListener {
                     else -> prepareAttackPlayer(teamBottom, chosenIndex, teamBottomViews[chosenIndex])
                 }
             }
-        }
-
-        if (!isBadCard) {
-            setOnClickListeners()
         } else {
-            // If it is bad card, this runs
-            Animations.animateBadCard(
-                flip_view,
-                vm.getScreenWidth(),
-                { removeAllOnClickListeners() },
-                {
-                    // OnStop
-                    vm.notifyToggleTurn()
-                    restoreFlipViewPosition()
-                    vm.removeCardFromDeck()
+            if (!isBadCard) {
+                setOnClickListeners()
+            } else {
+                // If it is bad card, this runs
+                Animations.animateBadCard(
+                    flip_view,
+                    vm.getScreenWidth(),
+                    { removeAllOnClickListeners() },
+                    {
+                        // OnStop
+                        vm.notifyToggleTurn()
+                        restoreFlipViewPosition()
+                        vm.removeCardFromDeck()
 
-                    if (!vm.isThisTeamReady()) {
-                        updateMessageBox("Please choose a position.")
-                        isOngoingGame = false
-                        isRestoringPlayers = true
-                    }
+                        if (!vm.isThisTeamReady()) {
+                            updateMessageBox("Please choose a position.")
+                            isOngoingGame = false
+                            isRestoringPlayers = true
+                        }
 
-                    if (isOngoingGame && !GameLogic.isTherePossibleMove(whoseTurn, vm.firstCardInDeck)) {
-                        vm.triggerBadCard()
-                    } else if (isOngoingGame && GameLogic.isTherePossibleMove(whoseTurn, vm.firstCardInDeck)) {
-                        prepareViewsToPulse()
-                    }
-                })
+                        if (isOngoingGame && !GameLogic.isTherePossibleMove(whoseTurn, vm.firstCardInDeck)) {
+                            vm.triggerBadCard()
+                        } else if (isOngoingGame && GameLogic.isTherePossibleMove(whoseTurn, vm.firstCardInDeck)) {
+                            prepareViewsToPulse()
+                        }
+                    })
+            }
         }
 
         if (isJustShotAtGoalie) isJustShotAtGoalie = false
@@ -598,6 +597,8 @@ class GameFragment : Fragment(), View.OnClickListener {
     * */
 
     private fun isNextPeriodReady(nextPeriod: Int): Boolean {
+        removeAllOnClickListeners()
+
         cards_left.visibility = View.GONE
         restoreFlipViewPosition()
         period += nextPeriod
@@ -615,8 +616,8 @@ class GameFragment : Fragment(), View.OnClickListener {
                 )
             }
 
-            removeAllOnClickListeners()
             whole_view.visibility = View.VISIBLE
+
             return false
         } else {
             if (period > 3) vm.notifyMessage(
@@ -753,13 +754,13 @@ class GameFragment : Fragment(), View.OnClickListener {
                 }
             }
 
-            val view = view?.findViewById<AppCompatImageView>(v.id)
+            val imageView = view?.findViewById<AppCompatImageView>(v.id)
             val team = if (whoseTurn == Constants.WhoseTurn.BOTTOM) teamBottom else teamTop
 
-            view?.let {
-                if (vm.canAddPlayerView(view, team, spotIndex)) {
+            imageView?.let {
+                if (vm.canAddPlayerView(imageView, team, spotIndex) && v.tag != null) {
                     removeAllOnClickListeners()
-                    animateAddPlayer(view, team, spotIndex)
+                    animateAddPlayer(imageView, team, spotIndex)
                 }
             }
         }

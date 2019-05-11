@@ -183,6 +183,7 @@
         android:text="@string/hard_mode"
         android:textAlignment="center"
         android:textAllCaps="true"
+        android:alpha="0.3"
         android:textColor="@color/darker_white"
         android:textSize="24sp"
         app:layout_constraintBottom_toTopOf="@id/gl_hor_82"
