@@ -322,10 +322,10 @@ class GameViewModel : ViewModel() {
     * */
 
     fun botChooseEmptySpot(possibleMoves: List<Int>, fTriggerBotMove: (Int) -> Unit) {
-        fTriggerBotMove.invoke(botRepo.getMoveIndex(currentGameMode, possibleMoves))
+        fTriggerBotMove.invoke(botRepo.getMoveIndex(currentGameMode, possibleMoves, firstCardInDeck))
     }
 
-    fun botChooseIndexToAttack(indexes: List<Int>): Int = botRepo.getMoveIndex(currentGameMode, indexes)
+    fun botChooseIndexToAttack(indexes: List<Int>): Int = botRepo.getMoveIndex(currentGameMode, indexes, firstCardInDeck)
 
     /*
     * On animation ends

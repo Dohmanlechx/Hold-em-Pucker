@@ -37,6 +37,12 @@ class MainMenuFragment : Fragment(), View.OnTouchListener {
             navigateToGameFragment()
         }
 
+        tv_ai_developer.setOnClickListener {
+            if (currentGameMode != Constants.GameMode.DEVELOPER) clearTeams()
+            currentGameMode = Constants.GameMode.DEVELOPER
+            navigateToGameFragment()
+        }
+
         tv_vs_friend.setOnClickListener {
             if (currentGameMode != Constants.GameMode.FRIEND) clearTeams()
             currentGameMode = Constants.GameMode.FRIEND
