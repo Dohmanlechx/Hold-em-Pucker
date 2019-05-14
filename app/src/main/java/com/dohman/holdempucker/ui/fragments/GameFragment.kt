@@ -34,6 +34,7 @@ import com.dohman.holdempucker.util.ViewUtil
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.items.AbstractItem
+import com.wajahatkarim3.easyflipview.EasyFlipView
 import kotlinx.android.synthetic.main.computer_layout.*
 import kotlinx.android.synthetic.main.game_fragment.*
 
@@ -280,13 +281,13 @@ class GameFragment : Fragment(), View.OnClickListener {
         removeAllOnClickListeners()
         Animations.stopAllPulsingCards()
 
-        val victimX = targetView.x
-        val victimY = targetView.y
+        val victimOriginalX = targetView.x
+        val victimOriginalY = targetView.y
 
         Animations.animateAttackPlayer(flip_view, targetView, vm.getScreenWidth()) {
             // OnStop
-            targetView.x = victimX
-            targetView.y = victimY
+            targetView.x = victimOriginalX
+            targetView.y = victimOriginalY
             restoreFlipViewsPosition()
             vm.onAttackedAnimationEnd(targetView) { prepareViewsToPulse() }
         }
@@ -303,7 +304,10 @@ class GameFragment : Fragment(), View.OnClickListener {
 
                 vm.notifyMessageAttackingGoalie()
 
-                if (whoseTurn == Constants.WhoseTurn.BOTTOM) {
+                val targetView = if (isTeamBottomTurn()) flip_top_goalie else flip_btm_goalie
+                val isTargetGoalieBottom = !isTeamBottomTurn()
+
+                if (isTeamBottomTurn()) {
                     ViewUtil.setImagesOnFlipView(
                         flip_top_goalie,
                         flip_top_goalie_front,
@@ -312,26 +316,6 @@ class GameFragment : Fragment(), View.OnClickListener {
                         ViewUtil.getRotatedBitmap(requireContext(), vm.resIdOfCard(tempGoalieCard)),
                         isVertical = false
                     )
-
-                    victimView.setImageResource(android.R.color.transparent)
-                    victimView.tag = Integer.valueOf(android.R.color.transparent)
-
-                    Animations.animateScoredAtGoalie(
-                        fading_view,
-                        flip_view,
-                        flip_top_goalie,
-                        vm.getScreenWidth(),
-                        card_top_center.x,
-                        tempGoalieCard,
-                        { message -> updateMessageBox(message) },
-                        {
-                            // OnStop
-                            onGoalieActionEnd(flip_top_goalie, true, teamTop)
-                            updateScores()
-                            addGoalieView(bottom = false, doNotFlip = true, doRemoveCardFromDeck = true)
-                        }
-                    )
-
                 } else {
                     ViewUtil.setImagesOnFlipView(
                         flip_btm_goalie,
@@ -341,26 +325,26 @@ class GameFragment : Fragment(), View.OnClickListener {
                         ViewUtil.getRotatedBitmap(requireContext(), vm.resIdOfCard(tempGoalieCard)),
                         isVertical = false
                     )
-
-                    victimView.setImageResource(android.R.color.transparent)
-                    victimView.tag = Integer.valueOf(android.R.color.transparent)
-
-                    Animations.animateScoredAtGoalie(
-                        fading_view,
-                        flip_view,
-                        flip_btm_goalie,
-                        vm.getScreenWidth(),
-                        card_bm_center.x,
-                        tempGoalieCard,
-                        { message -> updateMessageBox(message) },
-                        {
-                            // OnStop
-                            onGoalieActionEnd(flip_btm_goalie, true, teamBottom)
-                            updateScores()
-                            addGoalieView(bottom = true, doNotFlip = true, doRemoveCardFromDeck = true)
-                        }
-                    )
                 }
+
+                victimView.setImageResource(android.R.color.transparent)
+                victimView.tag = Integer.valueOf(android.R.color.transparent)
+
+                Animations.animateScoredAtGoalie(
+                    fading_view,
+                    flip_view,
+                    targetView,
+                    vm.getScreenWidth(),
+                    card_top_center.x,
+                    tempGoalieCard,
+                    { message -> updateMessageBox(message) },
+                    {
+                        // OnStop
+                        onGoalieActionEnd(targetView, true, if (isTargetGoalieBottom) teamBottom else teamTop)
+                        updateScores()
+                        addGoalieView(bottom = isTargetGoalieBottom, doNotFlip = true, doRemoveCardFromDeck = true)
+                    }
+                )
             }
         } else {
             // Attacking another player

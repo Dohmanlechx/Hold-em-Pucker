@@ -17,7 +17,7 @@ object Animations {
 
     private fun getDelay(): Long {
         return if (isBotMoving) {
-            val delays = listOf<Long>(1250, 1000, 750, 500)
+            val delays = listOf<Long>(1000, 750, 500)
             delays.random()
         } else {
             0
