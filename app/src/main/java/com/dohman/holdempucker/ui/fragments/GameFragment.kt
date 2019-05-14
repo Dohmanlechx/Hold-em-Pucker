@@ -9,11 +9,10 @@ import androidx.appcompat.widget.AppCompatImageView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
-import androidx.recyclerview.widget.LinearSnapHelper
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.dohman.holdempucker.R
 import com.dohman.holdempucker.cards.Card
 import com.dohman.holdempucker.ui.MessageTextItem
-import com.dohman.holdempucker.ui.overrides.SpeedyLinearLayoutManager
 import com.dohman.holdempucker.util.Constants
 import com.dohman.holdempucker.util.Constants.Companion.isOngoingGame
 import com.dohman.holdempucker.util.Constants.Companion.isJustShotAtGoalie
@@ -227,16 +226,9 @@ class GameFragment : Fragment(), View.OnClickListener {
         itemAdapter.clear()
 
         v_recycler.itemAnimator = null
-        v_recycler.layoutManager = SpeedyLinearLayoutManager(
-            requireContext(),
-            SpeedyLinearLayoutManager.VERTICAL,
-            false
-        )
+        v_recycler.layoutManager = LinearLayoutManager(requireContext())
         v_recycler.adapter = fastAdapter
         v_recycler.isNestedScrollingEnabled = true
-
-        val snapHelper = LinearSnapHelper()
-        snapHelper.attachToRecyclerView(v_recycler)
 
         updateMessageBox("Press anywhere to start the game! Period: $period", isNeutralMessage = true)
     }

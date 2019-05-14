@@ -58,6 +58,6 @@
 		app:layout_constraintBottom_toBottomOf="@id/frame_layout"
 		app:layout_constraintEnd_toEndOf="@id/frame_layout"
 		android:layout_marginEnd="16dp"
-		android:background="@drawable/old_computer_background" />
+		android:background="@drawable/computer_lamp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
