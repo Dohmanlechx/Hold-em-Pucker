@@ -14,9 +14,9 @@ class Constants {
         var isVsBot = false
         var isBotMoving = false
         var isOngoingGame = false // Set to true when all cards are laid out
+        var isJustShotAtGoalie = false // To prevent duplicate message
         var isRestoringPlayers = true // Set to true when a team need to lay out new cards to fulfill
         var areTeamsReadyToStartPeriod = false // Set to true as soon as both teams are full in the very beginning
-        var isJustShotAtGoalie = false // To prevent duplicate message
 
         // Objects
         val teamTop = arrayOfNulls<Card>(6)
@@ -61,6 +61,12 @@ class Constants {
             add(12, listOf(5))
         }
 
+        fun resetBooleansToInitState() {
+            isOngoingGame = false
+            isJustShotAtGoalie = false
+            isRestoringPlayers = true
+            areTeamsReadyToStartPeriod = false
+        }
     }
 
     // Enums
@@ -72,6 +78,8 @@ class Constants {
                 whoseTurn = if (whoseTurn == BOTTOM) TOP else BOTTOM
                 isBotMoving = whoseTurn == TOP && isVsBot
             }
+
+            fun isTeamBottomTurn() = whoseTurn == BOTTOM
         }
     }
 

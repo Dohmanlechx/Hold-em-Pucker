@@ -132,47 +132,12 @@ class GameViewModel : ViewModel() {
     * Image/view functions
     * */
 
-    fun setImagesOnFlipView(
-        flipView: EasyFlipView,
-        front: AppCompatImageView,
-        back: AppCompatImageView,
-        resId: Int?,
-        bitmap: Bitmap?,
-        isVertical: Boolean
-    ) {
-        val cover = if (isVertical) R.drawable.red_back_vertical else R.drawable.red_back
-
-        if (flipView.isBackSide) {
-            back.setImageResource(cover)
-            if (isVertical) resId?.let { front.setImageResource(it) } else bitmap?.let { front.setImageBitmap(it) }
-        } else {
-            front.setImageResource(cover)
-            if (isVertical) resId?.let { back.setImageResource(it) } else bitmap?.let { back.setImageBitmap(it) }
-        }
-
-        flipView.visibility = View.VISIBLE
-    }
-
     fun resIdOfCard(card: Card?): Int {
         return card.let {
             appRepo.context.resources.getIdentifier(
                 it?.src, "drawable", appRepo.context.packageName
             )
         }
-    }
-
-    fun getRotatedBitmap(card: Card?): Bitmap {
-        val matrix = Matrix()
-        matrix.postRotate(90f)
-
-        val scaledBitmap = Bitmap.createScaledBitmap(
-            BitmapFactory.decodeResource(appRepo.resources, resIdOfCard(card)),
-            173,
-            264,
-            true
-        )
-
-        return Bitmap.createBitmap(scaledBitmap, 0, 0, scaledBitmap.width, scaledBitmap.height, matrix, true)
     }
 
     fun notifyMessageAttackingGoalie() {
@@ -239,11 +204,6 @@ class GameViewModel : ViewModel() {
         if (period <= 3) notifyMessage("Not enough cards. Period $period started.", isNeutralMessage = true)
         isOngoingGame = false
         areTeamsReadyToStartPeriod = false
-    }
-
-    fun updateScores(topTeam: AppCompatTextView, bottomTeam: AppCompatTextView) {
-        topTeam.text = teamTopScore.toString()
-        bottomTeam.text = teamBottomScore.toString()
     }
 
     /*
