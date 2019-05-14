@@ -1,6 +1,7 @@
 package com.dohman.holdempucker.ui.fragments
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,12 +15,11 @@ import com.dohman.holdempucker.cards.Card
 import com.dohman.holdempucker.ui.MessageTextItem
 import com.dohman.holdempucker.ui.overrides.SpeedyLinearLayoutManager
 import com.dohman.holdempucker.util.Constants
-import com.dohman.holdempucker.util.Constants.Companion.isAnimationRunning
 import com.dohman.holdempucker.util.Constants.Companion.isOngoingGame
-import com.dohman.holdempucker.util.Constants.Companion.justShotAtGoalie
+import com.dohman.holdempucker.util.Constants.Companion.isJustShotAtGoalie
 import com.dohman.holdempucker.util.Constants.Companion.period
 import com.dohman.holdempucker.util.Constants.Companion.possibleMovesIndexes
-import com.dohman.holdempucker.util.Constants.Companion.restoringPlayers
+import com.dohman.holdempucker.util.Constants.Companion.isRestoringPlayers
 import com.dohman.holdempucker.util.Constants.Companion.teamBottom
 import com.dohman.holdempucker.util.Constants.Companion.teamBottomScore
 import com.dohman.holdempucker.util.Constants.Companion.teamTop
@@ -28,6 +28,9 @@ import com.dohman.holdempucker.util.Constants.Companion.whoseTeamStartedLastPeri
 import com.dohman.holdempucker.util.Constants.Companion.whoseTurn
 import com.dohman.holdempucker.util.GameLogic
 import com.dohman.holdempucker.util.Animations
+import com.dohman.holdempucker.util.Constants.Companion.TAG_GAMEACTIVITY
+import com.dohman.holdempucker.util.Constants.Companion.areTeamsReadyToStartPeriod
+import com.dohman.holdempucker.util.Constants.Companion.isBotMoving
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.items.AbstractItem
@@ -144,8 +147,13 @@ class GameFragment : Fragment(), View.OnClickListener {
             top_team_score.text = teamTopScore.toString()
             period = 1
 
-            teamBottomViews.forEach { view -> view.setImageResource(android.R.color.transparent) }
-            teamTopViews.forEach { view -> view.setImageResource(android.R.color.transparent) }
+            isOngoingGame = false
+            isRestoringPlayers = true
+            areTeamsReadyToStartPeriod = false
+            isJustShotAtGoalie = false
+
+            resetAllCards(teamBottomViews)
+            resetAllCards(teamTopViews)
 
             card_top_goalie.tag = null
             card_bm_goalie.tag = null
@@ -157,13 +165,9 @@ class GameFragment : Fragment(), View.OnClickListener {
 
     override fun onResume() {
         super.onResume()
+        vm.setGameMode()
         storeAllViews()
         setOnClickListeners()
-    }
-
-    override fun onPause() {
-        super.onPause()
-        clearListsOfViews()
     }
 
     /*
@@ -181,30 +185,39 @@ class GameFragment : Fragment(), View.OnClickListener {
     }
 
     private fun storeAllViews() {
-        if (teamBottomViews.isEmpty()) {
-            teamBottomViews.apply {
-                add(card_bm_forward_left)
-                add(card_bm_center)
-                add(card_bm_forward_right)
-                add(card_bm_defender_left)
-                add(card_bm_defender_right)
-                add(card_bm_goalie)
-            }
-        }
+        teamBottomViews.clear()
+        teamTopViews.clear()
 
-        if (teamTopViews.isEmpty()) {
-            teamTopViews.apply {
-                add(card_top_forward_left)
-                add(card_top_center)
-                add(card_top_forward_right)
-                add(card_top_defender_left)
-                add(card_top_defender_right)
-                add(card_top_goalie)
-            }
+//        if (teamBottomViews.isEmpty()) {
+        teamBottomViews.apply {
+            add(card_bm_forward_left)
+            add(card_bm_center)
+            add(card_bm_forward_right)
+            add(card_bm_defender_left)
+            add(card_bm_defender_right)
+            add(card_bm_goalie)
+        }
+//        }
+
+//        if (teamTopViews.isEmpty()) {
+        teamTopViews.apply {
+            add(card_top_forward_left)
+            add(card_top_center)
+            add(card_top_forward_right)
+            add(card_top_defender_left)
+            add(card_top_defender_right)
+            add(card_top_goalie)
+//            }
         }
     }
 
-    // FIXME! This fun is only temporary. Leading into crashes. Cuz Constant storage of views... remove later!
+    private fun resetAllCards(list: List<AppCompatImageView>) {
+        list.forEach {
+            it.setImageResource(android.R.color.transparent)
+            it.tag = Integer.valueOf(android.R.color.transparent)
+        }
+    }
+
     private fun clearListsOfViews() {
         teamBottomViews.clear()
         teamTopViews.clear()
@@ -229,24 +242,28 @@ class GameFragment : Fragment(), View.OnClickListener {
     }
 
     private fun updateMessageBox(message: String, isNeutralMessage: Boolean = false) {
-        if (!isNeutralMessage) itemAdapter.add(
-            MessageTextItem(
-                message,
-//                mikePenzPositions,
-//                { pos -> mikePenzPositions.add(pos) },
-                whoseTurn == Constants.WhoseTurn.TOP
-            )
-        )
-        else itemAdapter.add(
-            MessageTextItem(
-                message,
-//                mikePenzPositions,
-//                { pos -> mikePenzPositions.add(pos) },
-                isNeutralMessage = true
-            )
-        )
+        itemAdapter.clear()
 
-        v_recycler.adapter?.itemCount?.minus(1)?.let { v_recycler.smoothScrollToPosition(it) }
+        if (!isNeutralMessage) {
+            itemAdapter.add(
+                MessageTextItem(
+                    message
+//                mikePenzPositions,
+//                { pos -> mikePenzPositions.add(pos) },
+                )
+            )
+        } else {
+            itemAdapter.add(
+                MessageTextItem(
+                    message,
+//                mikePenzPositions,
+//                { pos -> mikePenzPositions.add(pos) },
+                    isNeutralMessage = true
+                )
+            )
+        }
+
+        v_recycler.adapter?.itemCount?.minus(1)?.let { v_recycler.scrollToPosition(it) }
     }
 
     /*
@@ -264,39 +281,6 @@ class GameFragment : Fragment(), View.OnClickListener {
             { message -> vm.notifyMessage(message) })
     }
 
-    private fun onFlipPlayingCardEnd(isBadCard: Boolean) {
-        flip_view.flipTheView()
-
-        if (!isBadCard) {
-            setOnClickListeners()
-        } else {
-            // If it is bad card, this runs
-            Animations.animateBadCard(
-                flip_view,
-                vm.getScreenWidth(),
-                { removeAllOnClickListeners() },
-                {
-                    // OnStop
-                    vm.notifyToggleTurn()
-                    restoreFlipViewPosition()
-                    vm.removeCardFromDeck()
-
-                    if (!vm.isThisTeamReady()) {
-                        isOngoingGame = false
-                        restoringPlayers = true
-                    }
-
-                    if (isOngoingGame && !GameLogic.isTherePossibleMove(whoseTurn, vm.firstCardInDeck)) {
-                        vm.triggerBadCard()
-                    } else if (isOngoingGame && GameLogic.isTherePossibleMove(whoseTurn, vm.firstCardInDeck)) {
-                        prepareViewsToPulse()
-                    }
-                })
-        }
-
-        if (justShotAtGoalie) justShotAtGoalie = false
-    }
-
     private fun prepareViewsToPulse() {
         val teamToPulse = if (whoseTurn == Constants.WhoseTurn.BOTTOM) teamTopViews else teamBottomViews
 
@@ -307,9 +291,7 @@ class GameFragment : Fragment(), View.OnClickListener {
         }
 
         Animations.animatePulsingCards(viewsToPulse as List<AppCompatImageView>) { message ->
-            updateMessageBox(
-                message
-            )
+            updateMessageBox(message)
         }
     }
 
@@ -347,16 +329,19 @@ class GameFragment : Fragment(), View.OnClickListener {
             restoreFlipViewPosition()
             vm.onGoalieAddedAnimationEnd(view)
             if (card_top_goalie.tag != Integer.valueOf(R.drawable.red_back)) addGoalieView(bottom = false) else {
-                if (!doNotFlip) flipNewCard(vm.resIdOfCard(vm.firstCardInDeck))
-                if (doRemoveCardFromDeck) vm.removeCardFromDeck()
-                vm.showPickedCard()
+                if (!doNotFlip) flipNewCard(vm.resIdOfCard(vm.firstCardInDeck)) // FIXME
+                if (doRemoveCardFromDeck) vm.removeCardFromDeck(doNotNotify = true)
+                vm.gameManager()
                 cards_left.visibility = View.VISIBLE
             }
         }
     }
 
-    private fun animateAddPlayer(targetView: AppCompatImageView, team: Array<Card?>, spotIndex: Int) {
-        removeAllOnClickListeners()
+    private fun animateAddPlayer(
+        targetView: AppCompatImageView,
+        team: Array<Card?>,
+        spotIndex: Int
+    ) {
         Animations.animateAddPlayer(flip_view, targetView) {
             // OnStop
             restoreFlipViewPosition()
@@ -383,7 +368,7 @@ class GameFragment : Fragment(), View.OnClickListener {
     private fun prepareAttackPlayer(victimTeam: Array<Card?>, spotIndex: Int, victimView: AppCompatImageView) {
         if (spotIndex == 5) {
             // Attacking goalie
-            justShotAtGoalie = true
+            isJustShotAtGoalie = true
 
             if (vm.canAttack(victimTeam, spotIndex, victimView)) {
                 removeAllOnClickListeners()
@@ -416,8 +401,6 @@ class GameFragment : Fragment(), View.OnClickListener {
                             // OnStop
                             onGoalieActionEnd(flip_top_goalie, true, teamTop)
                             vm.updateScores(top_team_score, bm_team_score)
-                            vm.notifyToggleTurn()
-                            restoreFlipViewPosition()
                             addGoalieView(bottom = false, doNotFlip = true, doRemoveCardFromDeck = true)
                         }
                     )
@@ -447,8 +430,6 @@ class GameFragment : Fragment(), View.OnClickListener {
                             // OnStop
                             onGoalieActionEnd(flip_btm_goalie, true, teamBottom)
                             vm.updateScores(top_team_score, bm_team_score)
-                            vm.notifyToggleTurn()
-                            restoreFlipViewPosition()
                             addGoalieView(bottom = true, doNotFlip = true, doRemoveCardFromDeck = true)
                         }
                     )
@@ -465,7 +446,7 @@ class GameFragment : Fragment(), View.OnClickListener {
         removeAllOnClickListeners()
         Animations.stopAllPulsingCards()
 
-        justShotAtGoalie = true
+        isJustShotAtGoalie = true
 
         vm.notifyMessageAttackingGoalie()
 
@@ -527,11 +508,79 @@ class GameFragment : Fragment(), View.OnClickListener {
         }
     }
 
+    /*
+    * On Animation Ends
+    * */
+
+    private fun onFlipPlayingCardEnd(isBadCard: Boolean) {
+        flip_view.flipTheView()
+
+        // Bot's turn
+        if (isBotMoving && !isBadCard) {
+            // Adding player
+            if (isRestoringPlayers) {
+                vm.botChooseEmptySpot(getEmptySpots()) {
+                    // Trigger the bot's move
+                    if (it != -1) animateAddPlayer(teamTopViews[it], teamTop, it)
+                }
+                // Attacking player
+            } else {
+                val chosenIndex = vm.botChooseIndexToAttack(possibleMovesIndexes)
+                Log.d(TAG_GAMEACTIVITY, chosenIndex.toString())
+
+                when (chosenIndex) {
+                    -1 -> { /* Do nothing */
+                    }
+                    5 -> {
+                        tempGoalieCard = teamBottom[5]
+                        if (vm.canAttack(teamBottom, 5, card_bm_goalie)) prepareAttackPlayer(
+                            teamBottom,
+                            5,
+                            card_bm_goalie
+                        )
+                        else prepareGoalieSaved(card_bm_goalie)
+                    }
+                    else -> prepareAttackPlayer(teamBottom, chosenIndex, teamBottomViews[chosenIndex])
+                }
+            }
+        } else {
+            if (!isBadCard) {
+                setOnClickListeners()
+            } else {
+                // If it is bad card, this runs
+                Animations.animateBadCard(
+                    flip_view,
+                    vm.getScreenWidth(),
+                    { removeAllOnClickListeners() },
+                    {
+                        // OnStop
+                        vm.notifyToggleTurn()
+                        restoreFlipViewPosition()
+                        vm.removeCardFromDeck()
+
+                        if (!vm.isThisTeamReady()) {
+                            updateMessageBox("Please choose a position.")
+                            isOngoingGame = false
+                            isRestoringPlayers = true
+                        }
+
+                        if (isOngoingGame && !GameLogic.isTherePossibleMove(whoseTurn, vm.firstCardInDeck)) {
+                            vm.triggerBadCard()
+                        } else if (isOngoingGame && GameLogic.isTherePossibleMove(whoseTurn, vm.firstCardInDeck)) {
+                            prepareViewsToPulse()
+                        }
+                    })
+            }
+        }
+
+        if (isJustShotAtGoalie) isJustShotAtGoalie = false
+    }
+
     private fun onGoalieActionEnd(view: View, isGoal: Boolean = false, team: Array<Card?>) {
         fading_view.visibility = View.GONE
         view.visibility = View.GONE
         isOngoingGame = false
-        restoringPlayers = true
+        isRestoringPlayers = true
 
         if (isGoal) {
             if (whoseTurn == Constants.WhoseTurn.BOTTOM) teamBottomScore++ else teamTopScore++
@@ -540,6 +589,7 @@ class GameFragment : Fragment(), View.OnClickListener {
         team[5] = null
         vm.notifyToggleTurn()
         restoreFlipViewPosition()
+        updateMessageBox("Please choose a position.")
     }
 
     /*
@@ -547,9 +597,12 @@ class GameFragment : Fragment(), View.OnClickListener {
     * */
 
     private fun isNextPeriodReady(nextPeriod: Int): Boolean {
+        removeAllOnClickListeners()
+
         cards_left.visibility = View.GONE
         restoreFlipViewPosition()
         period += nextPeriod
+        isRestoringPlayers = true
 
         if (period > 3 && (teamBottomScore != teamTopScore)) {
             when {
@@ -563,8 +616,8 @@ class GameFragment : Fragment(), View.OnClickListener {
                 )
             }
 
-            removeAllOnClickListeners()
             whole_view.visibility = View.VISIBLE
+
             return false
         } else {
             if (period > 3) vm.notifyMessage(
@@ -575,14 +628,26 @@ class GameFragment : Fragment(), View.OnClickListener {
             whoseTurn =
                 if (whoseTeamStartedLastPeriod == Constants.WhoseTurn.BOTTOM) Constants.WhoseTurn.TOP else Constants.WhoseTurn.BOTTOM
 
-            teamBottomViews.forEach { it.setImageResource(android.R.color.transparent) }
-            teamTopViews.forEach { it.setImageResource(android.R.color.transparent) }
+            resetAllCards(teamBottomViews)
+            resetAllCards(teamTopViews)
 
             card_top_goalie.tag = null
             card_bm_goalie.tag = null
 
             return true
         }
+    }
+
+    private fun getEmptySpots(): List<Int> {
+        val list = mutableListOf<Int>()
+
+        teamTopViews.minus(teamTopViews.last()).forEachIndexed { index, view ->
+            if (view.tag == Integer.valueOf(android.R.color.transparent)) list.add(index)
+        }
+
+        Log.d(TAG_GAMEACTIVITY, "$list")
+
+        return list
     }
 
     /*
@@ -600,9 +665,11 @@ class GameFragment : Fragment(), View.OnClickListener {
     }
 
     override fun onClick(v: View) {
+        if (isBotMoving) return
+
         val spotIndex: Int
         if (isOngoingGame) {
-            if (isAnimationRunning || v.tag == Integer.valueOf(android.R.color.transparent)) return
+            if (v.tag == Integer.valueOf(android.R.color.transparent)) return
             if (whoseTurn == Constants.WhoseTurn.BOTTOM) {
                 when (v.id) {
                     R.id.card_top_forward_left -> {
@@ -687,12 +754,14 @@ class GameFragment : Fragment(), View.OnClickListener {
                 }
             }
 
-            val view = view?.findViewById<AppCompatImageView>(v.id)
+            val imageView = view?.findViewById<AppCompatImageView>(v.id)
             val team = if (whoseTurn == Constants.WhoseTurn.BOTTOM) teamBottom else teamTop
 
-            view?.let {
-                if (vm.canAddPlayerView(view, team, spotIndex))
-                    animateAddPlayer(view, team, spotIndex)
+            imageView?.let {
+                if (vm.canAddPlayerView(imageView, team, spotIndex) && v.tag != null) {
+                    removeAllOnClickListeners()
+                    animateAddPlayer(imageView, team, spotIndex)
+                }
             }
         }
     }

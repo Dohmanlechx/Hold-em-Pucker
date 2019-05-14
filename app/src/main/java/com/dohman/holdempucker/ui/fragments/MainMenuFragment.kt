@@ -10,6 +10,10 @@ import android.view.ViewGroup
 import androidx.navigation.Navigation
 
 import com.dohman.holdempucker.R
+import com.dohman.holdempucker.util.Constants
+import com.dohman.holdempucker.util.Constants.Companion.currentGameMode
+import com.dohman.holdempucker.util.Constants.Companion.teamBottom
+import com.dohman.holdempucker.util.Constants.Companion.teamTop
 import kotlinx.android.synthetic.main.main_menu_fragment.*
 
 class MainMenuFragment : Fragment(), View.OnTouchListener {
@@ -26,10 +30,36 @@ class MainMenuFragment : Fragment(), View.OnTouchListener {
 
         setOnTouchListeners()
         setGradientOnTexts()
+
+        tv_ai_random.setOnClickListener {
+            if (currentGameMode != Constants.GameMode.RANDOM) clearTeams()
+            currentGameMode = Constants.GameMode.RANDOM
+            navigateToGameFragment()
+        }
+
+        tv_ai_developer.setOnClickListener {
+            if (currentGameMode != Constants.GameMode.DEVELOPER) clearTeams()
+            currentGameMode = Constants.GameMode.DEVELOPER
+            navigateToGameFragment()
+        }
+
+        tv_vs_friend.setOnClickListener {
+            if (currentGameMode != Constants.GameMode.FRIEND) clearTeams()
+            currentGameMode = Constants.GameMode.FRIEND
+            navigateToGameFragment()
+        }
+    }
+
+    private fun clearTeams() {
+        for (index in 0..5) {
+            teamTop[index] = null
+            teamBottom[index] = null
+        }
     }
 
     private fun setGradientOnTexts() {
-        tv_title.paint.shader = vm.getLinearGradient(tv_title)
+//        tv_title.paint.shader = vm.getLinearGradient(tv_title)
+        tv_sub_header.paint.shader = vm.getLinearGradient(tv_sub_header)
     }
 
     private fun navigateToGameFragment() {
@@ -38,17 +68,21 @@ class MainMenuFragment : Fragment(), View.OnTouchListener {
     }
 
     override fun onTouch(v: View?, event: MotionEvent?): Boolean {
-        if (event == null || v == null) return false
-
-        when (event.action) {
-            MotionEvent.ACTION_MOVE -> {
-                val fingerX = event.rawX - (v.width / 2)
-                v.x = fingerX
-                if (fingerX >= tv_vs_friend.width.toFloat()) navigateToGameFragment()
-            }
-            MotionEvent.ACTION_UP -> v.performClick()
-        }
-
+//        if (event == null || v == null) return false
+//
+//        when (event.action) {
+//            MotionEvent.ACTION_MOVE -> {
+//                val fingerX = event.rawX - (v.width / 2)
+//                v.x = fingerX
+//                if (fingerX >= tv_vs_friend.width.toFloat()) {
+//                    currentGameMode = Constants.GameMode.FRIEND
+//                    navigateToGameFragment()
+//                }
+//            }
+//            MotionEvent.ACTION_UP -> v.performClick()
+//        }
+//
+//        return true
         return true
     }
 

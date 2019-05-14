@@ -5,6 +5,7 @@ import android.view.animation.AnticipateInterpolator
 import android.view.animation.OvershootInterpolator
 import androidx.interpolator.view.animation.LinearOutSlowInInterpolator
 import com.dohman.holdempucker.cards.Card
+import com.dohman.holdempucker.util.Constants.Companion.isBotMoving
 import com.dohman.holdempucker.util.Constants.Companion.possibleMovesIndexes
 import com.dohman.holdempucker.util.Constants.Companion.whoseTurn
 import com.github.florent37.viewanimator.ViewAnimator
@@ -13,6 +14,15 @@ import com.wajahatkarim3.easyflipview.EasyFlipView
 object Animations {
 
     private val listOfPulseAnimations = mutableListOf<ViewAnimator>()
+
+    private fun getDelay(): Long {
+        return if (isBotMoving) {
+            val delays = listOf<Long>(1250, 1000, 750, 500)
+            delays.random()
+        } else {
+            0
+        }
+    }
 
     /*
     * Animation functions
@@ -26,6 +36,14 @@ object Animations {
                 .translationY(vector)
                 .duration(300)
                 .interpolator(OvershootInterpolator(2.0f))
+            .start()
+    }
+
+    fun animateComputerText(textView: View) {
+        ViewAnimator
+            .animate(textView)
+                .newsPaper()
+                .duration(100)
             .start()
     }
 
@@ -54,14 +72,13 @@ object Animations {
             .animate(flipView)
                 .translationX(60f)
                 .duration(100)
-                .onStop {
-                    if (!Constants.isOngoingGame
+                .onStart {
+                    if (Constants.isRestoringPlayers
                         && !doNotShowMessage
-                        && !Constants.justShotAtGoalie
+                        && !Constants.isJustShotAtGoalie
                     ) fNotifyMessage.invoke("Please choose a position.")
-
-                fOnFlipPlayingCardEnd.invoke()
                 }
+                .onStop { fOnFlipPlayingCardEnd.invoke() }
             .thenAnimate(cardsLeftText)
                 .scale(1.3f, 1.0f)
                 .duration(350)
@@ -96,6 +113,8 @@ object Animations {
         }
         fNotifyMessage.invoke("$numberToText possible $plural. Go Attack!")
 
+        if (isBotMoving) return
+
         viewsToPulse.forEach {
             listOfPulseAnimations.add(
                 ViewAnimator
@@ -123,6 +142,7 @@ object Animations {
             .animate(attacker)
                 .translationX(target.x + 60f - attacker.x)
                 .translationY(target.y - attacker.y)
+                .startDelay(getDelay())
                 .duration(400)
                 .interpolator(LinearOutSlowInInterpolator())
                 .onStop { fOnAddPlayerEnd.invoke() }
@@ -150,6 +170,7 @@ object Animations {
             .animate(attacker)
                 .translationX(target.x - attacker.x - 20f)
                 .translationY(target.y - attacker.y + 20f)
+                .startDelay(getDelay())
                 .duration(500)
                 .interpolator(LinearOutSlowInInterpolator())
             .thenAnimate(attacker, target)
@@ -192,6 +213,7 @@ object Animations {
                 .interpolator(LinearOutSlowInInterpolator())
             .thenAnimate(goalie)
                 .tada()
+                .startDelay(1000)
                 .duration(500)
                 .onStop { goalie.flipTheView() }
             .thenAnimate(attacker)
@@ -251,6 +273,7 @@ object Animations {
                 .interpolator(LinearOutSlowInInterpolator())
             .thenAnimate(goalie)
                 .rubber()
+                .startDelay(1000)
                 .duration(500)
                 .onStop { goalie.flipTheView() }
             .thenAnimate(attacker)

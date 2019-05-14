@@ -24,12 +24,14 @@ class MainMenuViewModel : ViewModel() {
     fun getLinearGradient(tv: AppCompatTextView): LinearGradient = LinearGradient(
         0f, 0f, tv.paint.measureText(tv.text.toString()), tv.textSize,
         intArrayOf(
-            Color.parseColor("#F97C3C"),
-            Color.parseColor("#FDB54E"),
-            Color.parseColor("#64B678"),
-            Color.parseColor("#478AEA"),
-            Color.parseColor("#8446CC")
+            Color.parseColor("#FF0000"),
+            Color.parseColor("#FF6464")
+//            Color.parseColor("#F97C3C"),
+//            Color.parseColor("#FDB54E"),
+//            Color.parseColor("#64B678"),
+//            Color.parseColor("#478AEA"),
+//            Color.parseColor("#8446CC")
         ),
-        null, Shader.TileMode.CLAMP
+        null, Shader.TileMode.MIRROR
     )
 }

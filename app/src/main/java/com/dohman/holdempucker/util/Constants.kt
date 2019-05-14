@@ -1,6 +1,5 @@
 package com.dohman.holdempucker.util
 
-import androidx.appcompat.widget.AppCompatImageView
 import com.dohman.holdempucker.cards.Card
 
 class Constants {
@@ -12,11 +11,12 @@ class Constants {
         const val TAG_GAMEVIEWMODEL = "DBG: GameViewModel.kt"
 
         // Booleans
-        var isAnimationRunning = false
+        var isVsBot = false
+        var isBotMoving = false
         var isOngoingGame = false // Set to true when all cards are laid out
-        var restoringPlayers = false // Set to true when a team need to lay out new cards to fulfill
+        var isRestoringPlayers = true // Set to true when a team need to lay out new cards to fulfill
         var areTeamsReadyToStartPeriod = false // Set to true as soon as both teams are full in the very beginning
-        var justShotAtGoalie = false // To prevent duplicate message
+        var isJustShotAtGoalie = false // To prevent duplicate message
 
         // Objects
         val teamTop = arrayOfNulls<Card>(6)
@@ -38,6 +38,9 @@ class Constants {
         // Whose turn
         var whoseTurn = WhoseTurn.TOP
         var whoseTeamStartedLastPeriod = WhoseTurn.BOTTOM
+
+        // Game Mode
+        var currentGameMode = GameMode.NONE
 
         // Cases
         val cases = mutableListOf<List<Int>>().apply {
@@ -67,7 +70,12 @@ class Constants {
         companion object {
             fun toggleTurn() {
                 whoseTurn = if (whoseTurn == BOTTOM) TOP else BOTTOM
+                isBotMoving = whoseTurn == TOP && isVsBot
             }
         }
+    }
+
+    enum class GameMode {
+        NONE, RANDOM, DEVELOPER, FRIEND;
     }
 }

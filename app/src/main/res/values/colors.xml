@@ -18,7 +18,9 @@
     <color name="victim">#0D3D0D</color>
     <color name="white">#FFFFFF</color>
     <color name="darker_white">#DCDCDC</color>
-    <color name="red">#CA1C01</color>
+    <color name="red">#FF0000</color>
+    <color name="darker_red">#C20000</color>
+    <color name="lighter_red">#FF7878</color>
     <color name="ice_white">#EBE4E4</color>
     <color name="ice_red">#66FF0000</color>
     <color name="ice_blue">#662020DB</color>
