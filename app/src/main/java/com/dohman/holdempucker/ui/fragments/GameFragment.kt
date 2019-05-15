@@ -353,62 +353,38 @@ class GameFragment : Fragment(), View.OnClickListener {
 
         vm.notifyMessageAttackingGoalie()
 
-        if (whoseTurn == Constants.WhoseTurn.BOTTOM) {
-            ViewUtil.setImagesOnFlipView(
-                flip_top_goalie,
-                flip_top_goalie_front,
-                flip_top_goalie_back,
-                null,
-                ViewUtil.getRotatedBitmap(requireContext(), vm.resIdOfCard(tempGoalieCard)),
-                isVertical = false
-            )
+        val isTargetGoalieBottom = !isTeamBottomTurn()
+        val targetView = if (isTargetGoalieBottom) flip_btm_goalie else flip_top_goalie
+        val targetViewFront = if (isTargetGoalieBottom) flip_btm_goalie_front else flip_top_goalie_front
+        val targetViewBack = if (isTargetGoalieBottom) flip_btm_goalie_back else flip_top_goalie_back
+        val targetTeam = if (isTargetGoalieBottom) teamBottom else teamTop
 
-            victimView.setImageResource(android.R.color.transparent)
-            victimView.tag = Integer.valueOf(android.R.color.transparent)
+        ViewUtil.setImagesOnFlipView(
+            targetView,
+            targetViewFront,
+            targetViewBack,
+            null,
+            ViewUtil.getRotatedBitmap(requireContext(), vm.resIdOfCard(tempGoalieCard)),
+            isVertical = false
+        )
 
-            Animations.animateGoalieSaved(
-                fading_view,
-                flip_view,
-                flip_top_goalie,
-                vm.getScreenWidth(),
-                card_top_center.x,
-                tempGoalieCard,
-                { message -> updateMessageBox(message) },
-                {
-                    // OnStop
-                    onGoalieActionEnd(flip_top_goalie, false, teamTop)
-                    addGoalieView(bottom = false, doNotFlip = true, doRemoveCardFromDeck = true)
-                }
-            )
+        victimView.setImageResource(android.R.color.transparent)
+        victimView.tag = Integer.valueOf(android.R.color.transparent)
 
-        } else {
-            ViewUtil.setImagesOnFlipView(
-                flip_btm_goalie,
-                flip_btm_goalie_front,
-                flip_btm_goalie_back,
-                null,
-                ViewUtil.getRotatedBitmap(requireContext(), vm.resIdOfCard(tempGoalieCard)),
-                isVertical = false
-            )
-
-            victimView.setImageResource(android.R.color.transparent)
-            victimView.tag = Integer.valueOf(android.R.color.transparent)
-
-            Animations.animateGoalieSaved(
-                fading_view,
-                flip_view,
-                flip_btm_goalie,
-                vm.getScreenWidth(),
-                card_bm_center.x,
-                tempGoalieCard,
-                { message -> updateMessageBox(message) },
-                {
-                    // OnStop
-                    onGoalieActionEnd(flip_btm_goalie, false, teamBottom)
-                    addGoalieView(bottom = true, doNotFlip = true, doRemoveCardFromDeck = true)
-                }
-            )
-        }
+        Animations.animateGoalieSaved(
+            fading_view,
+            flip_view,
+            targetView,
+            vm.getScreenWidth(),
+            card_top_center.x,
+            tempGoalieCard,
+            { message -> updateMessageBox(message) },
+            {
+                // OnStop
+                onGoalieActionEnd(targetView, false, targetTeam)
+                addGoalieView(bottom = isTargetGoalieBottom, doNotFlip = true, doRemoveCardFromDeck = true)
+            }
+        )
     }
 
     /*
@@ -485,9 +461,7 @@ class GameFragment : Fragment(), View.OnClickListener {
         isOngoingGame = false
         isRestoringPlayers = true
 
-        if (isGoal) {
-            if (whoseTurn == Constants.WhoseTurn.BOTTOM) teamBottomScore++ else teamTopScore++
-        }
+        if (isGoal) vm.addGoalToScore()
 
         team[5] = null
         vm.notifyToggleTurn()
@@ -502,43 +476,21 @@ class GameFragment : Fragment(), View.OnClickListener {
     private fun isNextPeriodReady(nextPeriod: Int): Boolean {
         removeAllOnClickListeners()
 
-        cards_left.visibility = View.GONE
-        restoreFlipViewsPosition()
         period += nextPeriod
         isRestoringPlayers = true
 
-        if (period > 3 && (teamBottomScore != teamTopScore)) {
-            when {
-                teamBottomScore > teamTopScore -> vm.notifyMessage(
-                    "Team Bottom won with $teamBottomScore-$teamTopScore!\nNew game? Press anywhere!",
-                    isNeutralMessage = true
-                )
-                teamBottomScore < teamTopScore -> vm.notifyMessage(
-                    "Team Top won with $teamTopScore-$teamBottomScore!\nNew game? Press anywhere!",
-                    isNeutralMessage = true
-                )
-            }
+        cards_left.visibility = View.GONE
+        restoreFlipViewsPosition()
 
-            whole_view.visibility = View.VISIBLE
-
-            return false
-        } else {
-            if (period > 3) vm.notifyMessage(
-                "Overtime! Play until all cards are out.\nPeriod: $period",
-                isNeutralMessage = true
-            )
-
-            whoseTurn =
-                if (whoseTeamStartedLastPeriod == Constants.WhoseTurn.BOTTOM) Constants.WhoseTurn.TOP else Constants.WhoseTurn.BOTTOM
-            whoseTeamStartedLastPeriod = whoseTurn
-
+        return if (vm.isNextPeriodReady()) {
             resetAllCards(teamBottomViews)
             resetAllCards(teamTopViews)
-
             card_top_goalie.tag = null
             card_bm_goalie.tag = null
-
-            return true
+            true
+        } else {
+            whole_view.visibility = View.VISIBLE
+            false
         }
     }
 
@@ -574,71 +526,43 @@ class GameFragment : Fragment(), View.OnClickListener {
         val spotIndex: Int
         if (isOngoingGame) {
             if (v.tag == Integer.valueOf(android.R.color.transparent)) return
-            if (whoseTurn == Constants.WhoseTurn.BOTTOM) {
-                when (v.id) {
-                    R.id.card_top_forward_left -> {
-                        prepareAttackPlayer(teamTop, 0, card_top_forward_left)
-                    }
-                    R.id.card_top_center -> {
-                        prepareAttackPlayer(teamTop, 1, card_top_center)
-                    }
-                    R.id.card_top_forward_right -> {
-                        prepareAttackPlayer(teamTop, 2, card_top_forward_right)
-                    }
-                    R.id.card_top_defender_left -> {
-                        if (vm.areEnoughForwardsOut(teamTop, 3))
-                            prepareAttackPlayer(teamTop, 3, card_top_defender_left)
-                    }
-                    R.id.card_top_defender_right -> {
-                        if (vm.areEnoughForwardsOut(teamTop, 4))
-                            prepareAttackPlayer(teamTop, 4, card_top_defender_right)
-                    }
-                    R.id.card_top_goalie -> {
-                        if (vm.isAtLeastOneDefenderOut(teamTop)) {
-                            tempGoalieCard = teamTop[5]
-                            if (vm.canAttack(teamTop, 5, card_top_goalie)) prepareAttackPlayer(
-                                teamTop,
-                                5,
-                                card_top_goalie
-                            )
-                            else prepareGoalieSaved(card_top_goalie)
-                        }
-                    }
+            if (isTeamBottomTurn()) {
+                spotIndex = when (v.id) {
+                    R.id.card_top_forward_left -> 0
+                    R.id.card_top_center -> 1
+                    R.id.card_top_forward_right -> 2
+                    R.id.card_top_defender_left -> if (vm.areEnoughForwardsOut(teamTop, 3)) 3 else return
+                    R.id.card_top_defender_right -> if (vm.areEnoughForwardsOut(teamTop, 4)) 4 else return
+                    R.id.card_top_goalie -> if (vm.isAtLeastOneDefenderOut(teamTop)) 5 else return
+                    else -> return
                 }
             } else {
-                when (v.id) {
-                    R.id.card_bm_forward_left -> {
-                        prepareAttackPlayer(teamBottom, 0, card_bm_forward_left)
-                    }
-                    R.id.card_bm_center -> {
-                        prepareAttackPlayer(teamBottom, 1, card_bm_center)
-                    }
-                    R.id.card_bm_forward_right -> {
-                        prepareAttackPlayer(teamBottom, 2, card_bm_forward_right)
-                    }
-                    R.id.card_bm_defender_left -> {
-                        if (vm.areEnoughForwardsOut(teamBottom, 3))
-                            prepareAttackPlayer(teamBottom, 3, card_bm_defender_left)
-                    }
-                    R.id.card_bm_defender_right -> {
-                        if (vm.areEnoughForwardsOut(teamBottom, 4))
-                            prepareAttackPlayer(teamBottom, 4, card_bm_defender_right)
-                    }
-                    R.id.card_bm_goalie -> {
-                        if (vm.isAtLeastOneDefenderOut(teamBottom)) {
-                            tempGoalieCard = teamBottom[5]
-                            if (vm.canAttack(teamBottom, 5, card_bm_goalie)) prepareAttackPlayer(
-                                teamBottom,
-                                5,
-                                card_bm_goalie
-                            )
-                            else prepareGoalieSaved(card_bm_goalie)
-                        }
-                    }
+                spotIndex = when (v.id) {
+                    R.id.card_bm_forward_left -> 0
+                    R.id.card_bm_center -> 1
+                    R.id.card_bm_forward_right -> 2
+                    R.id.card_bm_defender_left -> if (vm.areEnoughForwardsOut(teamBottom, 3)) 3 else return
+                    R.id.card_bm_defender_right -> if (vm.areEnoughForwardsOut(teamBottom, 4)) 4 else return
+                    R.id.card_bm_goalie -> if (vm.isAtLeastOneDefenderOut(teamBottom)) 5 else return
+                    else -> return
+                }
+            }
+
+            val imageView = view?.findViewById<AppCompatImageView>(v.id)
+            val targetTeam = if (isTeamBottomTurn()) teamTop else teamBottom
+
+            imageView?.let {
+                if (spotIndex == 5) {
+                    tempGoalieCard = targetTeam[5]
+                    if (vm.canAttack(targetTeam, 5, it))
+                        prepareAttackPlayer(targetTeam, 5, it)
+                    else prepareGoalieSaved(it)
+                } else {
+                    prepareAttackPlayer(targetTeam, spotIndex, it)
                 }
             }
         } else {
-            if (whoseTurn == Constants.WhoseTurn.BOTTOM) {
+            if (isTeamBottomTurn()) {
                 spotIndex = when (v.id) {
                     R.id.card_bm_forward_left -> 0
                     R.id.card_bm_center -> 1
@@ -659,7 +583,7 @@ class GameFragment : Fragment(), View.OnClickListener {
             }
 
             val imageView = view?.findViewById<AppCompatImageView>(v.id)
-            val team = if (whoseTurn == Constants.WhoseTurn.BOTTOM) teamBottom else teamTop
+            val team = if (isTeamBottomTurn()) teamBottom else teamTop
 
             imageView?.let {
                 if (vm.canAddPlayerView(imageView, team, spotIndex) && v.tag != null) {

@@ -27,7 +27,9 @@ import com.dohman.holdempucker.util.Constants.Companion.teamBottomScore
 import com.dohman.holdempucker.util.Constants.Companion.teamTop
 import com.dohman.holdempucker.util.Constants.Companion.teamTopScore
 import com.dohman.holdempucker.util.Constants.Companion.isVsBot
+import com.dohman.holdempucker.util.Constants.Companion.whoseTeamStartedLastPeriod
 import com.dohman.holdempucker.util.Constants.Companion.whoseTurn
+import com.dohman.holdempucker.util.Constants.WhoseTurn.Companion.isTeamBottomTurn
 import com.dohman.holdempucker.util.GameLogic
 import com.wajahatkarim3.easyflipview.EasyFlipView
 import javax.inject.Inject
@@ -187,8 +189,35 @@ class GameViewModel : ViewModel() {
         ) fPrepareViewsToPulse?.invoke()
     }
 
+    fun isNextPeriodReady(): Boolean {
+        if (period > 3 && (teamBottomScore != teamTopScore)) {
+            val message = when {
+                teamBottomScore > teamTopScore -> "Team Bottom won with $teamBottomScore-$teamTopScore!\nNew game? Press anywhere!"
+                else -> "Team Top won with $teamTopScore-$teamBottomScore!\nNew game? Press anywhere!"
+            }
+            notifyMessage(message, isNeutralMessage = true)
+
+            return false
+        } else {
+            if (period > 3) notifyMessage(
+                "Overtime! Play until all cards are out.\nPeriod: $period",
+                isNeutralMessage = true
+            )
+
+            whoseTurn =
+                if (whoseTeamStartedLastPeriod == Constants.WhoseTurn.BOTTOM) Constants.WhoseTurn.TOP else Constants.WhoseTurn.BOTTOM
+            whoseTeamStartedLastPeriod = whoseTurn
+
+            return true
+        }
+    }
+
     fun triggerBadCard() {
         badCardNotifier.value = true
+    }
+
+    fun addGoalToScore() {
+        if (isTeamBottomTurn()) teamBottomScore++ else teamTopScore++
     }
 
     private fun halfTime() {
