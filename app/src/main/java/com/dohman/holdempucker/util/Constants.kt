@@ -12,7 +12,6 @@ class Constants {
 
         // Booleans
         var isVsBot = false
-        var isBotMoving = false
         var isOngoingGame = false // Set to true when all cards are laid out
         var isJustShotAtGoalie = false // To prevent duplicate message
         var isRestoringPlayers = true // Set to true when a team need to lay out new cards to fulfill
@@ -33,11 +32,10 @@ class Constants {
 
         // Lists
         var possibleMovesIndexes = mutableListOf<Int>() // For the pulse animations
-        var mikePenzPositions = mutableListOf<Int>() // For the MikePenz adapter
 
         // Whose turn
-        var whoseTurn = WhoseTurn.TOP
-        var whoseTeamStartedLastPeriod = WhoseTurn.BOTTOM
+        var whoseTurn = WhoseTurn.BOTTOM
+//        var whoseTeamStartedLastPeriod = WhoseTurn.BOTTOM
 
         // Game Mode
         var currentGameMode = GameMode.NONE
@@ -76,9 +74,9 @@ class Constants {
         companion object {
             fun toggleTurn() {
                 whoseTurn = if (whoseTurn == BOTTOM) TOP else BOTTOM
-                isBotMoving = whoseTurn == TOP && isVsBot
             }
 
+            fun isBotMoving() = whoseTurn == TOP && isVsBot
             fun isTeamBottomTurn() = whoseTurn == BOTTOM
         }
     }

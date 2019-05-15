@@ -1,12 +1,7 @@
 package com.dohman.holdempucker.ui.fragments
 
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.Matrix
 import android.util.Log
-import android.view.View
 import androidx.appcompat.widget.AppCompatImageView
-import androidx.appcompat.widget.AppCompatTextView
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.dohman.holdempucker.R
@@ -27,11 +22,10 @@ import com.dohman.holdempucker.util.Constants.Companion.teamBottomScore
 import com.dohman.holdempucker.util.Constants.Companion.teamTop
 import com.dohman.holdempucker.util.Constants.Companion.teamTopScore
 import com.dohman.holdempucker.util.Constants.Companion.isVsBot
-import com.dohman.holdempucker.util.Constants.Companion.whoseTeamStartedLastPeriod
 import com.dohman.holdempucker.util.Constants.Companion.whoseTurn
 import com.dohman.holdempucker.util.Constants.WhoseTurn.Companion.isTeamBottomTurn
 import com.dohman.holdempucker.util.GameLogic
-import com.wajahatkarim3.easyflipview.EasyFlipView
+import com.dohman.holdempucker.util.Util
 import javax.inject.Inject
 
 class GameViewModel : ViewModel() {
@@ -89,7 +83,7 @@ class GameViewModel : ViewModel() {
     * Notify functions
     * */
 
-    private fun notifyPickedCard() {
+    fun notifyPickedCard() {
         pickedCardNotifier.value = resIdOfCard(firstCardInDeck)
     }
 
@@ -110,7 +104,7 @@ class GameViewModel : ViewModel() {
         // True = Game can continue
         cardDeck.remove(firstCardInDeck)
         return if (cardDeck.isEmpty()) {
-            halfTime()
+            triggerHalfTime()
             false
         } else {
             firstCardInDeck = cardDeck.first()
@@ -121,9 +115,9 @@ class GameViewModel : ViewModel() {
     }
 
     private fun areThereEnoughCards(team: Array<Card?>): Boolean {
-        val amountOfNulls = team.filter { it == null }.size
-        if ((amountOfNulls + 4) > cardDeck.size) { // 4 is the minimum amount to score an goal
-            halfTime()
+        val amountOfCardsToFill = team.filter { it == null }.size
+        if ((amountOfCardsToFill + 4) > cardDeck.size) { // 4 is the minimum amount to score an goal
+            triggerHalfTime()
             return false
         }
 
@@ -144,16 +138,8 @@ class GameViewModel : ViewModel() {
 
     fun notifyMessageAttackingGoalie() {
         firstCardInDeck.let {
-            val rankInterpreted = when (it.rank) {
-                11 -> "Jack"
-                12 -> "Queen"
-                13 -> "King"
-                14 -> "Ace"
-                else -> it.rank.toString()
-            }
-
             notifyMessage(
-                "${it.suit.toString().toLowerCase().capitalize()} $rankInterpreted attacks the goalie\n..."
+                "${it.suit.toString().toLowerCase().capitalize()} ${Util.rankToWord(it.rank)} attacks the goalie\n..."
             )
         }
     }
@@ -182,10 +168,7 @@ class GameViewModel : ViewModel() {
         }
 
         if (isOngoingGame && !GameLogic.isTherePossibleMove(whoseTurn, firstCardInDeck)) triggerBadCard()
-        else if (isOngoingGame && GameLogic.isTherePossibleMove(
-                whoseTurn,
-                firstCardInDeck
-            )
+        else if (isOngoingGame && GameLogic.isTherePossibleMove(whoseTurn, firstCardInDeck)
         ) fPrepareViewsToPulse?.invoke()
     }
 
@@ -204,9 +187,9 @@ class GameViewModel : ViewModel() {
                 isNeutralMessage = true
             )
 
-            whoseTurn =
-                if (whoseTeamStartedLastPeriod == Constants.WhoseTurn.BOTTOM) Constants.WhoseTurn.TOP else Constants.WhoseTurn.BOTTOM
-            whoseTeamStartedLastPeriod = whoseTurn
+//            whoseTurn =
+//                if (whoseTeamStartedLastPeriod == Constants.WhoseTurn.BOTTOM) Constants.WhoseTurn.TOP else Constants.WhoseTurn.BOTTOM
+//            whoseTeamStartedLastPeriod = whoseTurn
 
             return true
         }
@@ -220,7 +203,7 @@ class GameViewModel : ViewModel() {
         if (isTeamBottomTurn()) teamBottomScore++ else teamTopScore++
     }
 
-    private fun halfTime() {
+    fun triggerHalfTime() {
         cardDeck = cardRepo.createCards() as MutableList<Card>
         firstCardInDeck = cardDeck.first()
 
@@ -242,7 +225,9 @@ class GameViewModel : ViewModel() {
     private fun isGoalieThereOrAdd(goalieCard: Card): Boolean {
         if (GameLogic.isGoalieThereOrAdd(goalieCard)) return true
 
-        removeCardFromDeck()
+//        val doNotNotify = teamTop[5] == null || teamBottom[5] == null
+//        removeCardFromDeck(doNotNotify = true)
+
         return false // But goalie is added now
     }
 
@@ -263,7 +248,7 @@ class GameViewModel : ViewModel() {
 
     fun isThisTeamReady(): Boolean {
         val teamToCheck =
-            if (whoseTurn == Constants.WhoseTurn.BOTTOM) teamBottom else teamTop
+            if (isTeamBottomTurn()) teamBottom else teamTop
 
         teamToCheck.forEach { if (it == null) return false }
 

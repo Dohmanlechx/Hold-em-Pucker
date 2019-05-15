@@ -6,8 +6,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.dohman.holdempucker.R
 import com.dohman.holdempucker.util.Animations
-import com.dohman.holdempucker.util.Constants
-import com.dohman.holdempucker.util.Constants.Companion.whoseTurn
+import com.dohman.holdempucker.util.Constants.WhoseTurn.Companion.isTeamBottomTurn
 import com.mikepenz.fastadapter.items.AbstractItem
 import kotlinx.android.synthetic.main.message_box_item.view.*
 
@@ -22,15 +21,15 @@ class MessageTextItem(
     override fun bindView(holder: ViewHolder, payloads: MutableList<Any>) {
         super.bindView(holder, payloads)
 
-        val isTeamTop = whoseTurn == Constants.WhoseTurn.TOP
+        val isTeamBottom = isTeamBottomTurn()
 
         holder.itemView.txt_message.setTextColor(
             ContextCompat.getColor(
                 holder.context,
                 when {
                     isNeutralMessage -> R.color.white
-                    isTeamTop -> R.color.text_background_top
-                    else -> R.color.text_background_btm
+                    isTeamBottom -> R.color.text_background_btm
+                    else -> R.color.text_background_top
                 }
             )
         )

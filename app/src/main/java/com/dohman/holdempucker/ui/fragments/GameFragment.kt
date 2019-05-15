@@ -23,18 +23,16 @@ import com.dohman.holdempucker.util.Constants.Companion.teamBottom
 import com.dohman.holdempucker.util.Constants.Companion.teamBottomScore
 import com.dohman.holdempucker.util.Constants.Companion.teamTop
 import com.dohman.holdempucker.util.Constants.Companion.teamTopScore
-import com.dohman.holdempucker.util.Constants.Companion.whoseTeamStartedLastPeriod
 import com.dohman.holdempucker.util.Constants.Companion.whoseTurn
 import com.dohman.holdempucker.util.GameLogic
 import com.dohman.holdempucker.util.Animations
 import com.dohman.holdempucker.util.Constants.Companion.TAG_GAMEACTIVITY
-import com.dohman.holdempucker.util.Constants.Companion.isBotMoving
+import com.dohman.holdempucker.util.Constants.WhoseTurn.Companion.isBotMoving
 import com.dohman.holdempucker.util.Constants.WhoseTurn.Companion.isTeamBottomTurn
 import com.dohman.holdempucker.util.ViewUtil
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.items.AbstractItem
-import com.wajahatkarim3.easyflipview.EasyFlipView
 import kotlinx.android.synthetic.main.computer_layout.*
 import kotlinx.android.synthetic.main.game_fragment.*
 
@@ -131,7 +129,7 @@ class GameFragment : Fragment(), View.OnClickListener {
         card_top_goalie.tag = null
         card_bm_goalie.tag = null
 
-        addGoalieView(true)
+        addGoalieView(bottom = true)
         whole_view.visibility = View.GONE
     }
 
@@ -200,7 +198,15 @@ class GameFragment : Fragment(), View.OnClickListener {
     * */
 
     private fun flipNewCard(resId: Int, isBadCard: Boolean = false) {
-        ViewUtil.setImagesOnFlipView(flip_view, card_deck, card_picked, resId, null, isVertical = true)
+        ViewUtil.setImagesOnFlipView(
+            flip_view,
+            card_deck,
+            card_picked,
+            resId,
+            null,
+            isVertical = true,
+            cardSize = vm.cardDeck.size
+        )
 
         Animations.animateFlipPlayingCard(
             flip_view,
@@ -225,7 +231,7 @@ class GameFragment : Fragment(), View.OnClickListener {
 
     private fun addGoalieView(
         bottom: Boolean,
-        doNotFlip: Boolean = false,
+//        doNotFlip: Boolean = false,
         doRemoveCardFromDeck: Boolean = false,
         withStartDelay: Boolean = false
     ) {
@@ -256,10 +262,15 @@ class GameFragment : Fragment(), View.OnClickListener {
             // onStop
             restoreFlipViewsPosition()
             vm.onGoalieAddedAnimationEnd(view)
-            if (card_top_goalie.tag != Integer.valueOf(R.drawable.red_back)) addGoalieView(bottom = false) else {
-                if (!doNotFlip) flipNewCard(vm.resIdOfCard(vm.firstCardInDeck)) // FIXME
-                if (doRemoveCardFromDeck) vm.removeCardFromDeck(doNotNotify = true)
-                vm.gameManager()
+
+            vm.gameManager()
+            vm.removeCardFromDeck(doNotNotify = true)
+            if (card_top_goalie.tag != Integer.valueOf(R.drawable.red_back)) {
+                addGoalieView(bottom = false)
+            } else {
+                vm.notifyPickedCard()
+                /*if (!doNotFlip) */
+                //flipNewCard(vm.resIdOfCard(vm.firstCardInDeck)) // FIXME
                 cards_left.visibility = View.VISIBLE
             }
         }
@@ -334,7 +345,7 @@ class GameFragment : Fragment(), View.OnClickListener {
                         // OnStop
                         onGoalieActionEnd(targetView, true, targetTeam)
                         updateScores()
-                        addGoalieView(bottom = isTargetGoalieBottom, doNotFlip = true, doRemoveCardFromDeck = true)
+                        addGoalieView(bottom = isTargetGoalieBottom, doRemoveCardFromDeck = true)
                     }
                 )
             }
@@ -381,8 +392,9 @@ class GameFragment : Fragment(), View.OnClickListener {
             { message -> updateMessageBox(message) },
             {
                 // OnStop
+                // FIXME: Kolla upp kortantalet här. Kanske trigga HalfTime
                 onGoalieActionEnd(targetView, false, targetTeam)
-                addGoalieView(bottom = isTargetGoalieBottom, doNotFlip = true, doRemoveCardFromDeck = true)
+                addGoalieView(bottom = isTargetGoalieBottom, doRemoveCardFromDeck = true)
             }
         )
     }
@@ -395,15 +407,15 @@ class GameFragment : Fragment(), View.OnClickListener {
         flip_view.flipTheView()
 
         // Bot's turn
-        if (isBotMoving && !isBadCard) {
+        if (isBotMoving() && !isBadCard) {
             // Adding player
             if (isRestoringPlayers) {
                 vm.botChooseEmptySpot(getEmptySpots()) {
                     // Trigger the bot's move
                     if (it != -1) animateAddPlayer(teamTopViews[it], teamTop, it)
                 }
-                // Attacking player
             } else {
+                // Attacking player
                 val chosenIndex = vm.botChooseIndexToAttack(possibleMovesIndexes)
                 Log.d(TAG_GAMEACTIVITY, chosenIndex.toString())
 
@@ -521,7 +533,7 @@ class GameFragment : Fragment(), View.OnClickListener {
     }
 
     override fun onClick(v: View) {
-        if (isBotMoving) return
+        if (isBotMoving()) return
 
         val spotIndex: Int
         if (isOngoingGame) {

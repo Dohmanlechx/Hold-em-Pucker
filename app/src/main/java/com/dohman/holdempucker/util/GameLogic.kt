@@ -53,7 +53,7 @@ object GameLogic {
         return false
     }
 
-    fun isTherePossibleMove(whoseTurn: Enum<Constants.WhoseTurn>, currentCard: Card): Boolean {
+    fun isTherePossibleMove(whoseTurn: Constants.WhoseTurn, currentCard: Card): Boolean {
         val victimTeam =
             if (whoseTurn == Constants.WhoseTurn.BOTTOM) teamTop else teamBottom
 
