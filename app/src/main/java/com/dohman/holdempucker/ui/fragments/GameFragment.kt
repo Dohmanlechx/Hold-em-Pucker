@@ -304,28 +304,20 @@ class GameFragment : Fragment(), View.OnClickListener {
 
                 vm.notifyMessageAttackingGoalie()
 
-                val targetView = if (isTeamBottomTurn()) flip_top_goalie else flip_btm_goalie
                 val isTargetGoalieBottom = !isTeamBottomTurn()
+                val targetView = if (isTargetGoalieBottom) flip_btm_goalie else flip_top_goalie
+                val targetViewFront = if (isTargetGoalieBottom) flip_btm_goalie_front else flip_top_goalie_front
+                val targetViewBack = if (isTargetGoalieBottom) flip_btm_goalie_back else flip_top_goalie_back
+                val targetTeam = if (isTargetGoalieBottom) teamBottom else teamTop
 
-                if (isTeamBottomTurn()) {
-                    ViewUtil.setImagesOnFlipView(
-                        flip_top_goalie,
-                        flip_top_goalie_front,
-                        flip_top_goalie_back,
-                        null,
-                        ViewUtil.getRotatedBitmap(requireContext(), vm.resIdOfCard(tempGoalieCard)),
-                        isVertical = false
-                    )
-                } else {
-                    ViewUtil.setImagesOnFlipView(
-                        flip_btm_goalie,
-                        flip_btm_goalie_front,
-                        flip_btm_goalie_back,
-                        null,
-                        ViewUtil.getRotatedBitmap(requireContext(), vm.resIdOfCard(tempGoalieCard)),
-                        isVertical = false
-                    )
-                }
+                ViewUtil.setImagesOnFlipView(
+                    targetView,
+                    targetViewFront,
+                    targetViewBack,
+                    null,
+                    ViewUtil.getRotatedBitmap(requireContext(), vm.resIdOfCard(tempGoalieCard)),
+                    isVertical = false
+                )
 
                 victimView.setImageResource(android.R.color.transparent)
                 victimView.tag = Integer.valueOf(android.R.color.transparent)
@@ -340,7 +332,7 @@ class GameFragment : Fragment(), View.OnClickListener {
                     { message -> updateMessageBox(message) },
                     {
                         // OnStop
-                        onGoalieActionEnd(targetView, true, if (isTargetGoalieBottom) teamBottom else teamTop)
+                        onGoalieActionEnd(targetView, true, targetTeam)
                         updateScores()
                         addGoalieView(bottom = isTargetGoalieBottom, doNotFlip = true, doRemoveCardFromDeck = true)
                     }
@@ -538,6 +530,7 @@ class GameFragment : Fragment(), View.OnClickListener {
 
             whoseTurn =
                 if (whoseTeamStartedLastPeriod == Constants.WhoseTurn.BOTTOM) Constants.WhoseTurn.TOP else Constants.WhoseTurn.BOTTOM
+            whoseTeamStartedLastPeriod = whoseTurn
 
             resetAllCards(teamBottomViews)
             resetAllCards(teamTopViews)

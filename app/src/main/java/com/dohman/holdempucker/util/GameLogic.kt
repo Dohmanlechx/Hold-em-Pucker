@@ -5,13 +5,12 @@ import com.dohman.holdempucker.util.Constants.Companion.cases
 import com.dohman.holdempucker.util.Constants.Companion.possibleMovesIndexes
 import com.dohman.holdempucker.util.Constants.Companion.teamBottom
 import com.dohman.holdempucker.util.Constants.Companion.teamTop
-import com.dohman.holdempucker.util.Constants.Companion.whoseTurn
+import com.dohman.holdempucker.util.Constants.WhoseTurn.Companion.isTeamBottomTurn
 
 object GameLogic {
 
     fun isGoalieThereOrAdd(goalieCard: Card): Boolean {
-        val team =
-            if (whoseTurn == Constants.WhoseTurn.BOTTOM) teamBottom else teamTop
+        val team = if (isTeamBottomTurn()) teamBottom else teamTop
 
         team.let { if (it[5] != null) return true else it[5] = goalieCard }
 

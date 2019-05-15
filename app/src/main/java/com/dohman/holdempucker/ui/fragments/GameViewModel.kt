@@ -266,13 +266,7 @@ class GameViewModel : ViewModel() {
         victimView: AppCompatImageView
     ): Boolean {
         if (victimView.tag == Integer.valueOf(android.R.color.transparent)) return false
-
-        if (GameLogic.isAttacked(firstCardInDeck, victimTeam, spotIndex) && spotIndex == 5) {
-            // Goal at goalie
-            return true
-        } else if (GameLogic.isAttacked(firstCardInDeck, victimTeam, spotIndex)) {
-            return true
-        }
+        if (GameLogic.isAttacked(firstCardInDeck, victimTeam, spotIndex)) return true
 
         return false
     }
@@ -285,7 +279,8 @@ class GameViewModel : ViewModel() {
         fTriggerBotMove.invoke(botRepo.getMoveIndex(currentGameMode, possibleMoves, firstCardInDeck))
     }
 
-    fun botChooseIndexToAttack(indexes: List<Int>): Int = botRepo.getMoveIndex(currentGameMode, indexes, firstCardInDeck)
+    fun botChooseIndexToAttack(indexes: List<Int>): Int =
+        botRepo.getMoveIndex(currentGameMode, indexes, firstCardInDeck)
 
     /*
     * On animation ends

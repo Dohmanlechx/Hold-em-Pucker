@@ -12,6 +12,7 @@ import androidx.navigation.Navigation
 import com.dohman.holdempucker.R
 import com.dohman.holdempucker.util.Constants
 import com.dohman.holdempucker.util.Constants.Companion.currentGameMode
+import com.dohman.holdempucker.util.Constants.Companion.period
 import com.dohman.holdempucker.util.Constants.Companion.teamBottom
 import com.dohman.holdempucker.util.Constants.Companion.teamTop
 import kotlinx.android.synthetic.main.main_menu_fragment.*
@@ -63,8 +64,8 @@ class MainMenuFragment : Fragment(), View.OnTouchListener {
     }
 
     private fun navigateToGameFragment() {
+        period = 1
         view?.let { Navigation.findNavController(it).navigate(R.id.action_mainMenuFragment_to_gameFragment) }
-        puck_vs_friend.setOnTouchListener(null)
     }
 
     override fun onTouch(v: View?, event: MotionEvent?): Boolean {
