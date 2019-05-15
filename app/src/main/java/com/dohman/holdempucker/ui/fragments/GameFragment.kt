@@ -23,9 +23,14 @@ import com.dohman.holdempucker.util.Constants.Companion.teamBottom
 import com.dohman.holdempucker.util.Constants.Companion.teamBottomScore
 import com.dohman.holdempucker.util.Constants.Companion.teamTop
 import com.dohman.holdempucker.util.Constants.Companion.teamTopScore
-import com.dohman.holdempucker.util.Constants.Companion.whoseTurn
 import com.dohman.holdempucker.util.GameLogic
 import com.dohman.holdempucker.util.Animations
+import com.dohman.holdempucker.util.Constants.Companion.PLAYER_CENTER
+import com.dohman.holdempucker.util.Constants.Companion.PLAYER_DEFENDER_LEFT
+import com.dohman.holdempucker.util.Constants.Companion.PLAYER_DEFENDER_RIGHT
+import com.dohman.holdempucker.util.Constants.Companion.PLAYER_FORWARD_LEFT
+import com.dohman.holdempucker.util.Constants.Companion.PLAYER_FORWARD_RIGHT
+import com.dohman.holdempucker.util.Constants.Companion.PLAYER_GOALIE
 import com.dohman.holdempucker.util.Constants.Companion.TAG_GAMEACTIVITY
 import com.dohman.holdempucker.util.Constants.WhoseTurn.Companion.isBotMoving
 import com.dohman.holdempucker.util.Constants.WhoseTurn.Companion.isTeamBottomTurn
@@ -198,6 +203,8 @@ class GameFragment : Fragment(), View.OnClickListener {
     * */
 
     private fun flipNewCard(resId: Int, isBadCard: Boolean = false) {
+        if (vm.cardDeck.size > 50) return
+
         ViewUtil.setImagesOnFlipView(
             flip_view,
             card_deck,
@@ -231,8 +238,6 @@ class GameFragment : Fragment(), View.OnClickListener {
 
     private fun addGoalieView(
         bottom: Boolean,
-//        doNotFlip: Boolean = false,
-        doRemoveCardFromDeck: Boolean = false,
         withStartDelay: Boolean = false
     ) {
         if (fvGoalieBtmX == 0f) {
@@ -333,6 +338,8 @@ class GameFragment : Fragment(), View.OnClickListener {
                 victimView.setImageResource(android.R.color.transparent)
                 victimView.tag = Integer.valueOf(android.R.color.transparent)
 
+                vm.removeCardFromDeck(doNotNotify = true)
+
                 Animations.animateScoredAtGoalie(
                     fading_view,
                     flip_view,
@@ -345,7 +352,7 @@ class GameFragment : Fragment(), View.OnClickListener {
                         // OnStop
                         onGoalieActionEnd(targetView, true, targetTeam)
                         updateScores()
-                        addGoalieView(bottom = isTargetGoalieBottom, doRemoveCardFromDeck = true)
+                        addGoalieView(bottom = isTargetGoalieBottom)
                     }
                 )
             }
@@ -382,6 +389,8 @@ class GameFragment : Fragment(), View.OnClickListener {
         victimView.setImageResource(android.R.color.transparent)
         victimView.tag = Integer.valueOf(android.R.color.transparent)
 
+        vm.removeCardFromDeck(doNotNotify = true)
+
         Animations.animateGoalieSaved(
             fading_view,
             flip_view,
@@ -394,7 +403,7 @@ class GameFragment : Fragment(), View.OnClickListener {
                 // OnStop
                 // FIXME: Kolla upp kortantalet här. Kanske trigga HalfTime
                 onGoalieActionEnd(targetView, false, targetTeam)
-                addGoalieView(bottom = isTargetGoalieBottom, doRemoveCardFromDeck = true)
+                addGoalieView(bottom = isTargetGoalieBottom)
             }
         )
     }
@@ -455,9 +464,9 @@ class GameFragment : Fragment(), View.OnClickListener {
                             isRestoringPlayers = true
                         }
 
-                        if (isOngoingGame && !GameLogic.isTherePossibleMove(whoseTurn, vm.firstCardInDeck)) {
+                        if (isOngoingGame && !GameLogic.isTherePossibleMove(vm.firstCardInDeck)) {
                             vm.triggerBadCard()
-                        } else if (isOngoingGame && GameLogic.isTherePossibleMove(whoseTurn, vm.firstCardInDeck)) {
+                        } else if (isOngoingGame && GameLogic.isTherePossibleMove(vm.firstCardInDeck)) {
                             prepareViewsToPulse()
                         }
                     })
@@ -540,22 +549,35 @@ class GameFragment : Fragment(), View.OnClickListener {
             if (v.tag == Integer.valueOf(android.R.color.transparent)) return
             if (isTeamBottomTurn()) {
                 spotIndex = when (v.id) {
-                    R.id.card_top_forward_left -> 0
-                    R.id.card_top_center -> 1
-                    R.id.card_top_forward_right -> 2
-                    R.id.card_top_defender_left -> if (vm.areEnoughForwardsOut(teamTop, 3)) 3 else return
-                    R.id.card_top_defender_right -> if (vm.areEnoughForwardsOut(teamTop, 4)) 4 else return
-                    R.id.card_top_goalie -> if (vm.isAtLeastOneDefenderOut(teamTop)) 5 else return
+                    R.id.card_top_forward_left -> PLAYER_FORWARD_LEFT
+                    R.id.card_top_center -> PLAYER_CENTER
+                    R.id.card_top_forward_right -> PLAYER_FORWARD_RIGHT
+
+                    R.id.card_top_defender_left ->
+                        if (vm.areEnoughForwardsOut(teamTop, PLAYER_DEFENDER_LEFT))
+                            PLAYER_DEFENDER_LEFT else return
+
+                    R.id.card_top_defender_right ->
+                        if (vm.areEnoughForwardsOut(teamTop, PLAYER_DEFENDER_RIGHT))
+                            PLAYER_DEFENDER_RIGHT else return
+
+                    R.id.card_top_goalie -> if (vm.isAtLeastOneDefenderOut(teamTop)) PLAYER_GOALIE else return
                     else -> return
                 }
             } else {
                 spotIndex = when (v.id) {
-                    R.id.card_bm_forward_left -> 0
-                    R.id.card_bm_center -> 1
-                    R.id.card_bm_forward_right -> 2
-                    R.id.card_bm_defender_left -> if (vm.areEnoughForwardsOut(teamBottom, 3)) 3 else return
-                    R.id.card_bm_defender_right -> if (vm.areEnoughForwardsOut(teamBottom, 4)) 4 else return
-                    R.id.card_bm_goalie -> if (vm.isAtLeastOneDefenderOut(teamBottom)) 5 else return
+                    R.id.card_bm_forward_left -> PLAYER_FORWARD_LEFT
+                    R.id.card_bm_center -> PLAYER_CENTER
+                    R.id.card_bm_forward_right -> PLAYER_FORWARD_RIGHT
+
+                    R.id.card_bm_defender_left ->
+                        if (vm.areEnoughForwardsOut(teamBottom, PLAYER_DEFENDER_LEFT))
+                            PLAYER_DEFENDER_LEFT else return
+
+                    R.id.card_bm_defender_right ->
+                        if (vm.areEnoughForwardsOut(teamBottom, PLAYER_DEFENDER_RIGHT))
+                            PLAYER_DEFENDER_RIGHT else return
+                    R.id.card_bm_goalie -> if (vm.isAtLeastOneDefenderOut(teamBottom)) PLAYER_GOALIE else return
                     else -> return
                 }
             }

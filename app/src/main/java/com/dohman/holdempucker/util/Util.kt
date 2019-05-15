@@ -26,7 +26,7 @@ object Util {
 
     fun getDelay(): Long {
         return if (isBotMoving()) {
-            listOf<Long>(1000, 800, 600, 400).random()
+            listOf<Long>(1000, 900, 800, 700, 600, 500).random()
         } else {
             0
         }

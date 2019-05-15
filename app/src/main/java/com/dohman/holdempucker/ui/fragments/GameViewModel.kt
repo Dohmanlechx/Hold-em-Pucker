@@ -22,6 +22,7 @@ import com.dohman.holdempucker.util.Constants.Companion.teamBottomScore
 import com.dohman.holdempucker.util.Constants.Companion.teamTop
 import com.dohman.holdempucker.util.Constants.Companion.teamTopScore
 import com.dohman.holdempucker.util.Constants.Companion.isVsBot
+import com.dohman.holdempucker.util.Constants.Companion.whoseTeamStartedLastPeriod
 import com.dohman.holdempucker.util.Constants.Companion.whoseTurn
 import com.dohman.holdempucker.util.Constants.WhoseTurn.Companion.isTeamBottomTurn
 import com.dohman.holdempucker.util.GameLogic
@@ -167,8 +168,8 @@ class GameViewModel : ViewModel() {
             return
         }
 
-        if (isOngoingGame && !GameLogic.isTherePossibleMove(whoseTurn, firstCardInDeck)) triggerBadCard()
-        else if (isOngoingGame && GameLogic.isTherePossibleMove(whoseTurn, firstCardInDeck)
+        if (isOngoingGame && !GameLogic.isTherePossibleMove(firstCardInDeck)) triggerBadCard()
+        else if (isOngoingGame && GameLogic.isTherePossibleMove(firstCardInDeck)
         ) fPrepareViewsToPulse?.invoke()
     }
 
@@ -187,9 +188,10 @@ class GameViewModel : ViewModel() {
                 isNeutralMessage = true
             )
 
-//            whoseTurn =
-//                if (whoseTeamStartedLastPeriod == Constants.WhoseTurn.BOTTOM) Constants.WhoseTurn.TOP else Constants.WhoseTurn.BOTTOM
-//            whoseTeamStartedLastPeriod = whoseTurn
+            whoseTurn =
+                if (whoseTeamStartedLastPeriod == Constants.WhoseTurn.BOTTOM) Constants.WhoseTurn.TOP else Constants.WhoseTurn.BOTTOM
+
+            whoseTeamStartedLastPeriod = whoseTurn
 
             return true
         }

@@ -53,9 +53,9 @@ object GameLogic {
         return false
     }
 
-    fun isTherePossibleMove(whoseTurn: Constants.WhoseTurn, currentCard: Card): Boolean {
+    fun isTherePossibleMove(currentCard: Card): Boolean {
         val victimTeam =
-            if (whoseTurn == Constants.WhoseTurn.BOTTOM) teamTop else teamBottom
+            if (isTeamBottomTurn()) teamTop else teamBottom
 
         val currentCase = arrayListOf<Int>()
         victimTeam.forEachIndexed { index, card ->

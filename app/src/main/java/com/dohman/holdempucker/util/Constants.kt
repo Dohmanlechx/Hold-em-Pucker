@@ -25,6 +25,14 @@ class Constants {
                         3 = Left defender | 4 = Right defender
                                     5 = Goalie                          */
 
+        // Player Index
+        const val PLAYER_FORWARD_LEFT = 0
+        const val PLAYER_CENTER = 1
+        const val PLAYER_FORWARD_RIGHT = 2
+        const val PLAYER_DEFENDER_LEFT = 3
+        const val PLAYER_DEFENDER_RIGHT = 4
+        const val PLAYER_GOALIE = 5
+
         // Integers
         var period = 1
         var teamTopScore = 0
@@ -35,7 +43,7 @@ class Constants {
 
         // Whose turn
         var whoseTurn = WhoseTurn.BOTTOM
-//        var whoseTeamStartedLastPeriod = WhoseTurn.BOTTOM
+        var whoseTeamStartedLastPeriod = whoseTurn
 
         // Game Mode
         var currentGameMode = GameMode.NONE
