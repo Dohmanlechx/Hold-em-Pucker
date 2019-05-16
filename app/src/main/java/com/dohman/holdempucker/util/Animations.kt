@@ -4,6 +4,7 @@ import android.view.View
 import android.view.animation.AnticipateInterpolator
 import android.view.animation.OvershootInterpolator
 import androidx.interpolator.view.animation.LinearOutSlowInInterpolator
+import com.airbnb.lottie.LottieAnimationView
 import com.dohman.holdempucker.cards.Card
 import com.dohman.holdempucker.util.Constants.Companion.possibleMovesIndexes
 import com.dohman.holdempucker.util.Constants.Companion.whoseTurn
@@ -33,6 +34,30 @@ object Animations {
     /*
     * Animation functions
     * */
+
+    fun animateWinner(fadingScreen: View, trophy: LottieAnimationView, textWinner: View) {
+        fadingScreen.visibility = View.VISIBLE
+        fadingScreen.bringToFront()
+        trophy.bringToFront()
+        textWinner.bringToFront()
+
+        listOfAllAnimations.add(
+            ViewAnimator
+                .animate(fadingScreen)
+                    .alpha(0.0f, 1.0f)
+                    .bounceIn()
+                    .duration(500)
+                .andAnimate(trophy)
+                    .bounceIn()
+                    .onStart { trophy.playAnimation() }
+                .thenAnimate(textWinner)
+                    .alpha(0.0f, 1.0f)
+                    .translationY(300f, 0f)
+                    .duration(400)
+                    .onStart { textWinner.visibility = View.VISIBLE }
+                .start()
+        )
+    }
 
     fun animatePuck(puck: View, team: String) {
         val vector = if (team.toLowerCase() == "bottom") 100f else -100f

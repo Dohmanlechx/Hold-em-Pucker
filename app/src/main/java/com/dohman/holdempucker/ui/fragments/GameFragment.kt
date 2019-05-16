@@ -121,6 +121,8 @@ class GameFragment : Fragment(), View.OnClickListener {
     private fun initGame() {
         period = 1
 
+        Animations.animateWinner(fading_view, lottie_trophy, txt_winner) // FIXME
+
         teamBottomScore = 0
         teamTopScore = 0
         updateScores()
