@@ -4,7 +4,7 @@
 	xmlns:tools="http://schemas.android.com/tools"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	android:background="@drawable/menu_background"
+	android:background="@drawable/background_mainmenu"
 	tools:context=".MainActivity">
 
 	<!-- 16 percent between horizontal lines -->
@@ -72,21 +72,21 @@
 	<!--<View-->
 	<!--android:layout_width="match_parent"-->
 	<!--android:layout_height="8dp"-->
-	<!--android:game_background="@color/ice_red"-->
+	<!--android:background_game="@color/ice_red"-->
 	<!--app:layout_constraintBottom_toBottomOf="@id/gl_hor_50"-->
 	<!--app:layout_constraintTop_toTopOf="@id/gl_hor_50" />-->
 
 	<!--<View-->
 	<!--android:layout_width="match_parent"-->
 	<!--android:layout_height="8dp"-->
-	<!--android:game_background="@color/ice_blue"-->
+	<!--android:background_game="@color/ice_blue"-->
 	<!--app:layout_constraintBottom_toBottomOf="@id/gl_hor_34"-->
 	<!--app:layout_constraintTop_toTopOf="@id/gl_hor_34" />-->
 
 	<!--<View-->
 	<!--android:layout_width="match_parent"-->
 	<!--android:layout_height="8dp"-->
-	<!--android:game_background="@color/ice_blue"-->
+	<!--android:background_game="@color/ice_blue"-->
 	<!--app:layout_constraintBottom_toBottomOf="@id/gl_hor_66"-->
 	<!--app:layout_constraintTop_toTopOf="@id/gl_hor_66" />-->
 

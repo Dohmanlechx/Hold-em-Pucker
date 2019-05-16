@@ -3,4 +3,5 @@
 	<string name="easy_mode">vs.\nAI Stupid</string>
 	<string name="hard_mode">vs.\nAI Developer</string>
 	<string name="vs_friend">Duel\nA Friend</string>
+    <string name="full_card_deck_amount">52</string>
 </resources>

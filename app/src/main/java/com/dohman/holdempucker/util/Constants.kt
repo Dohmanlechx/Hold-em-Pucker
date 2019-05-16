@@ -11,12 +11,11 @@ class Constants {
         const val TAG_GAMEVIEWMODEL = "DBG: GameViewModel.kt"
 
         // Booleans
-        var isVsBot = false
-        var isBotMoving = false
+        var isVsBotMode = false
         var isOngoingGame = false // Set to true when all cards are laid out
+        var isJustShotAtGoalie = false // To prevent duplicate message
         var isRestoringPlayers = true // Set to true when a team need to lay out new cards to fulfill
         var areTeamsReadyToStartPeriod = false // Set to true as soon as both teams are full in the very beginning
-        var isJustShotAtGoalie = false // To prevent duplicate message
 
         // Objects
         val teamTop = arrayOfNulls<Card>(6)
@@ -26,18 +25,25 @@ class Constants {
                         3 = Left defender | 4 = Right defender
                                     5 = Goalie                          */
 
+        // Player Index
+        const val PLAYER_FORWARD_LEFT = 0
+        const val PLAYER_CENTER = 1
+        const val PLAYER_FORWARD_RIGHT = 2
+        const val PLAYER_DEFENDER_LEFT = 3
+        const val PLAYER_DEFENDER_RIGHT = 4
+        const val PLAYER_GOALIE = 5
+
         // Integers
         var period = 1
         var teamTopScore = 0
         var teamBottomScore = 0
 
         // Lists
-        var possibleMovesIndexes = mutableListOf<Int>() // For the pulse animations
-        var mikePenzPositions = mutableListOf<Int>() // For the MikePenz adapter
+        var possibleMovesIndexes = mutableListOf<Int>() // For the pulse animations and AI moves
 
         // Whose turn
-        var whoseTurn = WhoseTurn.TOP
-        var whoseTeamStartedLastPeriod = WhoseTurn.BOTTOM
+        var whoseTurn = WhoseTurn.BOTTOM
+        var whoseTeamStartedLastPeriod = whoseTurn
 
         // Game Mode
         var currentGameMode = GameMode.NONE
@@ -61,6 +67,12 @@ class Constants {
             add(12, listOf(5))
         }
 
+        fun resetBooleansToInitState() {
+            isOngoingGame = false
+            isJustShotAtGoalie = false
+            isRestoringPlayers = true
+            areTeamsReadyToStartPeriod = false
+        }
     }
 
     // Enums
@@ -70,8 +82,10 @@ class Constants {
         companion object {
             fun toggleTurn() {
                 whoseTurn = if (whoseTurn == BOTTOM) TOP else BOTTOM
-                isBotMoving = whoseTurn == TOP && isVsBot
             }
+
+            fun isBotMoving() = whoseTurn == TOP && isVsBotMode
+            fun isTeamBottomTurn() = whoseTurn == BOTTOM
         }
     }
 

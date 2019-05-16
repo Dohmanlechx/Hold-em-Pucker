@@ -1,714 +1,714 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:app="http://schemas.android.com/apk/res-auto"
-	xmlns:tools="http://schemas.android.com/tools"
-	android:id="@+id/board_layout"
-	android:layout_width="match_parent"
-	android:layout_height="match_parent"
-	android:background="@color/ice_white"
-	tools:context=".MainActivity">
-
-	<!-- GUIDE LINES HORIZONTAL -->
-
-	<androidx.constraintlayout.widget.Guideline
-		android:id="@+id/gl_hor_18"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:orientation="horizontal"
-		app:layout_constraintEnd_toEndOf="parent"
-		app:layout_constraintGuide_percent="0.18"
-		app:layout_constraintStart_toStartOf="parent" />
-
-	<androidx.constraintlayout.widget.Guideline
-		android:id="@+id/gl_hor_34"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:orientation="horizontal"
-		app:layout_constraintEnd_toEndOf="parent"
-		app:layout_constraintGuide_percent="0.34"
-		app:layout_constraintStart_toStartOf="parent" />
-
-	<androidx.constraintlayout.widget.Guideline
-		android:id="@+id/gl_hor_42"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:orientation="horizontal"
-		app:layout_constraintEnd_toEndOf="parent"
-		app:layout_constraintGuide_percent="0.42"
-		app:layout_constraintStart_toStartOf="parent" />
-
-	<androidx.constraintlayout.widget.Guideline
-		android:id="@+id/gl_hor_50"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:orientation="horizontal"
-		app:layout_constraintEnd_toEndOf="parent"
-		app:layout_constraintGuide_percent="0.5"
-		app:layout_constraintStart_toStartOf="parent" />
-
-	<androidx.constraintlayout.widget.Guideline
-		android:id="@+id/gl_hor_58"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:orientation="horizontal"
-		app:layout_constraintEnd_toEndOf="parent"
-		app:layout_constraintGuide_percent="0.58"
-		app:layout_constraintStart_toStartOf="parent" />
-
-	<androidx.constraintlayout.widget.Guideline
-		android:id="@+id/gl_hor_66"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:orientation="horizontal"
-		app:layout_constraintEnd_toEndOf="parent"
-		app:layout_constraintGuide_percent="0.66"
-		app:layout_constraintStart_toStartOf="parent" />
-
-	<androidx.constraintlayout.widget.Guideline
-		android:id="@+id/gl_hor_82"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:orientation="horizontal"
-		app:layout_constraintEnd_toEndOf="parent"
-		app:layout_constraintGuide_percent="0.82"
-		app:layout_constraintStart_toStartOf="parent" />
-
-	<androidx.constraintlayout.widget.Guideline
-		android:id="@+id/gl_hor_98"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:orientation="horizontal"
-		app:layout_constraintEnd_toEndOf="parent"
-		app:layout_constraintGuide_percent="0.98"
-		app:layout_constraintStart_toStartOf="parent" />
-
-	<!-- GUIDE LINES VERTICAL-->
-
-	<androidx.constraintlayout.widget.Guideline
-		android:id="@+id/gl_ver_20"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:orientation="vertical"
-		app:layout_constraintEnd_toEndOf="parent"
-		app:layout_constraintGuide_percent="0.20"
-		app:layout_constraintStart_toStartOf="parent" />
-
-	<androidx.constraintlayout.widget.Guideline
-		android:id="@+id/gl_ver_30"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:orientation="vertical"
-		app:layout_constraintEnd_toEndOf="parent"
-		app:layout_constraintGuide_percent="0.30"
-		app:layout_constraintStart_toStartOf="parent" />
-
-	<androidx.constraintlayout.widget.Guideline
-		android:id="@+id/gl_ver_40"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:orientation="vertical"
-		app:layout_constraintEnd_toEndOf="parent"
-		app:layout_constraintGuide_percent="0.40"
-		app:layout_constraintStart_toStartOf="parent" />
-
-	<androidx.constraintlayout.widget.Guideline
-		android:id="@+id/gl_ver_45"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:orientation="vertical"
-		app:layout_constraintEnd_toEndOf="parent"
-		app:layout_constraintGuide_percent="0.45"
-		app:layout_constraintStart_toStartOf="parent" />
-
-	<androidx.constraintlayout.widget.Guideline
-		android:id="@+id/gl_ver_50"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:orientation="vertical"
-		app:layout_constraintEnd_toEndOf="parent"
-		app:layout_constraintGuide_percent="0.50"
-		app:layout_constraintStart_toStartOf="parent" />
-
-	<androidx.constraintlayout.widget.Guideline
-		android:id="@+id/gl_ver_60"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:orientation="vertical"
-		app:layout_constraintEnd_toEndOf="parent"
-		app:layout_constraintGuide_percent="0.60"
-		app:layout_constraintStart_toStartOf="parent" />
-
-	<androidx.constraintlayout.widget.Guideline
-		android:id="@+id/gl_ver_70"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:orientation="vertical"
-		android:visibility="visible"
-		app:layout_constraintEnd_toEndOf="parent"
-		app:layout_constraintGuide_percent="0.70"
-		app:layout_constraintStart_toStartOf="parent" />
-
-	<androidx.constraintlayout.widget.Guideline
-		android:id="@+id/gl_ver_75"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:orientation="vertical"
-		app:layout_constraintEnd_toEndOf="parent"
-		app:layout_constraintGuide_percent="0.75"
-		app:layout_constraintStart_toStartOf="parent" />
-
-	<androidx.constraintlayout.widget.Guideline
-		android:id="@+id/gl_ver_80"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:orientation="vertical"
-		app:layout_constraintEnd_toEndOf="parent"
-		app:layout_constraintGuide_percent="0.80"
-		app:layout_constraintStart_toStartOf="parent" />
-
-	<androidx.constraintlayout.widget.Guideline
-		android:id="@+id/gl_ver_90"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:orientation="vertical"
-		android:visibility="visible"
-		app:layout_constraintEnd_toEndOf="parent"
-		app:layout_constraintGuide_percent="0.90"
-		app:layout_constraintStart_toStartOf="parent" />
-
-
-	<!-- VIEW LINES -->
-
-	<View
-		android:layout_width="match_parent"
-		android:layout_height="8dp"
-		android:background="@color/ice_red"
-		app:layout_constraintBottom_toBottomOf="@id/gl_hor_50"
-		app:layout_constraintTop_toTopOf="@id/gl_hor_50" />
-
-	<View
-		android:layout_width="match_parent"
-		android:layout_height="8dp"
-		android:background="@color/ice_blue"
-		app:layout_constraintBottom_toBottomOf="@id/gl_hor_34"
-		app:layout_constraintTop_toTopOf="@id/gl_hor_34" />
-
-	<View
-		android:layout_width="match_parent"
-		android:layout_height="8dp"
-		android:background="@color/ice_blue"
-		app:layout_constraintBottom_toBottomOf="@id/gl_hor_66"
-		app:layout_constraintTop_toTopOf="@id/gl_hor_66" />
-
-	<!-- SCORES -->
-
-	<androidx.appcompat.widget.AppCompatTextView
-		android:id="@+id/top_team_score"
-		android:layout_width="0dp"
-		android:layout_height="0dp"
-		android:alpha="0.8"
-		android:fontFamily="@font/hockey_score_font"
-		android:gravity="center"
-		android:shadowColor="@color/text_score_top"
-		android:shadowDx="0"
-		android:shadowDy="10"
-		android:shadowRadius="50"
-		android:textColor="@color/black"
-		android:textSize="42sp"
-		app:layout_constraintBottom_toTopOf="@id/gl_hor_34"
-		app:layout_constraintEnd_toEndOf="parent"
-		app:layout_constraintStart_toEndOf="@id/gl_ver_80"
-		app:layout_constraintTop_toTopOf="parent"
-		tools:text="17" />
-
-	<androidx.appcompat.widget.AppCompatTextView
-		android:id="@+id/bm_team_score"
-		android:layout_width="0dp"
-		android:layout_height="0dp"
-		android:alpha="0.8"
-		android:fontFamily="@font/hockey_score_font"
-		android:gravity="center"
-		android:shadowColor="@color/text_score_btm"
-		android:shadowDx="0"
-		android:shadowDy="10"
-		android:shadowRadius="50"
-		android:textColor="@color/black"
-		android:textSize="42sp"
-		app:layout_constraintBottom_toBottomOf="parent"
-		app:layout_constraintEnd_toEndOf="parent"
-		app:layout_constraintStart_toEndOf="@id/gl_ver_80"
-		app:layout_constraintTop_toBottomOf="@id/gl_hor_66"
-		tools:text="1" />
-
-	<!-- PUCK -->
-
-	<androidx.appcompat.widget.AppCompatImageView
-		android:id="@+id/puck"
-		android:layout_width="0dp"
-		android:layout_height="wrap_content"
-		android:adjustViewBounds="true"
-		android:padding="6dp"
-		android:src="@drawable/puck"
-		app:layout_constraintBottom_toTopOf="@id/gl_hor_50"
-		app:layout_constraintEnd_toEndOf="parent"
-		app:layout_constraintStart_toEndOf="@id/gl_ver_90"
-		app:layout_constraintTop_toBottomOf="@id/gl_hor_50" />
-
-	<!-- COMPUTER VIEW -->
-
-	<FrameLayout
-		android:layout_width="0dp"
-		android:layout_height="0dp"
-		app:layout_constraintBottom_toTopOf="@id/gl_hor_34"
-		app:layout_constraintDimensionRatio="H,1:1"
-		app:layout_constraintEnd_toStartOf="@id/gl_ver_40"
-		app:layout_constraintStart_toStartOf="parent"
-		app:layout_constraintTop_toTopOf="parent">
-
-		<include layout="@layout/computer_layout" />
-
-	</FrameLayout>
-
-	<!-- TEAM BOTTOM-->
-
-	<View
-		android:layout_width="0dp"
-		android:layout_height="0dp"
-		android:layout_margin="6dp"
-		android:background="@drawable/card_background_btm"
-		app:layout_constraintBottom_toTopOf="@id/gl_hor_66"
-		app:layout_constraintDimensionRatio="H,7:11"
-		app:layout_constraintEnd_toStartOf="@id/gl_ver_70"
-		app:layout_constraintStart_toEndOf="@id/gl_ver_50"
-		app:layout_constraintTop_toBottomOf="@id/gl_hor_50" />
-
-	<androidx.appcompat.widget.AppCompatImageView
-		android:id="@+id/card_bm_center"
-		android:layout_width="0dp"
-		android:layout_height="0dp"
-		android:layout_margin="6dp"
-		android:padding="1dp"
-		android:scaleType="fitXY"
-		app:layout_constraintBottom_toTopOf="@id/gl_hor_66"
-		app:layout_constraintDimensionRatio="H,7:11"
-		app:layout_constraintEnd_toStartOf="@id/gl_ver_70"
-		app:layout_constraintStart_toEndOf="@id/gl_ver_50"
-		app:layout_constraintTop_toBottomOf="@id/gl_hor_50"
-		tools:src="@drawable/da" />
-
-	<View
-		android:layout_width="0dp"
-		android:layout_height="0dp"
-		android:layout_margin="6dp"
-		android:background="@drawable/card_background_btm"
-		app:layout_constraintBottom_toTopOf="@id/gl_hor_66"
-		app:layout_constraintDimensionRatio="H,7:11"
-		app:layout_constraintEnd_toStartOf="@id/gl_ver_50"
-		app:layout_constraintStart_toEndOf="@id/gl_ver_30"
-		app:layout_constraintTop_toBottomOf="@id/gl_hor_50" />
-
-	<androidx.appcompat.widget.AppCompatImageView
-		android:id="@+id/card_bm_forward_left"
-		android:layout_width="0dp"
-		android:layout_height="0dp"
-		android:layout_margin="6dp"
-		android:padding="1dp"
-		android:scaleType="fitXY"
-		app:layout_constraintBottom_toTopOf="@id/gl_hor_66"
-		app:layout_constraintDimensionRatio="H,7:11"
-		app:layout_constraintEnd_toStartOf="@id/gl_ver_50"
-		app:layout_constraintStart_toEndOf="@id/gl_ver_30"
-		app:layout_constraintTop_toBottomOf="@id/gl_hor_50" />
-
-	<View
-		android:layout_width="0dp"
-		android:layout_height="0dp"
-		android:layout_margin="6dp"
-		android:background="@drawable/card_background_btm"
-		app:layout_constraintBottom_toTopOf="@id/gl_hor_66"
-		app:layout_constraintDimensionRatio="H,7:11"
-		app:layout_constraintEnd_toStartOf="@id/gl_ver_90"
-		app:layout_constraintStart_toEndOf="@id/gl_ver_70"
-		app:layout_constraintTop_toBottomOf="@id/gl_hor_50" />
-
-	<androidx.appcompat.widget.AppCompatImageView
-		android:id="@+id/card_bm_forward_right"
-		android:layout_width="0dp"
-		android:layout_height="0dp"
-		android:layout_margin="6dp"
-		android:padding="1dp"
-		android:scaleType="fitXY"
-		app:layout_constraintBottom_toTopOf="@id/gl_hor_66"
-		app:layout_constraintDimensionRatio="H,7:11"
-		app:layout_constraintEnd_toStartOf="@id/gl_ver_90"
-		app:layout_constraintStart_toEndOf="@id/gl_ver_70"
-		app:layout_constraintTop_toBottomOf="@id/gl_hor_50" />
-
-	<View
-		android:layout_width="0dp"
-		android:layout_height="0dp"
-		android:layout_margin="6dp"
-		android:background="@drawable/card_background_btm"
-		app:layout_constraintBottom_toTopOf="@id/gl_hor_82"
-		app:layout_constraintDimensionRatio="H,7:11"
-		app:layout_constraintEnd_toStartOf="@id/gl_ver_60"
-		app:layout_constraintStart_toEndOf="@id/gl_ver_40"
-		app:layout_constraintTop_toBottomOf="@id/gl_hor_66" />
-
-	<androidx.appcompat.widget.AppCompatImageView
-		android:id="@+id/card_bm_defender_left"
-		android:layout_width="0dp"
-		android:layout_height="0dp"
-		android:layout_margin="6dp"
-		android:padding="1dp"
-		android:scaleType="fitXY"
-		app:layout_constraintBottom_toTopOf="@id/gl_hor_82"
-		app:layout_constraintDimensionRatio="H,7:11"
-		app:layout_constraintEnd_toStartOf="@id/gl_ver_60"
-		app:layout_constraintStart_toEndOf="@id/gl_ver_40"
-		app:layout_constraintTop_toBottomOf="@id/gl_hor_66" />
-
-	<View
-		android:layout_width="0dp"
-		android:layout_height="0dp"
-		android:layout_margin="6dp"
-		android:background="@drawable/card_background_btm"
-		app:layout_constraintBottom_toTopOf="@id/gl_hor_82"
-		app:layout_constraintDimensionRatio="H,7:11"
-		app:layout_constraintEnd_toStartOf="@id/gl_ver_80"
-		app:layout_constraintStart_toEndOf="@id/gl_ver_60"
-		app:layout_constraintTop_toBottomOf="@id/gl_hor_66" />
-
-	<androidx.appcompat.widget.AppCompatImageView
-		android:id="@+id/card_bm_defender_right"
-		android:layout_width="0dp"
-		android:layout_height="0dp"
-		android:layout_margin="6dp"
-		android:padding="1dp"
-		android:scaleType="fitXY"
-		app:layout_constraintBottom_toTopOf="@id/gl_hor_82"
-		app:layout_constraintDimensionRatio="H,7:11"
-		app:layout_constraintEnd_toStartOf="@id/gl_ver_80"
-		app:layout_constraintStart_toEndOf="@id/gl_ver_60"
-		app:layout_constraintTop_toBottomOf="@id/gl_hor_66" />
-
-	<View
-		android:id="@+id/background_bm_goalie"
-		android:layout_width="0dp"
-		android:layout_height="0dp"
-		android:layout_margin="6dp"
-		android:background="@drawable/card_background_btm"
-		app:layout_constraintDimensionRatio="H,11:7"
-		app:layout_constraintEnd_toStartOf="@id/gl_ver_75"
-		app:layout_constraintStart_toEndOf="@id/gl_ver_45"
-		app:layout_constraintTop_toBottomOf="@id/gl_hor_82" />
-
-	<androidx.appcompat.widget.AppCompatImageView
-		android:id="@+id/card_bm_goalie"
-		android:layout_width="0dp"
-		android:layout_height="0dp"
-		android:layout_margin="6dp"
-		android:padding="1dp"
-		android:scaleType="fitXY"
-		app:layout_constraintDimensionRatio="H,11:7"
-		app:layout_constraintEnd_toStartOf="@id/gl_ver_75"
-		app:layout_constraintStart_toEndOf="@id/gl_ver_45"
-		app:layout_constraintTop_toBottomOf="@id/gl_hor_82" />
-
-	<!-- TEAM TOP -->
-
-	<View
-		android:layout_width="0dp"
-		android:layout_height="0dp"
-		android:layout_margin="6dp"
-		android:background="@drawable/card_background_top"
-		app:layout_constraintBottom_toTopOf="@id/gl_hor_50"
-		app:layout_constraintDimensionRatio="H,7:11"
-		app:layout_constraintEnd_toStartOf="@id/gl_ver_70"
-		app:layout_constraintStart_toEndOf="@id/gl_ver_50"
-		app:layout_constraintTop_toBottomOf="@id/gl_hor_34" />
-
-	<androidx.appcompat.widget.AppCompatImageView
-		android:id="@+id/card_top_center"
-		android:layout_width="0dp"
-		android:layout_height="0dp"
-		android:layout_margin="6dp"
-		android:padding="1dp"
-		android:scaleType="fitXY"
-		app:layout_constraintBottom_toTopOf="@id/gl_hor_50"
-		app:layout_constraintDimensionRatio="H,7:11"
-		app:layout_constraintEnd_toStartOf="@id/gl_ver_70"
-		app:layout_constraintStart_toEndOf="@id/gl_ver_50"
-		app:layout_constraintTop_toBottomOf="@id/gl_hor_34" />
-
-	<View
-		android:layout_width="0dp"
-		android:layout_height="0dp"
-		android:layout_margin="6dp"
-		android:background="@drawable/card_background_top"
-		app:layout_constraintBottom_toTopOf="@id/gl_hor_50"
-		app:layout_constraintDimensionRatio="H,7:11"
-		app:layout_constraintEnd_toStartOf="@id/gl_ver_90"
-		app:layout_constraintStart_toEndOf="@id/gl_ver_70"
-		app:layout_constraintTop_toBottomOf="@id/gl_hor_34" />
-
-	<androidx.appcompat.widget.AppCompatImageView
-		android:id="@+id/card_top_forward_left"
-		android:layout_width="0dp"
-		android:layout_height="0dp"
-		android:layout_margin="6dp"
-		android:padding="1dp"
-		android:scaleType="fitXY"
-		app:layout_constraintBottom_toTopOf="@id/gl_hor_50"
-		app:layout_constraintDimensionRatio="H,7:11"
-		app:layout_constraintEnd_toStartOf="@id/gl_ver_90"
-		app:layout_constraintStart_toEndOf="@id/gl_ver_70"
-		app:layout_constraintTop_toBottomOf="@id/gl_hor_34" />
-
-	<View
-		android:layout_width="0dp"
-		android:layout_height="0dp"
-		android:layout_margin="6dp"
-		android:background="@drawable/card_background_top"
-		app:layout_constraintBottom_toTopOf="@id/gl_hor_50"
-		app:layout_constraintDimensionRatio="H,7:11"
-		app:layout_constraintEnd_toStartOf="@id/gl_ver_50"
-		app:layout_constraintStart_toEndOf="@id/gl_ver_30"
-		app:layout_constraintTop_toBottomOf="@id/gl_hor_34" />
-
-	<androidx.appcompat.widget.AppCompatImageView
-		android:id="@+id/card_top_forward_right"
-		android:layout_width="0dp"
-		android:layout_height="0dp"
-		android:layout_margin="6dp"
-		android:padding="1dp"
-		android:scaleType="fitXY"
-		app:layout_constraintBottom_toTopOf="@id/gl_hor_50"
-		app:layout_constraintDimensionRatio="H,7:11"
-		app:layout_constraintEnd_toStartOf="@id/gl_ver_50"
-		app:layout_constraintStart_toEndOf="@id/gl_ver_30"
-		app:layout_constraintTop_toBottomOf="@id/gl_hor_34" />
-
-	<View
-		android:layout_width="0dp"
-		android:layout_height="0dp"
-		android:layout_margin="6dp"
-		android:background="@drawable/card_background_top"
-		app:layout_constraintBottom_toTopOf="@id/gl_hor_34"
-		app:layout_constraintDimensionRatio="H,7:11"
-		app:layout_constraintEnd_toStartOf="@id/gl_ver_60"
-		app:layout_constraintStart_toEndOf="@id/gl_ver_40"
-		app:layout_constraintTop_toBottomOf="@id/gl_hor_18" />
-
-	<androidx.appcompat.widget.AppCompatImageView
-		android:id="@+id/card_top_defender_right"
-		android:layout_width="0dp"
-		android:layout_height="0dp"
-		android:layout_margin="6dp"
-		android:padding="1dp"
-		android:scaleType="fitXY"
-		app:layout_constraintBottom_toTopOf="@id/gl_hor_34"
-		app:layout_constraintDimensionRatio="H,7:11"
-		app:layout_constraintEnd_toStartOf="@id/gl_ver_60"
-		app:layout_constraintStart_toEndOf="@id/gl_ver_40"
-		app:layout_constraintTop_toBottomOf="@id/gl_hor_18" />
-
-	<View
-		android:layout_width="0dp"
-		android:layout_height="0dp"
-		android:layout_margin="6dp"
-		android:background="@drawable/card_background_top"
-		app:layout_constraintBottom_toTopOf="@id/gl_hor_34"
-		app:layout_constraintDimensionRatio="H,7:11"
-		app:layout_constraintEnd_toStartOf="@id/gl_ver_80"
-		app:layout_constraintStart_toEndOf="@id/gl_ver_60"
-		app:layout_constraintTop_toBottomOf="@id/gl_hor_18" />
-
-	<androidx.appcompat.widget.AppCompatImageView
-		android:id="@+id/card_top_defender_left"
-		android:layout_width="0dp"
-		android:layout_height="0dp"
-		android:layout_margin="6dp"
-		android:padding="1dp"
-		android:scaleType="fitXY"
-		app:layout_constraintBottom_toTopOf="@id/gl_hor_34"
-		app:layout_constraintDimensionRatio="H,7:11"
-		app:layout_constraintEnd_toStartOf="@id/gl_ver_80"
-		app:layout_constraintStart_toEndOf="@id/gl_ver_60"
-		app:layout_constraintTop_toBottomOf="@id/gl_hor_18" />
-
-	<View
-		android:id="@+id/background_top_goalie"
-		android:layout_width="0dp"
-		android:layout_height="0dp"
-		android:layout_margin="6dp"
-		android:background="@drawable/card_background_top"
-		app:layout_constraintBottom_toTopOf="@id/gl_hor_18"
-		app:layout_constraintDimensionRatio="H,11:7"
-		app:layout_constraintEnd_toStartOf="@id/gl_ver_75"
-		app:layout_constraintStart_toEndOf="@id/gl_ver_45" />
-
-	<androidx.appcompat.widget.AppCompatImageView
-		android:id="@+id/card_top_goalie"
-		android:layout_width="0dp"
-		android:layout_height="0dp"
-		android:layout_margin="6dp"
-		android:padding="1dp"
-		android:scaleType="fitXY"
-		app:layout_constraintBottom_toTopOf="@id/gl_hor_18"
-		app:layout_constraintDimensionRatio="H,11:7"
-		app:layout_constraintEnd_toStartOf="@id/gl_ver_75"
-		app:layout_constraintStart_toEndOf="@id/gl_ver_45" />
-
-	<View
-		android:id="@+id/fading_view"
-		android:layout_width="match_parent"
-		android:layout_height="match_parent"
-		android:alpha="0"
-		android:background="@color/black"
-		android:visibility="gone" />
-
-	<!-- ALL FLIP VIEWS, TO OVERLAP -->
-
-	<com.wajahatkarim3.easyflipview.EasyFlipView
-		android:id="@+id/flip_top_goalie"
-		android:layout_width="0dp"
-		android:layout_height="0dp"
-		android:layout_margin="6dp"
-		app:flipDuration="300"
-		app:flipFrom="front"
-		app:flipOnTouch="false"
-		app:flipType="vertical"
-		app:layout_constraintBottom_toTopOf="@id/gl_hor_18"
-		app:layout_constraintDimensionRatio="H,11:7"
-		app:layout_constraintEnd_toStartOf="@id/gl_ver_75"
-		app:layout_constraintStart_toEndOf="@id/gl_ver_45">
-
-		<!-- BACK -->
-		<androidx.appcompat.widget.AppCompatImageView
-			android:id="@+id/flip_top_goalie_back"
-			android:layout_width="match_parent"
-			android:layout_height="match_parent"
-			android:padding="1dp"
-			android:scaleType="fitXY" />
-
-		<!-- FRONT -->
-		<androidx.appcompat.widget.AppCompatImageView
-			android:id="@+id/flip_top_goalie_front"
-			android:layout_width="match_parent"
-			android:layout_height="match_parent"
-			android:padding="1dp"
-			android:scaleType="fitXY" />
-
-	</com.wajahatkarim3.easyflipview.EasyFlipView>
-
-	<com.wajahatkarim3.easyflipview.EasyFlipView
-		android:id="@+id/flip_btm_goalie"
-		android:layout_width="0dp"
-		android:layout_height="0dp"
-		android:layout_margin="6dp"
-		app:flipDuration="300"
-		app:flipFrom="back"
-		app:flipOnTouch="false"
-		app:flipType="vertical"
-		app:layout_constraintDimensionRatio="H,11:7"
-		app:layout_constraintEnd_toStartOf="@id/gl_ver_75"
-		app:layout_constraintStart_toEndOf="@id/gl_ver_45"
-		app:layout_constraintTop_toBottomOf="@id/gl_hor_82">
-
-		<!-- BACK -->
-		<androidx.appcompat.widget.AppCompatImageView
-			android:id="@+id/flip_btm_goalie_back"
-			android:layout_width="match_parent"
-			android:layout_height="match_parent"
-			android:padding="1dp"
-			android:scaleType="fitXY" />
-
-		<!-- FRONT -->
-		<androidx.appcompat.widget.AppCompatImageView
-			android:id="@+id/flip_btm_goalie_front"
-			android:layout_width="match_parent"
-			android:layout_height="match_parent"
-			android:padding="1dp"
-			android:scaleType="fitXY"
-			tools:src="@drawable/red_back" />
-
-	</com.wajahatkarim3.easyflipview.EasyFlipView>
-
-	<!-- CARD DECK -->
-
-	<androidx.appcompat.widget.AppCompatTextView
-		android:id="@+id/cards_left"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_marginBottom="4dp"
-		android:fontFamily="@font/faster_one"
-		android:gravity="center"
-		android:textAlignment="center"
-		android:textColor="@color/darker_red"
-		android:textSize="22sp"
-		app:layout_constraintBottom_toTopOf="@id/flip_view"
-		app:layout_constraintEnd_toEndOf="@id/card_background"
-		app:layout_constraintStart_toStartOf="@id/card_background"
-		tools:text="52" />
-
-	<androidx.appcompat.widget.AppCompatImageView
-		android:id="@+id/card_background"
-		android:layout_width="0dp"
-		android:layout_height="0dp"
-		android:layout_margin="6dp"
-		android:padding="1dp"
-		android:scaleType="fitXY"
-		android:src="@drawable/red_back_vertical"
-		app:layout_constraintBottom_toTopOf="@id/gl_hor_58"
-		app:layout_constraintDimensionRatio="H,7:11"
-		app:layout_constraintEnd_toStartOf="@id/gl_ver_20"
-		app:layout_constraintStart_toStartOf="parent"
-		app:layout_constraintTop_toBottomOf="@id/gl_hor_42" />
-
-	<com.wajahatkarim3.easyflipview.EasyFlipView
-		android:id="@+id/flip_view"
-		android:layout_width="0dp"
-		android:layout_height="0dp"
-		android:layout_margin="6dp"
-		app:flipDuration="150"
-		app:flipFrom="right"
-		app:flipOnTouch="false"
-		app:flipType="horizontal"
-		app:layout_constraintBottom_toTopOf="@id/gl_hor_58"
-		app:layout_constraintDimensionRatio="H,7:11"
-		app:layout_constraintEnd_toStartOf="@id/gl_ver_20"
-		app:layout_constraintStart_toStartOf="parent"
-		app:layout_constraintTop_toBottomOf="@id/gl_hor_42">
-
-		<!-- BACK -->
-		<androidx.appcompat.widget.AppCompatImageView
-			android:id="@+id/card_picked"
-			android:layout_width="match_parent"
-			android:layout_height="match_parent"
-			android:padding="1dp"
-			android:scaleType="fitXY" />
-
-		<!-- FRONT -->
-		<androidx.appcompat.widget.AppCompatImageView
-			android:id="@+id/card_deck"
-			android:layout_width="match_parent"
-			android:layout_height="match_parent"
-			android:padding="1dp"
-			android:scaleType="fitXY" />
-
-	</com.wajahatkarim3.easyflipview.EasyFlipView>
-
-	<!-- WHOLE VIEW, FOR ONCLICK -->
-
-	<View
-		android:id="@+id/whole_view"
-		android:layout_width="match_parent"
-		android:layout_height="match_parent"
-		app:layout_constraintBottom_toBottomOf="parent"
-		app:layout_constraintEnd_toEndOf="parent"
-		app:layout_constraintStart_toStartOf="parent"
-		app:layout_constraintTop_toTopOf="parent"
-		tools:visibility="gone" />
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/board_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/ice_white"
+    tools:context=".MainActivity">
+
+    <!-- GUIDE LINES HORIZONTAL -->
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/gl_hor_18"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintGuide_percent="0.18"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/gl_hor_34"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintGuide_percent="0.34"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/gl_hor_42"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintGuide_percent="0.42"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/gl_hor_50"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintGuide_percent="0.5"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/gl_hor_58"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintGuide_percent="0.58"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/gl_hor_66"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintGuide_percent="0.66"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/gl_hor_82"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintGuide_percent="0.82"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/gl_hor_98"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintGuide_percent="0.98"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <!-- GUIDE LINES VERTICAL-->
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/gl_ver_20"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintGuide_percent="0.20"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/gl_ver_30"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintGuide_percent="0.30"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/gl_ver_40"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintGuide_percent="0.40"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/gl_ver_45"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintGuide_percent="0.45"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/gl_ver_50"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintGuide_percent="0.50"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/gl_ver_60"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintGuide_percent="0.60"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/gl_ver_70"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintGuide_percent="0.70"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/gl_ver_75"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintGuide_percent="0.75"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/gl_ver_80"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintGuide_percent="0.80"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/gl_ver_90"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintGuide_percent="0.90"
+        app:layout_constraintStart_toStartOf="parent" />
+
+
+    <!-- VIEW LINES -->
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="8dp"
+        android:background="@color/ice_red"
+        app:layout_constraintBottom_toBottomOf="@id/gl_hor_50"
+        app:layout_constraintTop_toTopOf="@id/gl_hor_50" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="8dp"
+        android:background="@color/ice_blue"
+        app:layout_constraintBottom_toBottomOf="@id/gl_hor_34"
+        app:layout_constraintTop_toTopOf="@id/gl_hor_34" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="8dp"
+        android:background="@color/ice_blue"
+        app:layout_constraintBottom_toBottomOf="@id/gl_hor_66"
+        app:layout_constraintTop_toTopOf="@id/gl_hor_66" />
+
+    <!-- SCORES -->
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/top_team_score"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:alpha="0.8"
+        android:fontFamily="@font/hockey_score_font"
+        android:gravity="center"
+        android:shadowColor="@color/text_score_top"
+        android:shadowDx="0"
+        android:shadowDy="10"
+        android:shadowRadius="50"
+        android:textColor="@color/black"
+        android:textSize="42sp"
+        app:layout_constraintBottom_toTopOf="@id/gl_hor_34"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/gl_ver_80"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="17" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/bm_team_score"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:alpha="0.8"
+        android:fontFamily="@font/hockey_score_font"
+        android:gravity="center"
+        android:shadowColor="@color/text_score_btm"
+        android:shadowDx="0"
+        android:shadowDy="10"
+        android:shadowRadius="50"
+        android:textColor="@color/black"
+        android:textSize="42sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/gl_ver_80"
+        app:layout_constraintTop_toBottomOf="@id/gl_hor_66"
+        tools:text="1" />
+
+    <!-- PUCK -->
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/puck"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        android:padding="6dp"
+        android:src="@drawable/puck"
+        app:layout_constraintBottom_toTopOf="@id/gl_hor_50"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/gl_ver_90"
+        app:layout_constraintTop_toBottomOf="@id/gl_hor_50" />
+
+    <!-- COMPUTER VIEW -->
+
+    <FrameLayout
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@id/gl_hor_34"
+        app:layout_constraintDimensionRatio="H,1:1"
+        app:layout_constraintEnd_toStartOf="@id/gl_ver_40"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <include layout="@layout/computer_layout" />
+
+    </FrameLayout>
+
+    <!-- TEAM BOTTOM-->
+
+    <View
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="6dp"
+        android:background="@drawable/background_placeholder_btm"
+        app:layout_constraintBottom_toTopOf="@id/gl_hor_66"
+        app:layout_constraintDimensionRatio="H,7:11"
+        app:layout_constraintEnd_toStartOf="@id/gl_ver_70"
+        app:layout_constraintStart_toEndOf="@id/gl_ver_50"
+        app:layout_constraintTop_toBottomOf="@id/gl_hor_50" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/card_bm_center"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="6dp"
+        android:padding="1dp"
+        android:scaleType="fitXY"
+        app:layout_constraintBottom_toTopOf="@id/gl_hor_66"
+        app:layout_constraintDimensionRatio="H,7:11"
+        app:layout_constraintEnd_toStartOf="@id/gl_ver_70"
+        app:layout_constraintStart_toEndOf="@id/gl_ver_50"
+        app:layout_constraintTop_toBottomOf="@id/gl_hor_50"
+        tools:src="@drawable/da" />
+
+    <View
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="6dp"
+        android:background="@drawable/background_placeholder_btm"
+        app:layout_constraintBottom_toTopOf="@id/gl_hor_66"
+        app:layout_constraintDimensionRatio="H,7:11"
+        app:layout_constraintEnd_toStartOf="@id/gl_ver_50"
+        app:layout_constraintStart_toEndOf="@id/gl_ver_30"
+        app:layout_constraintTop_toBottomOf="@id/gl_hor_50" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/card_bm_forward_left"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="6dp"
+        android:padding="1dp"
+        android:scaleType="fitXY"
+        app:layout_constraintBottom_toTopOf="@id/gl_hor_66"
+        app:layout_constraintDimensionRatio="H,7:11"
+        app:layout_constraintEnd_toStartOf="@id/gl_ver_50"
+        app:layout_constraintStart_toEndOf="@id/gl_ver_30"
+        app:layout_constraintTop_toBottomOf="@id/gl_hor_50" />
+
+    <View
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="6dp"
+        android:background="@drawable/background_placeholder_btm"
+        app:layout_constraintBottom_toTopOf="@id/gl_hor_66"
+        app:layout_constraintDimensionRatio="H,7:11"
+        app:layout_constraintEnd_toStartOf="@id/gl_ver_90"
+        app:layout_constraintStart_toEndOf="@id/gl_ver_70"
+        app:layout_constraintTop_toBottomOf="@id/gl_hor_50" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/card_bm_forward_right"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="6dp"
+        android:padding="1dp"
+        android:scaleType="fitXY"
+        app:layout_constraintBottom_toTopOf="@id/gl_hor_66"
+        app:layout_constraintDimensionRatio="H,7:11"
+        app:layout_constraintEnd_toStartOf="@id/gl_ver_90"
+        app:layout_constraintStart_toEndOf="@id/gl_ver_70"
+        app:layout_constraintTop_toBottomOf="@id/gl_hor_50" />
+
+    <View
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="6dp"
+        android:background="@drawable/background_placeholder_btm"
+        app:layout_constraintBottom_toTopOf="@id/gl_hor_82"
+        app:layout_constraintDimensionRatio="H,7:11"
+        app:layout_constraintEnd_toStartOf="@id/gl_ver_60"
+        app:layout_constraintStart_toEndOf="@id/gl_ver_40"
+        app:layout_constraintTop_toBottomOf="@id/gl_hor_66" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/card_bm_defender_left"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="6dp"
+        android:padding="1dp"
+        android:scaleType="fitXY"
+        app:layout_constraintBottom_toTopOf="@id/gl_hor_82"
+        app:layout_constraintDimensionRatio="H,7:11"
+        app:layout_constraintEnd_toStartOf="@id/gl_ver_60"
+        app:layout_constraintStart_toEndOf="@id/gl_ver_40"
+        app:layout_constraintTop_toBottomOf="@id/gl_hor_66" />
+
+    <View
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="6dp"
+        android:background="@drawable/background_placeholder_btm"
+        app:layout_constraintBottom_toTopOf="@id/gl_hor_82"
+        app:layout_constraintDimensionRatio="H,7:11"
+        app:layout_constraintEnd_toStartOf="@id/gl_ver_80"
+        app:layout_constraintStart_toEndOf="@id/gl_ver_60"
+        app:layout_constraintTop_toBottomOf="@id/gl_hor_66" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/card_bm_defender_right"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="6dp"
+        android:padding="1dp"
+        android:scaleType="fitXY"
+        app:layout_constraintBottom_toTopOf="@id/gl_hor_82"
+        app:layout_constraintDimensionRatio="H,7:11"
+        app:layout_constraintEnd_toStartOf="@id/gl_ver_80"
+        app:layout_constraintStart_toEndOf="@id/gl_ver_60"
+        app:layout_constraintTop_toBottomOf="@id/gl_hor_66" />
+
+    <View
+        android:id="@+id/background_bm_goalie"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="6dp"
+        android:background="@drawable/background_placeholder_btm"
+        app:layout_constraintDimensionRatio="H,11:7"
+        app:layout_constraintEnd_toStartOf="@id/gl_ver_75"
+        app:layout_constraintStart_toEndOf="@id/gl_ver_45"
+        app:layout_constraintTop_toBottomOf="@id/gl_hor_82" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/card_bm_goalie"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="6dp"
+        android:padding="1dp"
+        android:scaleType="fitXY"
+        app:layout_constraintDimensionRatio="H,11:7"
+        app:layout_constraintEnd_toStartOf="@id/gl_ver_75"
+        app:layout_constraintStart_toEndOf="@id/gl_ver_45"
+        app:layout_constraintTop_toBottomOf="@id/gl_hor_82" />
+
+    <!-- TEAM TOP -->
+
+    <View
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="6dp"
+        android:background="@drawable/background_placeholder_top"
+        app:layout_constraintBottom_toTopOf="@id/gl_hor_50"
+        app:layout_constraintDimensionRatio="H,7:11"
+        app:layout_constraintEnd_toStartOf="@id/gl_ver_70"
+        app:layout_constraintStart_toEndOf="@id/gl_ver_50"
+        app:layout_constraintTop_toBottomOf="@id/gl_hor_34" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/card_top_center"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="6dp"
+        android:padding="1dp"
+        android:scaleType="fitXY"
+        app:layout_constraintBottom_toTopOf="@id/gl_hor_50"
+        app:layout_constraintDimensionRatio="H,7:11"
+        app:layout_constraintEnd_toStartOf="@id/gl_ver_70"
+        app:layout_constraintStart_toEndOf="@id/gl_ver_50"
+        app:layout_constraintTop_toBottomOf="@id/gl_hor_34" />
+
+    <View
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="6dp"
+        android:background="@drawable/background_placeholder_top"
+        app:layout_constraintBottom_toTopOf="@id/gl_hor_50"
+        app:layout_constraintDimensionRatio="H,7:11"
+        app:layout_constraintEnd_toStartOf="@id/gl_ver_90"
+        app:layout_constraintStart_toEndOf="@id/gl_ver_70"
+        app:layout_constraintTop_toBottomOf="@id/gl_hor_34" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/card_top_forward_left"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="6dp"
+        android:padding="1dp"
+        android:scaleType="fitXY"
+        app:layout_constraintBottom_toTopOf="@id/gl_hor_50"
+        app:layout_constraintDimensionRatio="H,7:11"
+        app:layout_constraintEnd_toStartOf="@id/gl_ver_90"
+        app:layout_constraintStart_toEndOf="@id/gl_ver_70"
+        app:layout_constraintTop_toBottomOf="@id/gl_hor_34" />
+
+    <View
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="6dp"
+        android:background="@drawable/background_placeholder_top"
+        app:layout_constraintBottom_toTopOf="@id/gl_hor_50"
+        app:layout_constraintDimensionRatio="H,7:11"
+        app:layout_constraintEnd_toStartOf="@id/gl_ver_50"
+        app:layout_constraintStart_toEndOf="@id/gl_ver_30"
+        app:layout_constraintTop_toBottomOf="@id/gl_hor_34" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/card_top_forward_right"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="6dp"
+        android:padding="1dp"
+        android:scaleType="fitXY"
+        app:layout_constraintBottom_toTopOf="@id/gl_hor_50"
+        app:layout_constraintDimensionRatio="H,7:11"
+        app:layout_constraintEnd_toStartOf="@id/gl_ver_50"
+        app:layout_constraintStart_toEndOf="@id/gl_ver_30"
+        app:layout_constraintTop_toBottomOf="@id/gl_hor_34" />
+
+    <View
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="6dp"
+        android:background="@drawable/background_placeholder_top"
+        app:layout_constraintBottom_toTopOf="@id/gl_hor_34"
+        app:layout_constraintDimensionRatio="H,7:11"
+        app:layout_constraintEnd_toStartOf="@id/gl_ver_60"
+        app:layout_constraintStart_toEndOf="@id/gl_ver_40"
+        app:layout_constraintTop_toBottomOf="@id/gl_hor_18" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/card_top_defender_right"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="6dp"
+        android:padding="1dp"
+        android:scaleType="fitXY"
+        app:layout_constraintBottom_toTopOf="@id/gl_hor_34"
+        app:layout_constraintDimensionRatio="H,7:11"
+        app:layout_constraintEnd_toStartOf="@id/gl_ver_60"
+        app:layout_constraintStart_toEndOf="@id/gl_ver_40"
+        app:layout_constraintTop_toBottomOf="@id/gl_hor_18" />
+
+    <View
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="6dp"
+        android:background="@drawable/background_placeholder_top"
+        app:layout_constraintBottom_toTopOf="@id/gl_hor_34"
+        app:layout_constraintDimensionRatio="H,7:11"
+        app:layout_constraintEnd_toStartOf="@id/gl_ver_80"
+        app:layout_constraintStart_toEndOf="@id/gl_ver_60"
+        app:layout_constraintTop_toBottomOf="@id/gl_hor_18" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/card_top_defender_left"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="6dp"
+        android:padding="1dp"
+        android:scaleType="fitXY"
+        app:layout_constraintBottom_toTopOf="@id/gl_hor_34"
+        app:layout_constraintDimensionRatio="H,7:11"
+        app:layout_constraintEnd_toStartOf="@id/gl_ver_80"
+        app:layout_constraintStart_toEndOf="@id/gl_ver_60"
+        app:layout_constraintTop_toBottomOf="@id/gl_hor_18" />
+
+    <View
+        android:id="@+id/background_top_goalie"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="6dp"
+        android:background="@drawable/background_placeholder_top"
+        app:layout_constraintBottom_toTopOf="@id/gl_hor_18"
+        app:layout_constraintDimensionRatio="H,11:7"
+        app:layout_constraintEnd_toStartOf="@id/gl_ver_75"
+        app:layout_constraintStart_toEndOf="@id/gl_ver_45" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/card_top_goalie"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="6dp"
+        android:padding="1dp"
+        android:scaleType="fitXY"
+        app:layout_constraintBottom_toTopOf="@id/gl_hor_18"
+        app:layout_constraintDimensionRatio="H,11:7"
+        app:layout_constraintEnd_toStartOf="@id/gl_ver_75"
+        app:layout_constraintStart_toEndOf="@id/gl_ver_45" />
+
+    <View
+        android:id="@+id/fading_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:alpha="0"
+        android:background="@color/black"
+        android:visibility="gone" />
+
+    <!-- ALL FLIP VIEWS, TO OVERLAP -->
+
+    <com.wajahatkarim3.easyflipview.EasyFlipView
+        android:id="@+id/flip_top_goalie"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="6dp"
+        app:flipDuration="300"
+        app:flipFrom="front"
+        app:flipOnTouch="false"
+        app:flipType="vertical"
+        app:layout_constraintBottom_toTopOf="@id/gl_hor_18"
+        app:layout_constraintDimensionRatio="H,11:7"
+        app:layout_constraintEnd_toStartOf="@id/gl_ver_75"
+        app:layout_constraintStart_toEndOf="@id/gl_ver_45">
+
+        <!-- BACK -->
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/flip_top_goalie_back"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="1dp"
+            android:scaleType="fitXY" />
+
+        <!-- FRONT -->
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/flip_top_goalie_front"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="1dp"
+            android:scaleType="fitXY" />
+
+    </com.wajahatkarim3.easyflipview.EasyFlipView>
+
+    <com.wajahatkarim3.easyflipview.EasyFlipView
+        android:id="@+id/flip_btm_goalie"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="6dp"
+        app:flipDuration="300"
+        app:flipFrom="back"
+        app:flipOnTouch="false"
+        app:flipType="vertical"
+        app:layout_constraintDimensionRatio="H,11:7"
+        app:layout_constraintEnd_toStartOf="@id/gl_ver_75"
+        app:layout_constraintStart_toEndOf="@id/gl_ver_45"
+        app:layout_constraintTop_toBottomOf="@id/gl_hor_82">
+
+        <!-- BACK -->
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/flip_btm_goalie_back"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="1dp"
+            android:scaleType="fitXY" />
+
+        <!-- FRONT -->
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/flip_btm_goalie_front"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="1dp"
+            android:scaleType="fitXY"
+            tools:src="@drawable/red_back" />
+
+    </com.wajahatkarim3.easyflipview.EasyFlipView>
+
+    <!-- CARD DECK -->
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/cards_left"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="4dp"
+        android:fontFamily="@font/faster_one"
+        android:gravity="center"
+        android:text="@string/full_card_deck_amount"
+        android:textAlignment="center"
+        android:textColor="@color/darker_red"
+        android:textSize="22sp"
+        app:layout_constraintBottom_toTopOf="@id/flip_view"
+        app:layout_constraintEnd_toEndOf="@id/card_background"
+        app:layout_constraintStart_toStartOf="@id/card_background" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/card_background"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="6dp"
+        android:padding="1dp"
+        android:scaleType="fitXY"
+        android:src="@drawable/red_back_vertical"
+        app:layout_constraintBottom_toTopOf="@id/gl_hor_58"
+        app:layout_constraintDimensionRatio="H,7:11"
+        app:layout_constraintEnd_toStartOf="@id/gl_ver_20"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/gl_hor_42" />
+
+    <com.wajahatkarim3.easyflipview.EasyFlipView
+        android:id="@+id/flip_view"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="6dp"
+        app:flipDuration="150"
+        app:flipFrom="right"
+        app:flipOnTouch="false"
+        app:flipType="horizontal"
+        app:layout_constraintBottom_toTopOf="@id/gl_hor_58"
+        app:layout_constraintDimensionRatio="H,7:11"
+        app:layout_constraintEnd_toStartOf="@id/gl_ver_20"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/gl_hor_42">
+
+        <!-- BACK -->
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/card_picked"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="1dp"
+            android:scaleType="fitXY" />
+
+        <!-- FRONT -->
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/card_deck"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="1dp"
+            android:scaleType="fitXY" />
+
+    </com.wajahatkarim3.easyflipview.EasyFlipView>
+
+    <!-- WHOLE VIEW, FOR ONCLICK -->
+
+    <View
+        android:id="@+id/whole_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="gone" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

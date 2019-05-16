@@ -5,24 +5,15 @@ import android.view.animation.AnticipateInterpolator
 import android.view.animation.OvershootInterpolator
 import androidx.interpolator.view.animation.LinearOutSlowInInterpolator
 import com.dohman.holdempucker.cards.Card
-import com.dohman.holdempucker.util.Constants.Companion.isBotMoving
 import com.dohman.holdempucker.util.Constants.Companion.possibleMovesIndexes
 import com.dohman.holdempucker.util.Constants.Companion.whoseTurn
+import com.dohman.holdempucker.util.Constants.WhoseTurn.Companion.isBotMoving
 import com.github.florent37.viewanimator.ViewAnimator
 import com.wajahatkarim3.easyflipview.EasyFlipView
 
 object Animations {
 
     private val listOfPulseAnimations = mutableListOf<ViewAnimator>()
-
-    private fun getDelay(): Long {
-        return if (isBotMoving) {
-            val delays = listOf<Long>(1250, 1000, 750, 500)
-            delays.random()
-        } else {
-            0
-        }
-    }
 
     /*
     * Animation functions
@@ -103,17 +94,9 @@ object Animations {
     }
 
     fun animatePulsingCards(viewsToPulse: List<View>, fNotifyMessage: (message: String) -> Unit) {
+        fNotifyMessage.invoke(Util.pulseCardsText(possibleMovesIndexes.size))
 
-        val plural = if (possibleMovesIndexes.size == 1) "move" else "moves"
-        val numberToText = when (possibleMovesIndexes.size) {
-            1 -> "One"
-            2 -> "Two"
-            3 -> "Three"
-            else -> "${possibleMovesIndexes.size}"
-        }
-        fNotifyMessage.invoke("$numberToText possible $plural. Go Attack!")
-
-        if (isBotMoving) return
+        if (isBotMoving()) return
 
         viewsToPulse.forEach {
             listOfPulseAnimations.add(
@@ -142,7 +125,7 @@ object Animations {
             .animate(attacker)
                 .translationX(target.x + 60f - attacker.x)
                 .translationY(target.y - attacker.y)
-                .startDelay(getDelay())
+                .startDelay(Util.getDelay())
                 .duration(400)
                 .interpolator(LinearOutSlowInInterpolator())
                 .onStop { fOnAddPlayerEnd.invoke() }
@@ -170,7 +153,7 @@ object Animations {
             .animate(attacker)
                 .translationX(target.x - attacker.x - 20f)
                 .translationY(target.y - attacker.y + 20f)
-                .startDelay(getDelay())
+                .startDelay(Util.getDelay())
                 .duration(500)
                 .interpolator(LinearOutSlowInInterpolator())
             .thenAnimate(attacker, target)
@@ -223,16 +206,7 @@ object Animations {
             .thenAnimate(fadingScreen)
                 .alpha(0.3f, 0.0f)
                 .duration(1000)
-            .onStart {
-                val rankInterpreted = when (goalieCard?.rank) {
-                    11 -> "Jack"
-                    12 -> "Queen"
-                    13 -> "King"
-                    14 -> "Ace"
-                    else -> goalieCard?.rank.toString()
-                }
-                fNotifyMessage.invoke("...\nof rank $rankInterpreted and the goalie SAVED!")
-            }
+                .onStart { fNotifyMessage.invoke("...\nof rank ${Util.rankToWord(goalieCard?.rank)} and the goalie SAVED!") }
             .thenAnimate(attacker, goalie)
                 .translationX(screenWidth.toFloat())
                 .startDelay(500)
@@ -283,16 +257,7 @@ object Animations {
             .thenAnimate(fadingScreen)
                 .alpha(0.3f, 0.0f)
                 .duration(1000)
-                .onStart {
-                    val rankInterpreted = when (goalieCard?.rank) {
-                        11 -> "Jack"
-                        12 -> "Queen"
-                        13 -> "King"
-                        14 -> "Ace"
-                        else -> goalieCard?.rank.toString()
-                    }
-                    fNotifyMessage.invoke("...\nof rank $rankInterpreted and it's GOAL!")
-            }
+                .onStart { fNotifyMessage.invoke("...\nof rank ${Util.rankToWord(goalieCard?.rank)} and it's GOAL!") }
             .thenAnimate(attacker, goalie)
                 .translationX(screenWidth.toFloat())
                 .startDelay(500)
