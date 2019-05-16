@@ -4,4 +4,5 @@
 	<string name="hard_mode">vs.\nAI Developer</string>
 	<string name="vs_friend">Duel\nA Friend</string>
     <string name="full_card_deck_amount">52</string>
+    <string name="zero">0</string>
 </resources>

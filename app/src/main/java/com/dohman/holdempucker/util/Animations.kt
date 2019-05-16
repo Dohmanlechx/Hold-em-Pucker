@@ -68,6 +68,17 @@ object Animations {
         )
     }
 
+    fun animateScore(textView: View, fUpdateTexts: () -> Unit) {
+        listOfAllAnimations.add(
+            ViewAnimator
+                .animate(textView)
+                    .scale(1.5f, 1.0f)
+                    .duration(300)
+                    .onStart { fUpdateTexts.invoke() }
+                .start()
+        )
+    }
+
     fun animateFlipPlayingCard(
         flipView: View,
         cardsLeftText: View,

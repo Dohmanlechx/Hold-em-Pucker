@@ -141,8 +141,22 @@ class GameFragment : Fragment(), View.OnClickListener {
     * */
 
     private fun updateScores() {
-        top_team_score.text = teamTopScore.toString()
-        bm_team_score.text = teamBottomScore.toString()
+        val scorerTextView = when {
+            teamTopScore > Integer.parseInt(top_team_score.text.toString()) -> top_team_score
+            teamBottomScore > Integer.parseInt(bm_team_score.text.toString()) -> bm_team_score
+            else -> null
+        }
+
+        if (scorerTextView == null) {
+            top_team_score.text = teamTopScore.toString()
+            bm_team_score.text = teamBottomScore.toString()
+        } else {
+            Animations.animateScore(scorerTextView) {
+                Util.vibrate(requireContext(), true)
+                top_team_score.text = teamTopScore.toString()
+                bm_team_score.text = teamBottomScore.toString()
+            }
+        }
     }
 
     private fun restoreFlipViewsPosition() {
