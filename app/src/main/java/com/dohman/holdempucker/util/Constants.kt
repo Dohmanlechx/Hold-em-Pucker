@@ -25,7 +25,7 @@ class Constants {
                         3 = Left defender | 4 = Right defender
                                     5 = Goalie                          */
 
-        // Player Index
+        // Player Indexes
         const val PLAYER_FORWARD_LEFT = 0
         const val PLAYER_CENTER = 1
         const val PLAYER_FORWARD_RIGHT = 2

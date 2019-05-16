@@ -14,6 +14,7 @@ import com.dohman.holdempucker.util.Constants.Companion.currentGameMode
 import com.dohman.holdempucker.util.Constants.Companion.period
 import com.dohman.holdempucker.util.Constants.Companion.teamBottom
 import com.dohman.holdempucker.util.Constants.Companion.teamTop
+import com.dohman.holdempucker.util.Util
 import kotlinx.android.synthetic.main.main_menu_fragment.*
 
 class MainMenuFragment : Fragment() {
@@ -58,6 +59,7 @@ class MainMenuFragment : Fragment() {
     private fun navigateToGameFragment() {
         clearTeams()
         period = 1
+        Util.vibrate(requireContext(), true)
         view?.let { Navigation.findNavController(it).navigate(R.id.action_mainMenuFragment_to_gameFragment) }
     }
 }

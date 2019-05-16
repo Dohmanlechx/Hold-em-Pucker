@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.dohman.holdempucker.R
 import com.dohman.holdempucker.cards.Card
 import com.dohman.holdempucker.ui.MessageTextItem
-import com.dohman.holdempucker.util.Constants
+import com.dohman.holdempucker.util.*
 import com.dohman.holdempucker.util.Constants.Companion.isOngoingGame
 import com.dohman.holdempucker.util.Constants.Companion.isJustShotAtGoalie
 import com.dohman.holdempucker.util.Constants.Companion.period
@@ -23,13 +23,10 @@ import com.dohman.holdempucker.util.Constants.Companion.teamBottom
 import com.dohman.holdempucker.util.Constants.Companion.teamBottomScore
 import com.dohman.holdempucker.util.Constants.Companion.teamTop
 import com.dohman.holdempucker.util.Constants.Companion.teamTopScore
-import com.dohman.holdempucker.util.GameLogic
-import com.dohman.holdempucker.util.Animations
 import com.dohman.holdempucker.util.Constants.Companion.PLAYER_GOALIE
 import com.dohman.holdempucker.util.Constants.Companion.TAG_GAMEACTIVITY
 import com.dohman.holdempucker.util.Constants.WhoseTurn.Companion.isBotMoving
 import com.dohman.holdempucker.util.Constants.WhoseTurn.Companion.isTeamBottomTurn
-import com.dohman.holdempucker.util.ViewUtil
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.items.AbstractItem
@@ -365,6 +362,7 @@ class GameFragment : Fragment(), View.OnClickListener {
             // Attacking another player
             if (vm.canAttack(victimTeam, spotIndex, victimView))
                 animateAttack(victimView)
+            else Util.vibrate(requireContext(), false)
         }
     }
 
@@ -623,6 +621,8 @@ class GameFragment : Fragment(), View.OnClickListener {
                 if (vm.canAddPlayerView(imageView, team, spotIndex) && v.tag != null) {
                     removeAllOnClickListeners()
                     animateAddPlayer(imageView, team, spotIndex)
+                } else {
+                    Util.vibrate(requireContext(), false)
                 }
             }
         }

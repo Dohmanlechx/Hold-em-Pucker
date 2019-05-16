@@ -1,5 +1,9 @@
 package com.dohman.holdempucker.util
 
+import android.content.Context
+import android.os.Build
+import android.os.VibrationEffect
+import android.os.Vibrator
 import com.dohman.holdempucker.util.Constants.WhoseTurn.Companion.isBotMoving
 
 object Util {
@@ -29,6 +33,21 @@ object Util {
             listOf<Long>(1000, 900, 800, 700, 600, 500).random()
         } else {
             0
+        }
+    }
+
+    fun vibrate(context: Context, isPositive: Boolean) {
+        val vibrator = context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+        if (vibrator.hasVibrator()) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                val effect =
+                    if (isPositive) VibrationEffect.createWaveform(longArrayOf(100, 100, 100), -1)
+                    else VibrationEffect.createOneShot(30, -1)
+                vibrator.vibrate(effect)
+            } else {
+                val duration = if (isPositive) 100L else 30L
+                vibrator.vibrate(duration)
+            }
         }
     }
 }
