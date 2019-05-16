@@ -256,7 +256,7 @@ class GameFragment : Fragment(), View.OnClickListener {
         card_deck.setImageResource(R.drawable.red_back_vertical)
         card_picked.setImageResource(R.drawable.red_back_vertical)
 
-        val delay: Long = if (withStartDelay) 1500 else 150
+        val delay: Long = if (withStartDelay) 2500 else 250
 
         Animations.animateAddGoalie(
             flipView = flip_view,
@@ -269,7 +269,7 @@ class GameFragment : Fragment(), View.OnClickListener {
             restoreFlipViewsPosition()
             vm.onGoalieAddedAnimationEnd(view)
 
-            vm.gameManager()
+            vm.checkGameSituation()
             vm.removeCardFromDeck(doNotNotify = true)
             if (card_top_goalie.tag != Integer.valueOf(R.drawable.red_back)) {
                 addGoalieView(bottom = false)
@@ -339,7 +339,8 @@ class GameFragment : Fragment(), View.OnClickListener {
                 victimView.setImageResource(android.R.color.transparent)
                 victimView.tag = Integer.valueOf(android.R.color.transparent)
 
-                vm.removeCardFromDeck(doNotNotify = true)
+                if (vm.cardDeck.size > 1)
+                    vm.removeCardFromDeck(doNotNotify = true)
 
                 Animations.animateScoredAtGoalie(
                     fading_view,
@@ -353,7 +354,10 @@ class GameFragment : Fragment(), View.OnClickListener {
                         // OnStop
                         onGoalieActionEnd(targetView, true, targetTeam)
                         updateScores()
-                        addGoalieView(bottom = isTargetGoalieBottom)
+                        if (vm.cardDeck.size <= 1)
+                            vm.removeCardFromDeck(doNotNotify = true)
+                        else
+                            addGoalieView(bottom = isTargetGoalieBottom)
                     }
                 )
             }
@@ -390,7 +394,8 @@ class GameFragment : Fragment(), View.OnClickListener {
         victimView.setImageResource(android.R.color.transparent)
         victimView.tag = Integer.valueOf(android.R.color.transparent)
 
-        vm.removeCardFromDeck(doNotNotify = true)
+        if (vm.cardDeck.size > 1)
+            vm.removeCardFromDeck(doNotNotify = true)
 
         Animations.animateGoalieSaved(
             fading_view,
@@ -402,9 +407,12 @@ class GameFragment : Fragment(), View.OnClickListener {
             { message -> updateMessageBox(message) },
             {
                 // OnStop
-                // FIXME: Kolla upp kortantalet här. Kanske trigga HalfTime
                 onGoalieActionEnd(targetView, false, targetTeam)
-                addGoalieView(bottom = isTargetGoalieBottom)
+
+                if (vm.cardDeck.size <= 1)
+                    vm.removeCardFromDeck(doNotNotify = true)
+                else
+                    addGoalieView(bottom = isTargetGoalieBottom)
             }
         )
     }

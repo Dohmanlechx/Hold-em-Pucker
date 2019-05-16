@@ -1,6 +1,5 @@
 package com.dohman.holdempucker.ui.fragments
 
-import android.util.Log
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -11,7 +10,6 @@ import com.dohman.holdempucker.repositories.BotRepository
 import com.dohman.holdempucker.repositories.CardRepository
 import com.dohman.holdempucker.repositories.ResourceRepository
 import com.dohman.holdempucker.util.Constants
-import com.dohman.holdempucker.util.Constants.Companion.TAG_GAMEVIEWMODEL
 import com.dohman.holdempucker.util.Constants.Companion.areTeamsReadyToStartPeriod
 import com.dohman.holdempucker.util.Constants.Companion.currentGameMode
 import com.dohman.holdempucker.util.Constants.Companion.isOngoingGame
@@ -61,22 +59,11 @@ class GameViewModel : ViewModel() {
     fun getScreenWidth() = appRepo.getScreenWidth()
 
     fun setGameMode() {
-        when (currentGameMode) {
-            Constants.GameMode.RANDOM -> {
-                Log.d(TAG_GAMEVIEWMODEL, "Game Mode: $currentGameMode")
-                isVsBotMode = true
-            }
-            Constants.GameMode.DEVELOPER -> {
-                Log.d(TAG_GAMEVIEWMODEL, "Game Mode: $currentGameMode")
-                isVsBotMode = true
-            }
-            Constants.GameMode.FRIEND -> {
-                Log.d(TAG_GAMEVIEWMODEL, "Game Mode: $currentGameMode")
-                isVsBotMode = false
-            }
-            else -> {
-                Log.d(TAG_GAMEVIEWMODEL, "Game Mode: $currentGameMode")
-            }
+        isVsBotMode = when (currentGameMode) {
+            Constants.GameMode.RANDOM -> true
+            Constants.GameMode.DEVELOPER -> true
+            Constants.GameMode.FRIEND -> false
+            else -> false
         }
     }
 
@@ -149,7 +136,7 @@ class GameViewModel : ViewModel() {
     * Game management functions
     * */
 
-    fun gameManager(
+    fun checkGameSituation(
         doNotToggleTurn: Boolean = false,
         fPrepareViewsToPulse: (() -> Unit)? = null
     ) {
@@ -164,7 +151,7 @@ class GameViewModel : ViewModel() {
         }
 
         if (!isGoalieThereOrAdd(firstCardInDeck)) { // If returned false, goalie is added
-            gameManager()
+            checkGameSituation()
             return
         }
 
@@ -197,15 +184,7 @@ class GameViewModel : ViewModel() {
         }
     }
 
-    fun triggerBadCard() {
-        badCardNotifier.value = true
-    }
-
-    fun addGoalToScore() {
-        if (isTeamBottomTurn()) teamBottomScore++ else teamTopScore++
-    }
-
-    fun triggerHalfTime() {
+    private fun triggerHalfTime() {
         cardDeck = cardRepo.createCards() as MutableList<Card>
         firstCardInDeck = cardDeck.first()
 
@@ -220,22 +199,26 @@ class GameViewModel : ViewModel() {
         areTeamsReadyToStartPeriod = false
     }
 
+    fun triggerBadCard() {
+        badCardNotifier.value = true
+    }
+
+    fun addGoalToScore() {
+        if (isTeamBottomTurn()) teamBottomScore++ else teamTopScore++
+    }
+
     /*
     * Teams functions
     * */
 
     private fun isGoalieThereOrAdd(goalieCard: Card): Boolean {
         if (GameLogic.isGoalieThereOrAdd(goalieCard)) return true
-
-//        val doNotNotify = teamTop[5] == null || teamBottom[5] == null
-//        removeCardFromDeck(doNotNotify = true)
-
         return false // But goalie is added now
     }
 
     private fun setPlayerInTeam(team: Array<Card?>, spotIndex: Int, fPrepareViewsToPulse: () -> Unit) {
         team[spotIndex] = firstCardInDeck
-        if (removeCardFromDeck()) gameManager(false, fPrepareViewsToPulse)
+        if (removeCardFromDeck()) checkGameSituation(false, fPrepareViewsToPulse)
     }
 
     private fun areTeamsReady(): Boolean {
@@ -322,6 +305,6 @@ class GameViewModel : ViewModel() {
         view.setImageResource(android.R.color.transparent)
         view.tag = Integer.valueOf(android.R.color.transparent)
         removeCardFromDeck()
-        gameManager(true, fPrepareViewsToPulse)
+        checkGameSituation(true, fPrepareViewsToPulse)
     }
 }
