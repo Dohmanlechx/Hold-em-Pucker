@@ -11,7 +11,7 @@ class Constants {
         const val TAG_GAMEVIEWMODEL = "DBG: GameViewModel.kt"
 
         // Booleans
-        var isVsBot = false
+        var isVsBotMode = false
         var isOngoingGame = false // Set to true when all cards are laid out
         var isJustShotAtGoalie = false // To prevent duplicate message
         var isRestoringPlayers = true // Set to true when a team need to lay out new cards to fulfill
@@ -39,7 +39,7 @@ class Constants {
         var teamBottomScore = 0
 
         // Lists
-        var possibleMovesIndexes = mutableListOf<Int>() // For the pulse animations
+        var possibleMovesIndexes = mutableListOf<Int>() // For the pulse animations and AI moves
 
         // Whose turn
         var whoseTurn = WhoseTurn.BOTTOM
@@ -84,7 +84,7 @@ class Constants {
                 whoseTurn = if (whoseTurn == BOTTOM) TOP else BOTTOM
             }
 
-            fun isBotMoving() = whoseTurn == TOP && isVsBot
+            fun isBotMoving() = whoseTurn == TOP && isVsBotMode
             fun isTeamBottomTurn() = whoseTurn == BOTTOM
         }
     }

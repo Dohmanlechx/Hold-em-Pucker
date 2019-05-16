@@ -1,6 +1,9 @@
 package com.dohman.holdempucker.util
 
 import com.dohman.holdempucker.cards.Card
+import com.dohman.holdempucker.util.Constants.Companion.PLAYER_DEFENDER_LEFT
+import com.dohman.holdempucker.util.Constants.Companion.PLAYER_DEFENDER_RIGHT
+import com.dohman.holdempucker.util.Constants.Companion.PLAYER_GOALIE
 import com.dohman.holdempucker.util.Constants.Companion.cases
 import com.dohman.holdempucker.util.Constants.Companion.possibleMovesIndexes
 import com.dohman.holdempucker.util.Constants.Companion.teamBottom
@@ -12,7 +15,7 @@ object GameLogic {
     fun isGoalieThereOrAdd(goalieCard: Card): Boolean {
         val team = if (isTeamBottomTurn()) teamBottom else teamTop
 
-        team.let { if (it[5] != null) return true else it[5] = goalieCard }
+        team.let { if (it[PLAYER_GOALIE] != null) return true else it[PLAYER_GOALIE] = goalieCard }
 
         return false // But goalie is added now
     }
@@ -30,12 +33,12 @@ object GameLogic {
 
     fun areEnoughForwardsDead(victimTeam: Array<Card?>, defenderPos: Int): Boolean {
         when (defenderPos) {
-            3 -> {
+            PLAYER_DEFENDER_LEFT -> {
                 for (i in 0..1) {
                     if (victimTeam[i] != null) return false
                 }
             }
-            4 -> {
+            PLAYER_DEFENDER_RIGHT -> {
                 for (i in 1..2) {
                     if (victimTeam[i] != null) return false
                 }

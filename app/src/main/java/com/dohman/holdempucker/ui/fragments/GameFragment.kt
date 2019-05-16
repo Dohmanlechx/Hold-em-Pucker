@@ -25,11 +25,6 @@ import com.dohman.holdempucker.util.Constants.Companion.teamTop
 import com.dohman.holdempucker.util.Constants.Companion.teamTopScore
 import com.dohman.holdempucker.util.GameLogic
 import com.dohman.holdempucker.util.Animations
-import com.dohman.holdempucker.util.Constants.Companion.PLAYER_CENTER
-import com.dohman.holdempucker.util.Constants.Companion.PLAYER_DEFENDER_LEFT
-import com.dohman.holdempucker.util.Constants.Companion.PLAYER_DEFENDER_RIGHT
-import com.dohman.holdempucker.util.Constants.Companion.PLAYER_FORWARD_LEFT
-import com.dohman.holdempucker.util.Constants.Companion.PLAYER_FORWARD_RIGHT
 import com.dohman.holdempucker.util.Constants.Companion.PLAYER_GOALIE
 import com.dohman.holdempucker.util.Constants.Companion.TAG_GAMEACTIVITY
 import com.dohman.holdempucker.util.Constants.WhoseTurn.Companion.isBotMoving

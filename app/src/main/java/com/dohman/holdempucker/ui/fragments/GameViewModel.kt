@@ -21,7 +21,7 @@ import com.dohman.holdempucker.util.Constants.Companion.teamBottom
 import com.dohman.holdempucker.util.Constants.Companion.teamBottomScore
 import com.dohman.holdempucker.util.Constants.Companion.teamTop
 import com.dohman.holdempucker.util.Constants.Companion.teamTopScore
-import com.dohman.holdempucker.util.Constants.Companion.isVsBot
+import com.dohman.holdempucker.util.Constants.Companion.isVsBotMode
 import com.dohman.holdempucker.util.Constants.Companion.whoseTeamStartedLastPeriod
 import com.dohman.holdempucker.util.Constants.Companion.whoseTurn
 import com.dohman.holdempucker.util.Constants.WhoseTurn.Companion.isTeamBottomTurn
@@ -64,15 +64,15 @@ class GameViewModel : ViewModel() {
         when (currentGameMode) {
             Constants.GameMode.RANDOM -> {
                 Log.d(TAG_GAMEVIEWMODEL, "Game Mode: $currentGameMode")
-                isVsBot = true
+                isVsBotMode = true
             }
             Constants.GameMode.DEVELOPER -> {
                 Log.d(TAG_GAMEVIEWMODEL, "Game Mode: $currentGameMode")
-                isVsBot = true
+                isVsBotMode = true
             }
             Constants.GameMode.FRIEND -> {
                 Log.d(TAG_GAMEVIEWMODEL, "Game Mode: $currentGameMode")
-                isVsBot = false
+                isVsBotMode = false
             }
             else -> {
                 Log.d(TAG_GAMEVIEWMODEL, "Game Mode: $currentGameMode")
