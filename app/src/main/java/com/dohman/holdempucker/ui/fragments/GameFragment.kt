@@ -115,6 +115,12 @@ class GameFragment : Fragment(), View.OnClickListener {
         setOnClickListeners()
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        Animations.stopAllAnimations()
+        Animations.stopAllPulsingCards()
+    }
+
     private fun initGame() {
         period = 1
 
