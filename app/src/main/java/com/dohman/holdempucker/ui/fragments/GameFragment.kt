@@ -549,35 +549,26 @@ class GameFragment : Fragment(), View.OnClickListener {
             if (v.tag == Integer.valueOf(android.R.color.transparent)) return
             if (isTeamBottomTurn()) {
                 spotIndex = when (v.id) {
-                    R.id.card_top_forward_left -> PLAYER_FORWARD_LEFT
-                    R.id.card_top_center -> PLAYER_CENTER
-                    R.id.card_top_forward_right -> PLAYER_FORWARD_RIGHT
-
+                    R.id.card_top_forward_left -> 0
+                    R.id.card_top_center -> 1
+                    R.id.card_top_forward_right -> 2
                     R.id.card_top_defender_left ->
-                        if (vm.areEnoughForwardsOut(teamTop, PLAYER_DEFENDER_LEFT))
-                            PLAYER_DEFENDER_LEFT else return
-
+                        if (vm.areEnoughForwardsOut(teamTop, 3)) 3 else return
                     R.id.card_top_defender_right ->
-                        if (vm.areEnoughForwardsOut(teamTop, PLAYER_DEFENDER_RIGHT))
-                            PLAYER_DEFENDER_RIGHT else return
-
-                    R.id.card_top_goalie -> if (vm.isAtLeastOneDefenderOut(teamTop)) PLAYER_GOALIE else return
+                        if (vm.areEnoughForwardsOut(teamTop, 4)) 4 else return
+                    R.id.card_top_goalie -> if (vm.isAtLeastOneDefenderOut(teamTop)) 5 else return
                     else -> return
                 }
             } else {
                 spotIndex = when (v.id) {
-                    R.id.card_bm_forward_left -> PLAYER_FORWARD_LEFT
-                    R.id.card_bm_center -> PLAYER_CENTER
-                    R.id.card_bm_forward_right -> PLAYER_FORWARD_RIGHT
-
+                    R.id.card_bm_forward_left -> 0
+                    R.id.card_bm_center -> 1
+                    R.id.card_bm_forward_right -> 2
                     R.id.card_bm_defender_left ->
-                        if (vm.areEnoughForwardsOut(teamBottom, PLAYER_DEFENDER_LEFT))
-                            PLAYER_DEFENDER_LEFT else return
-
+                        if (vm.areEnoughForwardsOut(teamBottom, 3)) 3 else return
                     R.id.card_bm_defender_right ->
-                        if (vm.areEnoughForwardsOut(teamBottom, PLAYER_DEFENDER_RIGHT))
-                            PLAYER_DEFENDER_RIGHT else return
-                    R.id.card_bm_goalie -> if (vm.isAtLeastOneDefenderOut(teamBottom)) PLAYER_GOALIE else return
+                        if (vm.areEnoughForwardsOut(teamBottom, 4)) 4 else return
+                    R.id.card_bm_goalie -> if (vm.isAtLeastOneDefenderOut(teamBottom)) 5 else return
                     else -> return
                 }
             }
@@ -586,10 +577,10 @@ class GameFragment : Fragment(), View.OnClickListener {
             val targetTeam = if (isTeamBottomTurn()) teamTop else teamBottom
 
             imageView?.let {
-                if (spotIndex == 5) {
-                    tempGoalieCard = targetTeam[5]
-                    if (vm.canAttack(targetTeam, 5, it))
-                        prepareAttackPlayer(targetTeam, 5, it)
+                if (spotIndex == PLAYER_GOALIE) {
+                    tempGoalieCard = targetTeam[PLAYER_GOALIE]
+                    if (vm.canAttack(targetTeam, PLAYER_GOALIE, it))
+                        prepareAttackPlayer(targetTeam, PLAYER_GOALIE, it)
                     else prepareGoalieSaved(it)
                 } else {
                     prepareAttackPlayer(targetTeam, spotIndex, it)

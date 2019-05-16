@@ -2,6 +2,12 @@ package com.dohman.holdempucker.repositories
 
 import com.dohman.holdempucker.cards.Card
 import com.dohman.holdempucker.util.Constants
+import com.dohman.holdempucker.util.Constants.Companion.PLAYER_CENTER
+import com.dohman.holdempucker.util.Constants.Companion.PLAYER_DEFENDER_LEFT
+import com.dohman.holdempucker.util.Constants.Companion.PLAYER_DEFENDER_RIGHT
+import com.dohman.holdempucker.util.Constants.Companion.PLAYER_FORWARD_LEFT
+import com.dohman.holdempucker.util.Constants.Companion.PLAYER_FORWARD_RIGHT
+import com.dohman.holdempucker.util.Constants.Companion.PLAYER_GOALIE
 import com.dohman.holdempucker.util.Constants.Companion.isRestoringPlayers
 import com.dohman.holdempucker.util.Constants.Companion.teamBottom
 import javax.inject.Inject
@@ -27,30 +33,30 @@ class BotRepository @Inject constructor(
             // Add player
             return if (playingCard.beats(10)) {
                 when {
-                    possibleMoves.contains(1) -> 1
-                    possibleMoves.contains(3) -> 3
-                    possibleMoves.contains(4) -> 4
+                    possibleMoves.contains(PLAYER_CENTER) -> PLAYER_CENTER
+                    possibleMoves.contains(PLAYER_DEFENDER_LEFT) -> PLAYER_DEFENDER_LEFT
+                    possibleMoves.contains(PLAYER_DEFENDER_RIGHT) -> PLAYER_DEFENDER_RIGHT
                     else -> possibleMoves.random()
                 }
             } else {
                 // Weaker than rank 10
                 when {
-                    possibleMoves.contains(0) -> 0
-                    possibleMoves.contains(2) -> 2
+                    possibleMoves.contains(PLAYER_FORWARD_LEFT) -> PLAYER_FORWARD_LEFT
+                    possibleMoves.contains(PLAYER_FORWARD_RIGHT) -> PLAYER_FORWARD_RIGHT
                     else -> possibleMoves.random()
                 }
             }
         } else {
             // Attack player
-            if (possibleMoves.contains(1)) {
+            if (possibleMoves.contains(PLAYER_CENTER)) {
                 // First, check if center is alive. Then, check if it is equal to 10 or stronger. If yes, attack it.
-                if (teamBottom[1]?.beats(10)!!) {
-                    return if (playingCard.beats(teamBottom[1]?.rank!!)) 1
+                if (teamBottom[PLAYER_CENTER]?.beats(10)!!) {
+                    return if (playingCard.beats(teamBottom[PLAYER_CENTER]?.rank!!)) PLAYER_CENTER
                     else attackTheStrongest(possibleMoves)
                 }
-            } else if (possibleMoves.contains(5)) {
+            } else if (possibleMoves.contains(PLAYER_GOALIE)) {
                 // Second, check if you can attack the goalie and if the playing card is equal to 10 or stronger. If yes, attack goalie.
-                return if (playingCard.beats(10)) 5
+                return if (playingCard.beats(10)) PLAYER_GOALIE
                 else attackTheStrongest(possibleMoves)
             } else {
                 // Else, attack the strongest available card.
@@ -58,13 +64,10 @@ class BotRepository @Inject constructor(
             }
         }
 
-        return possibleMoves.random()
+        return attackTheStrongest(possibleMoves)
     }
 
     private fun attackTheStrongest(possibleMoves: List<Int>): Int {
-        // By this time, center is less than rank 10, but attack it anyway if it is alive.
-        if (possibleMoves.contains(1)) return 1
-
         var strongestRank: Int = teamBottom[possibleMoves.first()]?.rank!!
         var index: Int = possibleMoves.first()
 
