@@ -232,7 +232,11 @@ class GameFragment : Fragment(), View.OnClickListener {
             cards_left,
             vm.cardDeck.size > 50,
             { onFlipPlayingCardEnd(isBadCard) },
-            { message -> vm.notifyMessage(message) })
+            { message ->
+                vm.notifyMessage(message)
+                if (vm.cardDeck.size <= 1) card_background.visibility = View.GONE
+            }
+        )
     }
 
     private fun prepareViewsToPulse() {
@@ -264,8 +268,8 @@ class GameFragment : Fragment(), View.OnClickListener {
 
         val view = if (bottom) card_bm_goalie else card_top_goalie
 
-        card_deck.setImageResource(R.drawable.red_back_vertical)
-        card_picked.setImageResource(R.drawable.red_back_vertical)
+        card_deck.setImageResource(R.drawable.red_back_vertical_new)
+        card_picked.setImageResource(R.drawable.red_back_vertical_new)
 
         val delay: Long = if (withStartDelay) 2500 else 250
 
@@ -282,7 +286,7 @@ class GameFragment : Fragment(), View.OnClickListener {
 
             vm.checkGameSituation()
             vm.removeCardFromDeck(doNotNotify = true)
-            if (card_top_goalie.tag != Integer.valueOf(R.drawable.red_back)) {
+            if (card_top_goalie.tag != Integer.valueOf(R.drawable.red_back_new)) {
                 addGoalieView(bottom = false)
             } else {
                 vm.notifyPickedCard()
@@ -525,6 +529,7 @@ class GameFragment : Fragment(), View.OnClickListener {
         restoreFlipViewsPosition()
 
         return if (vm.isNextPeriodReady()) {
+            card_background.visibility = View.VISIBLE
             resetAllCards(teamBottomViews)
             resetAllCards(teamTopViews)
             card_top_goalie.tag = null

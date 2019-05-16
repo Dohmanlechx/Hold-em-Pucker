@@ -26,7 +26,7 @@ object ViewUtil {
         isVertical: Boolean,
         cardSize: Int? = null
     ) {
-        val cover = if (isVertical) R.drawable.red_back_vertical else R.drawable.red_back
+        val cover = if (isVertical) R.drawable.red_back_vertical_new else R.drawable.red_back_new
 
 //        if (cardSize ?: 0 > 50) {
 //            front.setImageResource(cover)

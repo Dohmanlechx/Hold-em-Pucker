@@ -213,7 +213,7 @@
         android:shadowColor="@color/text_score_top"
         android:shadowDx="0"
         android:shadowDy="10"
-        android:shadowRadius="50"
+        android:shadowRadius="35"
         android:text="@string/zero"
         android:textColor="@color/black"
         android:textSize="42sp"
@@ -234,7 +234,7 @@
         android:shadowColor="@color/text_score_btm"
         android:shadowDx="0"
         android:shadowDy="10"
-        android:shadowRadius="50"
+        android:shadowRadius="35"
         android:text="@string/zero"
         android:textColor="@color/black"
         android:textSize="42sp"
@@ -635,7 +635,7 @@
             android:layout_height="match_parent"
             android:padding="1dp"
             android:scaleType="fitXY"
-            tools:src="@drawable/red_back" />
+            tools:src="@drawable/red_back_new" />
 
     </com.wajahatkarim3.easyflipview.EasyFlipView>
 
@@ -663,7 +663,7 @@
         android:layout_margin="6dp"
         android:padding="1dp"
         android:scaleType="fitXY"
-        android:src="@drawable/red_back_vertical"
+        android:src="@drawable/red_back_vertical_new"
         app:layout_constraintBottom_toTopOf="@id/gl_hor_58"
         app:layout_constraintDimensionRatio="H,7:11"
         app:layout_constraintEnd_toStartOf="@id/gl_ver_20"
