@@ -9,6 +9,7 @@ import androidx.appcompat.widget.AppCompatImageView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.dohman.holdempucker.R
 import com.dohman.holdempucker.cards.Card
@@ -120,9 +121,6 @@ class GameFragment : Fragment(), View.OnClickListener {
 
     private fun initGame() {
         period = 1
-
-        Animations.animateWinner(fading_view, lottie_trophy, txt_winner) // FIXME
-
         teamBottomScore = 0
         teamTopScore = 0
         updateScores()
@@ -539,6 +537,15 @@ class GameFragment : Fragment(), View.OnClickListener {
             true
         } else {
             whole_view.visibility = View.VISIBLE
+            txt_winner.text = when {
+                teamBottomScore > teamTopScore -> "Team Bottom\nwon with $teamBottomScore-$teamTopScore!"
+                else -> "Team Top\nwon with $teamTopScore-$teamBottomScore!"
+            }
+            Animations.animateWinner(fading_view, lottie_trophy, txt_winner)
+
+            fading_view.setOnClickListener {
+                view?.let { Navigation.findNavController(it).popBackStack() }
+            }
             false
         }
     }

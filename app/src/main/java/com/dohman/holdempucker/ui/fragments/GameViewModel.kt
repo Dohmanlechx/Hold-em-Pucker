@@ -161,15 +161,7 @@ class GameViewModel : ViewModel() {
     }
 
     fun isNextPeriodReady(): Boolean {
-        if (period > 3 && (teamBottomScore != teamTopScore)) {
-            val message = when {
-                teamBottomScore > teamTopScore -> "Team Bottom won with $teamBottomScore-$teamTopScore!\nNew game? Press anywhere!"
-                else -> "Team Top won with $teamTopScore-$teamBottomScore!\nNew game? Press anywhere!"
-            }
-            notifyMessage(message, isNeutralMessage = true)
-
-            return false
-        } else {
+        return if (period > 3 && (teamBottomScore != teamTopScore)) false else {
             if (period > 3) notifyMessage(
                 "Overtime! Play until all cards are out.\nPeriod: $period",
                 isNeutralMessage = true
@@ -180,7 +172,7 @@ class GameViewModel : ViewModel() {
 
             whoseTeamStartedLastPeriod = whoseTurn
 
-            return true
+            true
         }
     }
 
