@@ -9,8 +9,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import androidx.navigation.Navigation
+import androidx.navigation.findNavController
 
 import com.dohman.holdempucker.R
+import com.dohman.holdempucker.util.Animations
+import kotlinx.android.synthetic.main.splash_fragment.*
 
 class SplashFragment : Fragment() {
     private lateinit var vm: SplashViewModel
@@ -22,8 +25,17 @@ class SplashFragment : Fragment() {
 
     override fun onViewCreated(v: View, savedInstanceState: Bundle?) {
         super.onViewCreated(v, savedInstanceState)
-        Handler().postDelayed({
-            view?.let { Navigation.findNavController(it).navigate(SplashFragmentDirections.actionSplashFragmentToMainMenuFragment()) }
-        }, 2000)
+
+        tv_title.post {
+            Animations.animateSplashText(tv_title) {
+                // OnStop
+                val action = SplashFragmentDirections.actionSplashFragmentToMainMenuFragment()
+                view?.findNavController()?.navigate(action)
+            }
+        }
+
+//        Handler().postDelayed({
+//
+//        }, 2000)
     }
 }

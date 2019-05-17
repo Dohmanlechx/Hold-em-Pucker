@@ -6,6 +6,8 @@ apply plugin: 'kotlin-android-extensions'
 
 apply plugin: 'kotlin-kapt'
 
+apply plugin: 'androidx.navigation.safeargs.kotlin'
+
 android {
     compileSdkVersion 28
     defaultConfig {
@@ -25,7 +27,7 @@ android {
 }
 
 dependencies {
-    val nav_version = rootProject.extra["nav_version"] as String
+    def nav_version = "2.1.0-alpha04"
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
@@ -61,8 +63,8 @@ dependencies {
     // Memory leaking tool
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.0-alpha-1'
     // Navigation UI
-    implementation 'android.arch.navigation:navigation-fragment:1.0.0'
-    implementation 'android.arch.navigation:navigation-ui:1.0.0'
+    implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"
+    implementation "androidx.navigation:navigation-ui-ktx:$nav_version"
     // Animations
     implementation 'com.github.florent37:viewanimator:1.1.0'
     implementation "com.airbnb.android:lottie:3.0.2"

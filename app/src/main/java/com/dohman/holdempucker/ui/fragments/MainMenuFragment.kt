@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.Navigation
+import androidx.navigation.findNavController
 import com.dohman.holdempucker.R
 import com.dohman.holdempucker.util.Constants
 import com.dohman.holdempucker.util.Constants.Companion.currentGameMode
@@ -57,6 +58,6 @@ class MainMenuFragment : Fragment() {
     private fun navigateToGameFragment() {
         clearTeams()
         period = 1
-        view?.let { Navigation.findNavController(it).navigate(R.id.action_mainMenuFragment_to_gameFragment) }
+        view?.findNavController()?.navigate(R.id.action_mainMenuFragment_to_gameFragment)
     }
 }
