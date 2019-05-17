@@ -33,9 +33,10 @@ class SplashFragment : Fragment() {
                 view?.findNavController()?.navigate(action)
             }
         }
+    }
 
-//        Handler().postDelayed({
-//
-//        }, 2000)
+    override fun onDestroyView() {
+        super.onDestroyView()
+        Animations.stopAllAnimations()
     }
 }
