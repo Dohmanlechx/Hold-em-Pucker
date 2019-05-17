@@ -1,4 +1,4 @@
-package com.dohman.holdempucker.ui.fragments
+package com.dohman.holdempucker.ui.game
 
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.lifecycle.MutableLiveData

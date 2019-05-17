@@ -22,7 +22,7 @@
 
     <fragment
         android:id="@+id/mainMenuFragment"
-        android:name="com.dohman.holdempucker.ui.fragments.MainMenuFragment"
+        android:name="com.dohman.holdempucker.ui.main_menu.MainMenuFragment"
         android:label="MainMenuFragment">
         <action
             android:id="@+id/action_mainMenuFragment_to_gameFragment"
@@ -33,6 +33,6 @@
 
     <fragment
         android:id="@+id/gameFragment"
-        android:name="com.dohman.holdempucker.ui.fragments.GameFragment"
+        android:name="com.dohman.holdempucker.ui.game.GameFragment"
         android:label="GameFragment" />
 </navigation>

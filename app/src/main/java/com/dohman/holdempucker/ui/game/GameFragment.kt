@@ -1,4 +1,4 @@
-package com.dohman.holdempucker.ui.fragments
+package com.dohman.holdempucker.ui.game
 
 import android.os.Bundle
 import android.util.Log
@@ -13,7 +13,7 @@ import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.dohman.holdempucker.R
 import com.dohman.holdempucker.cards.Card
-import com.dohman.holdempucker.ui.MessageTextItem
+import com.dohman.holdempucker.ui.items.MessageTextItem
 import com.dohman.holdempucker.util.*
 import com.dohman.holdempucker.util.Constants.Companion.isOngoingGame
 import com.dohman.holdempucker.util.Constants.Companion.isJustShotAtGoalie

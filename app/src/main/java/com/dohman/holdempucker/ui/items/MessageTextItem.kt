@@ -1,4 +1,4 @@
-package com.dohman.holdempucker.ui
+package com.dohman.holdempucker.ui.items
 
 import android.content.Context
 import android.view.View
@@ -15,7 +15,8 @@ class MessageTextItem(
     private val isNeutralMessage: Boolean = false
 ) : AbstractItem<MessageTextItem, MessageTextItem.ViewHolder>() {
     override fun getType(): Int = R.id.fastadapter_item
-    override fun getViewHolder(v: View): ViewHolder = ViewHolder(v)
+    override fun getViewHolder(v: View): ViewHolder =
+        ViewHolder(v)
     override fun getLayoutRes(): Int = R.layout.message_box_item
 
     override fun bindView(holder: ViewHolder, payloads: MutableList<Any>) {

@@ -1,4 +1,4 @@
-package com.dohman.holdempucker.ui.fragments
+package com.dohman.holdempucker.ui.main_menu
 
 import android.graphics.Color
 import android.graphics.LinearGradient
