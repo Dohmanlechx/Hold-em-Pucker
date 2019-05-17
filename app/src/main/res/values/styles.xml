@@ -8,4 +8,8 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="ColdStart" parent="AppTheme">
+        <item name="android:windowBackground">@drawable/background_mainmenu</item>
+    </style>
+
 </resources>
