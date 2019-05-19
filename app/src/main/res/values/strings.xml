@@ -5,4 +5,8 @@
 	<string name="vs_friend">Duel\nA Friend</string>
     <string name="full_card_deck_amount">52</string>
     <string name="zero">0</string>
+	<string name="dialog_back_header">Are you sure?</string>
+	<string name="dialog_back_message">You are about to go back to main menu. If doing so, you\'ll lose all the progress.</string>
+	<string name="dialog_back_positive">Yes!</string>
+	<string name="dialog_back_negative">No, stay!</string>
 </resources>

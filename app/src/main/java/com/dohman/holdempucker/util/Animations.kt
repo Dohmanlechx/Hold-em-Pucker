@@ -42,7 +42,7 @@ object Animations {
             ViewAnimator
                 .animate(text)
                     .alpha(0.0f, 1.0f)
-                    .translationY(750f, 0f)
+                    .translationY(1000f, 0f)
                     .duration(2000)
                     .onStop { fNavigateToMainMenuFragment.invoke() }
                 .start()
