@@ -1,14 +1,10 @@
 package com.dohman.holdempucker.ui.game
 
-import android.annotation.SuppressLint
-import android.content.DialogInterface
 import android.os.Bundle
 import android.util.Log
-import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -227,8 +223,7 @@ class GameFragment : Fragment(), View.OnClickListener {
             card_picked,
             resId,
             null,
-            isVertical = true,
-            cardSize = vm.cardDeck.size
+            isVertical = true
         )
 
         Animations.animateFlipPlayingCard(
@@ -294,8 +289,6 @@ class GameFragment : Fragment(), View.OnClickListener {
                 addGoalieView(bottom = false)
             } else {
                 vm.notifyPickedCard()
-                /*if (!doNotFlip) */
-                //flipNewCard(vm.resIdOfCard(vm.firstCardInDeck)) // FIXME
                 cards_left.visibility = View.VISIBLE
             }
         }
@@ -560,8 +553,6 @@ class GameFragment : Fragment(), View.OnClickListener {
         teamTopViews.minus(teamTopViews.last()).forEachIndexed { index, view ->
             if (view.tag == Integer.valueOf(android.R.color.transparent)) list.add(index)
         }
-
-        Log.d(TAG_GAMEACTIVITY, "$list")
 
         return list
     }

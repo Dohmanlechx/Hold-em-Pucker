@@ -23,15 +23,10 @@ object ViewUtil {
         back: AppCompatImageView,
         resId: Int?,
         bitmap: Bitmap?,
-        isVertical: Boolean,
-        cardSize: Int? = null
+        isVertical: Boolean
     ) {
         val cover = if (isVertical) R.drawable.red_back_vertical_new else R.drawable.red_back_new
 
-//        if (cardSize ?: 0 > 50) {
-//            front.setImageResource(cover)
-//            back.setImageResource(cover)
-//        } else {
             if (flipView.isBackSide) {
                 back.setImageResource(cover)
                 if (isVertical) resId?.let { front.setImageResource(it) } else bitmap?.let { front.setImageBitmap(it) }
@@ -39,7 +34,6 @@ object ViewUtil {
                 front.setImageResource(cover)
                 if (isVertical) resId?.let { back.setImageResource(it) } else bitmap?.let { back.setImageBitmap(it) }
             }
-//        }
 
         flipView.visibility = View.VISIBLE
     }
