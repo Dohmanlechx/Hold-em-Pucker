@@ -441,7 +441,7 @@ class GameFragment : Fragment(), View.OnClickListener {
         if (isBotMoving() && !isBadCard) {
             // Adding player
             if (isRestoringPlayers) {
-                vm.botChooseEmptySpot(getEmptySpots()) {
+                vm.botChooseEmptySpot(vm.getEmptySpots(teamTopViews)) {
                     // Trigger the bot's move
                     if (it != -1) animateAddPlayer(teamTopViews[it], teamTop, it)
                 }
@@ -539,22 +539,13 @@ class GameFragment : Fragment(), View.OnClickListener {
                 else -> "Team Top\nwon with $teamTopScore-$teamBottomScore!"
             }
             Animations.animateWinner(fading_view, lottie_trophy, txt_winner)
+            Util.vibrate(requireContext(), true)
 
             fading_view.setOnClickListener {
                 view?.let { Navigation.findNavController(it).popBackStack() }
             }
             false
         }
-    }
-
-    private fun getEmptySpots(): List<Int> {
-        val list = mutableListOf<Int>()
-
-        teamTopViews.minus(teamTopViews.last()).forEachIndexed { index, view ->
-            if (view.tag == Integer.valueOf(android.R.color.transparent)) list.add(index)
-        }
-
-        return list
     }
 
     /*

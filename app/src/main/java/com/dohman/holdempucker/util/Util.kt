@@ -42,10 +42,10 @@ object Util {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 val effect =
                     if (isPositive) VibrationEffect.createWaveform(longArrayOf(100, 100, 100), -1)
-                    else VibrationEffect.createOneShot(30, -1)
+                    else VibrationEffect.createOneShot(20, -1)
                 vibrator.vibrate(effect)
             } else {
-                val duration = if (isPositive) 100L else 30L
+                val duration = if (isPositive) 100L else 20L
                 vibrator.vibrate(duration)
             }
         }

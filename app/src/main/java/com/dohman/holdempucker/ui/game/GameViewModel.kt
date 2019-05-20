@@ -1,5 +1,6 @@
 package com.dohman.holdempucker.ui.game
 
+import android.view.View
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -239,6 +240,16 @@ class GameViewModel : ViewModel() {
 
     fun isAtLeastOneDefenderOut(victimTeam: Array<Card?>): Boolean {
         return GameLogic.isAtLeastOneDefenderDead(victimTeam)
+    }
+
+    fun getEmptySpots(views: List<View>): List<Int> {
+        val list = mutableListOf<Int>()
+
+        views.minus(views.last()).forEachIndexed { index, view ->
+            if (view.tag == Integer.valueOf(android.R.color.transparent)) list.add(index)
+        }
+
+        return list
     }
 
     /*
