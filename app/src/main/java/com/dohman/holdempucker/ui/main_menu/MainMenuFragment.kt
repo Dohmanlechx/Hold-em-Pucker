@@ -25,7 +25,7 @@ class MainMenuFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setGradientOnTexts()
+//        setGradientOnTexts()
 
         tv_ai_random.setOnClickListener {
             currentGameMode = Constants.GameMode.RANDOM
