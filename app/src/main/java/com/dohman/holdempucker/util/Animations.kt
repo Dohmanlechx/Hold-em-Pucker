@@ -49,6 +49,17 @@ object Animations {
         )
     }
 
+    fun animateButton(button: View, fNavigateToGameFragment: () -> Unit) {
+        listOfAllAnimations.add(
+            ViewAnimator
+                .animate(button)
+                .scale(0.9f, 1.0f)
+                .duration(200)
+                .onStop { fNavigateToGameFragment.invoke() }
+                .start()
+        )
+    }
+
     fun animateWinner(fadingScreen: View, trophy: LottieAnimationView, textWinner: View) {
         fadingScreen.visibility = View.VISIBLE
         fadingScreen.bringToFront()

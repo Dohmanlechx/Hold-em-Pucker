@@ -8,11 +8,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.findNavController
 import com.dohman.holdempucker.R
+import com.dohman.holdempucker.util.Animations
 import com.dohman.holdempucker.util.Constants
 import com.dohman.holdempucker.util.Constants.Companion.currentGameMode
 import com.dohman.holdempucker.util.Constants.Companion.period
 import com.dohman.holdempucker.util.Constants.Companion.teamBottom
 import com.dohman.holdempucker.util.Constants.Companion.teamTop
+import com.dohman.holdempucker.util.Util
 import kotlinx.android.synthetic.main.main_menu_fragment.*
 
 class MainMenuFragment : Fragment() {
@@ -25,16 +27,18 @@ class MainMenuFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-//        setGradientOnTexts()
+        setGradientOnTexts()
 
-        tv_ai_random.setOnClickListener {
+        btn_easy_mode.setOnClickListener {
             currentGameMode = Constants.GameMode.RANDOM
-            navigateToGameFragment()
+            Util.vibrate(requireContext(), true)
+            Animations.animateButton(it) { navigateToGameFragment() }
         }
 
-        tv_ai_developer.setOnClickListener {
+        btn_hard_mode.setOnClickListener {
             currentGameMode = Constants.GameMode.DEVELOPER
-            navigateToGameFragment()
+            Util.vibrate(requireContext(), true)
+            Animations.animateButton(it) { navigateToGameFragment() }
         }
 
         tv_vs_friend.setOnClickListener {
@@ -51,7 +55,7 @@ class MainMenuFragment : Fragment() {
     }
 
     private fun setGradientOnTexts() {
-        tv_sub_header.paint.shader = vm.getLinearGradient(tv_sub_header)
+        tv_title.paint.shader = vm.getLinearGradient(tv_sub_header)
     }
 
     private fun navigateToGameFragment() {
