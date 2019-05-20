@@ -16,7 +16,7 @@ import com.dohman.holdempucker.cards.Card
 import com.dohman.holdempucker.ui.items.MessageTextItem
 import com.dohman.holdempucker.util.*
 import com.dohman.holdempucker.util.Constants.Companion.isOngoingGame
-import com.dohman.holdempucker.util.Constants.Companion.isJustShotAtGoalie
+import com.dohman.holdempucker.util.Constants.Companion.isShootingAtGoalie
 import com.dohman.holdempucker.util.Constants.Companion.period
 import com.dohman.holdempucker.util.Constants.Companion.possibleMovesIndexes
 import com.dohman.holdempucker.util.Constants.Companion.isRestoringPlayers
@@ -325,7 +325,7 @@ class GameFragment : Fragment(), View.OnClickListener {
     private fun prepareAttackPlayer(victimTeam: Array<Card?>, spotIndex: Int, victimView: AppCompatImageView) {
         if (spotIndex == 5) {
             // Attacking goalie
-            isJustShotAtGoalie = true
+            isShootingAtGoalie = true
 
             if (vm.canAttack(victimTeam, spotIndex, victimView)) {
                 removeAllOnClickListeners()
@@ -385,7 +385,7 @@ class GameFragment : Fragment(), View.OnClickListener {
         removeAllOnClickListeners()
         Animations.stopAllPulsingCards()
 
-        isJustShotAtGoalie = true
+        isShootingAtGoalie = true
 
         vm.notifyMessageAttackingGoalie()
 
@@ -447,10 +447,7 @@ class GameFragment : Fragment(), View.OnClickListener {
                 }
             } else {
                 // Attacking player
-                val chosenIndex = vm.botChooseIndexToAttack(possibleMovesIndexes)
-                Log.d(TAG_GAMEACTIVITY, chosenIndex.toString())
-
-                when (chosenIndex) {
+                when (val chosenIndex = vm.botChooseIndexToAttack(possibleMovesIndexes)) {
                     -1 -> { /* Do nothing */
                     }
                     5 -> {
@@ -494,11 +491,10 @@ class GameFragment : Fragment(), View.OnClickListener {
                     })
             }
         }
-
-        if (isJustShotAtGoalie) isJustShotAtGoalie = false
     }
 
     private fun onGoalieActionEnd(view: View, isGoal: Boolean = false, team: Array<Card?>) {
+        if (isShootingAtGoalie) isShootingAtGoalie = false
         fading_view.visibility = View.GONE
         view.visibility = View.GONE
         isOngoingGame = false
@@ -509,7 +505,7 @@ class GameFragment : Fragment(), View.OnClickListener {
         team[5] = null
         vm.notifyToggleTurn()
         restoreFlipViewsPosition()
-        updateMessageBox("Please choose a position.")
+//        updateMessageBox("Please choose a position.")
     }
 
     /*

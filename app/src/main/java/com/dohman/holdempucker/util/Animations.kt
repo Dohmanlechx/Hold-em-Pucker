@@ -138,7 +138,7 @@ object Animations {
                 .onStart {
                     if (Constants.isRestoringPlayers
                         && !doNotShowMessage
-                        && !Constants.isJustShotAtGoalie
+                        && !Constants.isShootingAtGoalie
                     ) fNotifyMessage.invoke("Please choose a position.")
                 }
                 .onStop { fOnFlipPlayingCardEnd.invoke() }
@@ -283,7 +283,7 @@ object Animations {
             .thenAnimate(fadingScreen)
                 .alpha(0.3f, 0.0f)
                 .duration(1000)
-                .onStart { fNotifyMessage.invoke("...\nof rank ${Util.rankToWord(goalieCard?.rank)} and the goalie SAVED!") }
+                .onStart { fNotifyMessage.invoke("...\nof rank ${Util.rankToWord(goalieCard?.rank)} and it's NO GOAL!") }
             .thenAnimate(attacker, goalie)
                 .translationX(screenWidth.toFloat())
                 .startDelay(500)

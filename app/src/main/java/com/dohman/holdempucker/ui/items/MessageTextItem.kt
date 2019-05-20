@@ -6,6 +6,8 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.dohman.holdempucker.R
 import com.dohman.holdempucker.util.Animations
+import com.dohman.holdempucker.util.Constants.Companion.isShootingAtGoalie
+import com.dohman.holdempucker.util.Constants.WhoseTurn.Companion.isBotMoving
 import com.dohman.holdempucker.util.Constants.WhoseTurn.Companion.isTeamBottomTurn
 import com.mikepenz.fastadapter.items.AbstractItem
 import kotlinx.android.synthetic.main.message_box_item.view.*
@@ -15,8 +17,8 @@ class MessageTextItem(
     private val isNeutralMessage: Boolean = false
 ) : AbstractItem<MessageTextItem, MessageTextItem.ViewHolder>() {
     override fun getType(): Int = R.id.fastadapter_item
-    override fun getViewHolder(v: View): ViewHolder =
-        ViewHolder(v)
+    override fun getViewHolder(v: View): ViewHolder = ViewHolder(v)
+
     override fun getLayoutRes(): Int = R.layout.message_box_item
 
     override fun bindView(holder: ViewHolder, payloads: MutableList<Any>) {
@@ -35,9 +37,13 @@ class MessageTextItem(
             )
         )
 
-        holder.itemView.txt_message.apply {
-            text = message
-            Animations.animateComputerText(this)
+        if (isBotMoving() && !isNeutralMessage && !isShootingAtGoalie) {
+            holder.itemView.txt_message.text = holder.context.getString(R.string.bot_inputting)
+        } else {
+            holder.itemView.txt_message.apply {
+                text = message
+                Animations.animateComputerText(this)
+            }
         }
     }
 
