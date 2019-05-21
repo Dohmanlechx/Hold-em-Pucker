@@ -1,7 +1,6 @@
 package com.dohman.holdempucker.ui.game
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -25,7 +24,6 @@ import com.dohman.holdempucker.util.Constants.Companion.teamBottomScore
 import com.dohman.holdempucker.util.Constants.Companion.teamTop
 import com.dohman.holdempucker.util.Constants.Companion.teamTopScore
 import com.dohman.holdempucker.util.Constants.Companion.PLAYER_GOALIE
-import com.dohman.holdempucker.util.Constants.Companion.TAG_GAMEACTIVITY
 import com.dohman.holdempucker.util.Constants.WhoseTurn.Companion.isBotMoving
 import com.dohman.holdempucker.util.Constants.WhoseTurn.Companion.isTeamBottomTurn
 import com.mikepenz.fastadapter.FastAdapter
@@ -503,7 +501,6 @@ class GameFragment : Fragment(), View.OnClickListener {
         team[5] = null
         vm.notifyToggleTurn()
         restoreFlipViewsPosition()
-//        updateMessageBox("Please choose a position.")
     }
 
     /*
@@ -516,7 +513,7 @@ class GameFragment : Fragment(), View.OnClickListener {
         period += nextPeriod
         isRestoringPlayers = true
 
-        cards_left.text = "52"
+        cards_left.text = getString(R.string.full_card_deck_amount)
         restoreFlipViewsPosition()
 
         return if (vm.isNextPeriodReady()) {
