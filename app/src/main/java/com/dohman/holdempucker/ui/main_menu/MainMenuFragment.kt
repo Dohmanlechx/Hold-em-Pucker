@@ -20,7 +20,7 @@ import kotlinx.android.synthetic.main.main_menu_fragment.*
 
 class MainMenuFragment : Fragment() {
     private lateinit var vm: MainMenuViewModel
-    private lateinit var howToPlayDialog: HowToPlayDialogFragment
+    private lateinit var howToPlayDialogFragment: HowToPlayDialogFragment
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         vm = ViewModelProviders.of(this).get(MainMenuViewModel::class.java)
@@ -32,8 +32,7 @@ class MainMenuFragment : Fragment() {
 //        setGradientOnTexts()
 
         tv_sub_header.setOnClickListener {
-            howToPlayDialog = HowToPlayDialogFragment()
-            if (!howToPlayDialog.isVisible) howToPlayDialog.show(childFragmentManager, "Dialog")
+            showHowToPlayDialog()
         }
 
         btn_easy_mode.setOnClickListener {
@@ -63,6 +62,11 @@ class MainMenuFragment : Fragment() {
 
     private fun setGradientOnTexts() {
         tv_title.paint.shader = vm.getLinearGradient(tv_sub_header)
+    }
+
+    private fun showHowToPlayDialog() {
+        howToPlayDialogFragment = HowToPlayDialogFragment()
+        if (!howToPlayDialogFragment.isVisible) howToPlayDialogFragment.show(childFragmentManager, "Dialog")
     }
 
     private fun navigateToGameFragment() {

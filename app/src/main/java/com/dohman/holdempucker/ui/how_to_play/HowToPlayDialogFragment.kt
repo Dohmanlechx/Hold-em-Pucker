@@ -30,4 +30,8 @@ class HowToPlayDialogFragment : DialogFragment() {
         whole_dialog_view.setOnClickListener { this@HowToPlayDialogFragment.dismiss() }
     }
 
+    override fun onPause() {
+        super.onPause()
+        this@HowToPlayDialogFragment.dismiss()
+    }
 }
