@@ -27,7 +27,7 @@ class MainMenuFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setGradientOnTexts()
+//        setGradientOnTexts()
 
         btn_easy_mode.setOnClickListener {
             currentGameMode = Constants.GameMode.RANDOM

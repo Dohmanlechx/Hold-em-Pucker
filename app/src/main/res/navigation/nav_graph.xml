@@ -27,8 +27,8 @@
         <action
             android:id="@+id/action_mainMenuFragment_to_gameFragment"
             app:destination="@id/gameFragment"
-            app:exitAnim="@android:anim/fade_out"
-            app:popExitAnim="@android:anim/fade_out" />
+            app:enterAnim="@android:anim/slide_in_left"
+            app:exitAnim="@android:anim/slide_out_right" />
     </fragment>
 
     <fragment

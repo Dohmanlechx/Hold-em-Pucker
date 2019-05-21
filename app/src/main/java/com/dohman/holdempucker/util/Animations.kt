@@ -134,7 +134,8 @@ object Animations {
         cardsLeftText: View,
         doNotShowMessage: Boolean = false,
         fOnFlipPlayingCardEnd: () -> Unit,
-        fNotifyMessage: (message: String) -> Unit
+        fNotifyMessage: (message: String) -> Unit,
+        fHideTheCardBackground: () -> Unit
     ) {
         cardsLeftText.apply {
             scaleX = 1.3f
@@ -147,6 +148,8 @@ object Animations {
                 .translationX(60f)
                 .duration(100)
                 .onStart {
+                    fHideTheCardBackground.invoke()
+
                     if (Constants.isRestoringPlayers
                         && !doNotShowMessage
                         && !Constants.isShootingAtGoalie
@@ -294,7 +297,7 @@ object Animations {
             .thenAnimate(fadingScreen)
                 .alpha(0.3f, 0.0f)
                 .duration(1000)
-                .onStart { fNotifyMessage.invoke("...\nof rank ${Util.rankToWord(goalieCard?.rank)} and it's NO GOAL!") }
+                .onStart { fNotifyMessage.invoke("of rank ${Util.rankToWord(goalieCard?.rank)} and it's NO GOAL!") }
             .thenAnimate(attacker, goalie)
                 .translationX(screenWidth.toFloat())
                 .startDelay(500)
@@ -347,7 +350,7 @@ object Animations {
             .thenAnimate(fadingScreen)
                 .alpha(0.3f, 0.0f)
                 .duration(1000)
-                .onStart { fNotifyMessage.invoke("...\nof rank ${Util.rankToWord(goalieCard?.rank)} and it's GOAL!") }
+                .onStart { fNotifyMessage.invoke("of rank ${Util.rankToWord(goalieCard?.rank)} and it's GOAL!") }
             .thenAnimate(attacker, goalie)
                 .translationX(screenWidth.toFloat())
                 .startDelay(500)

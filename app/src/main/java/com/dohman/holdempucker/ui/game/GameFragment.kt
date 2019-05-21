@@ -231,10 +231,8 @@ class GameFragment : Fragment(), View.OnClickListener {
             cards_left,
             vm.cardDeck.size > 50,
             { onFlipPlayingCardEnd(isBadCard) },
-            { message ->
-                vm.notifyMessage(message)
-                if (vm.cardDeck.size <= 1) card_background.visibility = View.GONE
-            }
+            { message -> vm.notifyMessage(message) },
+            { if (vm.cardDeck.size <= 1) card_background.visibility = View.GONE }
         )
     }
 

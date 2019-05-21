@@ -4,7 +4,7 @@
 	xmlns:tools="http://schemas.android.com/tools"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	android:background="@drawable/background_main_menu"
+	android:background="@color/darker_red"
 	tools:context=".MainActivity">
 
 	<!-- 16 percent between horizontal lines -->
@@ -75,29 +75,6 @@
 		app:layout_constraintEnd_toEndOf="parent"
 		app:layout_constraintGuide_percent="0.90"
 		app:layout_constraintStart_toStartOf="parent" />
-
-	<!-- VIEW LINES -->
-
-	<!--<View-->
-	<!--android:layout_width="match_parent"-->
-	<!--android:layout_height="8dp"-->
-	<!--android:background_game="@color/ice_red"-->
-	<!--app:layout_constraintBottom_toBottomOf="@id/gl_hor_50"-->
-	<!--app:layout_constraintTop_toTopOf="@id/gl_hor_50" />-->
-
-	<!--<View-->
-	<!--android:layout_width="match_parent"-->
-	<!--android:layout_height="8dp"-->
-	<!--android:background_game="@color/ice_blue"-->
-	<!--app:layout_constraintBottom_toBottomOf="@id/gl_hor_34"-->
-	<!--app:layout_constraintTop_toTopOf="@id/gl_hor_34" />-->
-
-	<!--<View-->
-	<!--android:layout_width="match_parent"-->
-	<!--android:layout_height="8dp"-->
-	<!--android:background_game="@color/ice_blue"-->
-	<!--app:layout_constraintBottom_toBottomOf="@id/gl_hor_66"-->
-	<!--app:layout_constraintTop_toTopOf="@id/gl_hor_66" />-->
 
 	<!-- MAIN HEADER -->
 
@@ -170,7 +147,7 @@
 		android:layout_height="0dp"
 		android:fontFamily="@font/days_one"
 		android:gravity="top"
-		android:text="@string/vs_friend"
+		android:text="vs friend"
 		android:textAlignment="center"
 		android:textAllCaps="true"
 		android:textColor="@color/darker_white"

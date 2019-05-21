@@ -1,11 +1,13 @@
 package com.dohman.holdempucker.ui.items
 
 import android.content.Context
+import android.util.Log
 import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.dohman.holdempucker.R
 import com.dohman.holdempucker.util.Animations
+import com.dohman.holdempucker.util.Constants.Companion.TAG_GAMEACTIVITY
 import com.dohman.holdempucker.util.Constants.Companion.isShootingAtGoalie
 import com.dohman.holdempucker.util.Constants.WhoseTurn.Companion.isBotMoving
 import com.dohman.holdempucker.util.Constants.WhoseTurn.Companion.isTeamBottomTurn
@@ -36,6 +38,8 @@ class MessageTextItem(
                 }
             )
         )
+
+        Log.d(TAG_GAMEACTIVITY, message)
 
         if (isBotMoving() && !isNeutralMessage && !isShootingAtGoalie) {
             holder.itemView.txt_message.text = holder.context.getString(R.string.bot_inputting)
