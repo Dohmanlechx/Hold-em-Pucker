@@ -13,9 +13,24 @@
     <string name="bot_inputting">CPU\'s\nmoving...</string>
 
     <!-- HOW TO PLAY -->
-    <string name="htp_how_game_works">This is a card game based on ice hockey! Full card deck (52 cards) represents a period. 3 periods are played, with overtime if needed.\nSimple as that.</string>
-    <string name="htp_add_players">Both teams need to be fulfilled before the game can start. Choose your position for the card wisely!\n\nHint: Center is an important position.</string>
-    <string name="htp_attack_players">Now it is time to attack! You can only attack another card whose rank is equal or less to your playing card. The center needs to be eliminated before you can attack any defender.</string>
-    <string name="htp_restore_players">When you have been attacked and lost any players, you need to restore your team before you can attack back.\n\nGood luck!</string>
+    <string name="htp_how_game_works">
+        This is a card game based on ice hockey! Full card deck (52 cards) represents a
+        period. 3 periods will be played, with overtime if needed.\nSimple as that.
+    </string>
+    <string name="htp_add_players">
+        Both teams need to be fulfilled before the game can start. Choose your position
+        for the card wisely!\n\nHint: Center is an important position.
+    </string>
+    <string name="htp_attack_players">
+        Now it is time to attack! You can only attack another card whose rank is equal or less
+        to your playing card. The center needs to be eliminated before you can attack any defender.
+    </string>
+    <string name="htp_restore_players">
+        When you have been attacked and lost any players, you need to restore your team before
+        you can counter-attack.\n\nGood luck!
+    </string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

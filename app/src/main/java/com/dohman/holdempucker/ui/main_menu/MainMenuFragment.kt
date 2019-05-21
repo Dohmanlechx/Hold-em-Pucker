@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.findNavController
 import com.dohman.holdempucker.R
+import com.dohman.holdempucker.ui.how_to_play.HowToPlayDialogFragment
 import com.dohman.holdempucker.util.Animations
 import com.dohman.holdempucker.util.Constants
 import com.dohman.holdempucker.util.Constants.Companion.currentGameMode
@@ -19,6 +20,7 @@ import kotlinx.android.synthetic.main.main_menu_fragment.*
 
 class MainMenuFragment : Fragment() {
     private lateinit var vm: MainMenuViewModel
+    private lateinit var howToPlayDialog: HowToPlayDialogFragment
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         vm = ViewModelProviders.of(this).get(MainMenuViewModel::class.java)
@@ -28,6 +30,11 @@ class MainMenuFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 //        setGradientOnTexts()
+
+        tv_sub_header.setOnClickListener {
+            howToPlayDialog = HowToPlayDialogFragment()
+            if (!howToPlayDialog.isVisible) howToPlayDialog.show(childFragmentManager, "Dialog")
+        }
 
         btn_easy_mode.setOnClickListener {
             currentGameMode = Constants.GameMode.RANDOM
