@@ -31,32 +31,29 @@ class MainMenuFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-//        setGradientOnTexts()
 
-        tv_sub_header.setOnClickListener {
-            if (!isHowToPlayDialogShown) showHowToPlayDialog()
+        btn_how_to_play.setOnClickListener {
+            if (!isHowToPlayDialogShown) showHowToPlayDialog(it)
         }
 
         btn_easy_mode.setOnClickListener {
             currentGameMode = Constants.GameMode.RANDOM
-            Util.vibrate(requireContext(), true)
-            Animations.animateButton(it) { navigateToGameFragment() }
+            navigateToGameFragment(it)
         }
 
         btn_hard_mode.setOnClickListener {
             currentGameMode = Constants.GameMode.DEVELOPER
-            Util.vibrate(requireContext(), true)
-            Animations.animateButton(it) { navigateToGameFragment() }
+            navigateToGameFragment(it)
         }
 
-        tv_vs_friend.setOnClickListener {
+        btn_multiplayer.setOnClickListener {
             currentGameMode = Constants.GameMode.FRIEND
-            navigateToGameFragment()
+            navigateToGameFragment(it)
         }
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
+    override fun onStop() {
+        super.onStop()
         Animations.stopAllAnimations()
 
         howToPlayDialogFragment?.dismiss()
@@ -70,18 +67,23 @@ class MainMenuFragment : Fragment() {
         }
     }
 
-    private fun setGradientOnTexts() {
-        tv_title.paint.shader = vm.getLinearGradient(tv_sub_header)
+    private fun showHowToPlayDialog(button: View) {
+        Util.vibrate(requireContext(), true)
+        Animations.animateButton(button) {
+            if (howToPlayDialogFragment == null)
+                howToPlayDialogFragment = HowToPlayDialogFragment()
+
+            howToPlayDialogFragment?.show(childFragmentManager, "Dialog")
+        }
     }
 
-    private fun showHowToPlayDialog() {
-        howToPlayDialogFragment = HowToPlayDialogFragment()
-        howToPlayDialogFragment?.show(childFragmentManager, "Dialog")
-    }
-
-    private fun navigateToGameFragment() {
+    private fun navigateToGameFragment(button: View) {
         clearTeams()
         period = 1
-        view?.findNavController()?.navigate(R.id.action_mainMenuFragment_to_gameFragment)
+
+        Util.vibrate(requireContext(), true)
+        Animations.animateButton(button) {
+            view?.findNavController()?.navigate(R.id.action_mainMenuFragment_to_gameFragment)
+        }
     }
 }

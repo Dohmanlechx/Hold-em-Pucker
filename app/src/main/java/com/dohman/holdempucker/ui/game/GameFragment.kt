@@ -263,8 +263,8 @@ class GameFragment : Fragment(), View.OnClickListener {
 
         val view = if (bottom) card_bm_goalie else card_top_goalie
 
-        card_deck.setImageResource(R.drawable.red_back_vertical_new)
-        card_picked.setImageResource(R.drawable.red_back_vertical_new)
+        card_deck.setImageResource(R.drawable.red_back_vertical)
+        card_picked.setImageResource(R.drawable.red_back_vertical)
 
         val delay: Long = if (withStartDelay) 2500 else 250
 
@@ -281,7 +281,7 @@ class GameFragment : Fragment(), View.OnClickListener {
 
             vm.checkGameSituation()
             vm.removeCardFromDeck(doNotNotify = true)
-            if (card_top_goalie.tag != Integer.valueOf(R.drawable.red_back_new)) {
+            if (card_top_goalie.tag != Integer.valueOf(R.drawable.red_back)) {
                 addGoalieView(bottom = false)
             } else {
                 vm.notifyPickedCard()

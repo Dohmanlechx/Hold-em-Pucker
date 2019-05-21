@@ -635,7 +635,7 @@
 			android:layout_height="match_parent"
 			android:padding="1dp"
 			android:scaleType="fitXY"
-			tools:src="@drawable/red_back_new" />
+			tools:src="@drawable/red_back" />
 
 	</com.wajahatkarim3.easyflipview.EasyFlipView>
 
@@ -663,7 +663,7 @@
 		android:layout_margin="6dp"
 		android:padding="1dp"
 		android:scaleType="fitXY"
-		android:src="@drawable/red_back_vertical_new"
+		android:src="@drawable/red_back_vertical"
 		app:layout_constraintBottom_toTopOf="@id/gl_hor_58"
 		app:layout_constraintDimensionRatio="H,7:11"
 		app:layout_constraintEnd_toStartOf="@id/gl_ver_20"

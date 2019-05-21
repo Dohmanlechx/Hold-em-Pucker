@@ -25,7 +25,7 @@ object ViewUtil {
         bitmap: Bitmap?,
         isVertical: Boolean
     ) {
-        val cover = if (isVertical) R.drawable.red_back_vertical_new else R.drawable.red_back_new
+        val cover = if (isVertical) R.drawable.red_back_vertical else R.drawable.red_back
 
             if (flipView.isBackSide) {
                 back.setImageResource(cover)

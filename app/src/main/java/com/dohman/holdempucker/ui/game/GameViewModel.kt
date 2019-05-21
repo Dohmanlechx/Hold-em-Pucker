@@ -289,8 +289,8 @@ class GameViewModel : ViewModel() {
     * */
 
     fun onGoalieAddedAnimationEnd(view: AppCompatImageView) {
-        view.setImageResource(R.drawable.red_back_new)
-        view.tag = Integer.valueOf(R.drawable.red_back_new)
+        view.setImageResource(R.drawable.red_back)
+        view.tag = Integer.valueOf(R.drawable.red_back)
     }
 
     fun onPlayerAddedAnimationEnd(
