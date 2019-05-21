@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import androidx.navigation.findNavController
 import com.dohman.holdempucker.R
 import com.dohman.holdempucker.ui.how_to_play.HowToPlayDialogFragment
+import com.dohman.holdempucker.ui.how_to_play.HowToPlayDialogFragment.Companion.isHowToPlayDialogShown
 import com.dohman.holdempucker.util.Animations
 import com.dohman.holdempucker.util.Constants
 import com.dohman.holdempucker.util.Constants.Companion.currentGameMode
@@ -20,7 +21,8 @@ import kotlinx.android.synthetic.main.main_menu_fragment.*
 
 class MainMenuFragment : Fragment() {
     private lateinit var vm: MainMenuViewModel
-    private lateinit var howToPlayDialogFragment: HowToPlayDialogFragment
+
+    private var howToPlayDialogFragment: HowToPlayDialogFragment? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         vm = ViewModelProviders.of(this).get(MainMenuViewModel::class.java)
@@ -32,7 +34,7 @@ class MainMenuFragment : Fragment() {
 //        setGradientOnTexts()
 
         tv_sub_header.setOnClickListener {
-            showHowToPlayDialog()
+            if (!isHowToPlayDialogShown) showHowToPlayDialog()
         }
 
         btn_easy_mode.setOnClickListener {
@@ -53,6 +55,14 @@ class MainMenuFragment : Fragment() {
         }
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        Animations.stopAllAnimations()
+
+        howToPlayDialogFragment?.dismiss()
+        howToPlayDialogFragment = null
+    }
+
     private fun clearTeams() {
         for (index in 0..5) {
             teamTop[index] = null
@@ -66,7 +76,7 @@ class MainMenuFragment : Fragment() {
 
     private fun showHowToPlayDialog() {
         howToPlayDialogFragment = HowToPlayDialogFragment()
-        if (!howToPlayDialogFragment.isVisible) howToPlayDialogFragment.show(childFragmentManager, "Dialog")
+        howToPlayDialogFragment?.show(childFragmentManager, "Dialog")
     }
 
     private fun navigateToGameFragment() {

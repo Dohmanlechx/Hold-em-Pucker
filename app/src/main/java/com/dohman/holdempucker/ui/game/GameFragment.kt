@@ -516,7 +516,7 @@ class GameFragment : Fragment(), View.OnClickListener {
         period += nextPeriod
         isRestoringPlayers = true
 
-        cards_left.visibility = View.GONE
+        cards_left.text = "52"
         restoreFlipViewsPosition()
 
         return if (vm.isNextPeriodReady()) {

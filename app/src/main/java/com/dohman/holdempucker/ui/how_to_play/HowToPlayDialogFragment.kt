@@ -21,17 +21,27 @@ class HowToPlayDialogFragment : DialogFragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        isHowToPlayDialogShown = true
         return inflater.inflate(R.layout.dialog_htp, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        whole_dialog_view.setOnClickListener { this@HowToPlayDialogFragment.dismiss() }
+        whole_dialog_view.setOnClickListener {
+            this@HowToPlayDialogFragment.dismiss()
+            isHowToPlayDialogShown = false
+        }
     }
 
     override fun onPause() {
         super.onPause()
         this@HowToPlayDialogFragment.dismiss()
+        isHowToPlayDialogShown = false
+    }
+
+    companion object {
+        // The inbuilt isVisible() apparently doesn't work, it is why I have got an own value here
+        var isHowToPlayDialogShown = false
     }
 }
