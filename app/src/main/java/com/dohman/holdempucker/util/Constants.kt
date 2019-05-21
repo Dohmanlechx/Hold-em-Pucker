@@ -13,7 +13,7 @@ class Constants {
         // Booleans
         var isVsBotMode = false
         var isOngoingGame = false // Set to true when all cards are laid out
-        var isJustShotAtGoalie = false // To prevent duplicate message
+        var isShootingAtGoalie = false // To prevent duplicate message
         var isRestoringPlayers = true // Set to true when a team need to lay out new cards to fulfill
         var areTeamsReadyToStartPeriod = false // Set to true as soon as both teams are full in the very beginning
 
@@ -25,7 +25,7 @@ class Constants {
                         3 = Left defender | 4 = Right defender
                                     5 = Goalie                          */
 
-        // Player Index
+        // Player Indexes
         const val PLAYER_FORWARD_LEFT = 0
         const val PLAYER_CENTER = 1
         const val PLAYER_FORWARD_RIGHT = 2
@@ -69,7 +69,7 @@ class Constants {
 
         fun resetBooleansToInitState() {
             isOngoingGame = false
-            isJustShotAtGoalie = false
+            isShootingAtGoalie = false
             isRestoringPlayers = true
             areTeamsReadyToStartPeriod = false
         }

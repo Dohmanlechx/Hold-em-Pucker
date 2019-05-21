@@ -1,7 +1,33 @@
 <resources>
     <string name="app_name">Hold\'em pucker</string>
-	<string name="easy_mode">vs.\nAI Stupid</string>
-	<string name="hard_mode">vs.\nAI Developer</string>
-	<string name="vs_friend">Duel\nA Friend</string>
     <string name="full_card_deck_amount">52</string>
+    <string name="zero">0</string>
+    <string name="one">1</string>
+    <string name="two">2</string>
+    <string name="three">3</string>
+    <string name="four">4</string>
+    <string name="dialog_back_header">Are you sure?</string>
+    <string name="dialog_back_message">You are about to go back to main menu. If doing so, you\'ll lose all the progress.</string>
+    <string name="dialog_back_positive">Yes!</string>
+    <string name="dialog_back_negative">No, stay!</string>
+    <string name="bot_inputting">CPU\'s\nmoving...</string>
+
+    <!-- HOW TO PLAY -->
+    <string name="htp_how_game_works">
+        This is a card game based on ice hockey! Full card deck (52 cards) represents a
+        period. 3 periods will be played, with overtime if needed.\nSimple as that.
+    </string>
+    <string name="htp_add_players">
+        Both teams need to be fulfilled before the game can start. Choose your position
+        for the card wisely!\n\nHint: Center is an important position.
+    </string>
+    <string name="htp_attack_players">
+        Now it is time to attack! You can only attack another card whose rank is equal or less
+        to your playing card. The center needs to be eliminated before you can attack any defender.
+    </string>
+    <string name="htp_restore_players">
+        When you have been attacked and lost any players, you need to restore your team before
+        you can counter-attack.\n\nGood luck!
+    </string>
+
 </resources>
