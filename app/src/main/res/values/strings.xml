@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Hold\'em pucker</string>
+    <string name="app_name">Hold\'em Pucker</string>
     <string name="full_card_deck_amount">52</string>
     <string name="zero">0</string>
     <string name="one">1</string>
@@ -11,6 +11,7 @@
     <string name="dialog_back_positive">Yes!</string>
     <string name="dialog_back_negative">No, stay!</string>
     <string name="bot_inputting">CPU\'s\nmoving...</string>
+    <string name="version">v%s</string>
 
     <!-- HOW TO PLAY -->
     <string name="htp_how_game_works">

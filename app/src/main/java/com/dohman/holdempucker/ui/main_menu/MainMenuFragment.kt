@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.findNavController
+import com.dohman.holdempucker.BuildConfig
 import com.dohman.holdempucker.R
 import com.dohman.holdempucker.ui.how_to_play.HowToPlayDialogFragment
 import com.dohman.holdempucker.ui.how_to_play.HowToPlayDialogFragment.Companion.isHowToPlayDialogShown
@@ -31,6 +32,8 @@ class MainMenuFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        txt_version.text = String.format(getString(R.string.version, BuildConfig.VERSION_NAME))
 
         btn_how_to_play.setOnClickListener {
             if (!isHowToPlayDialogShown) showHowToPlayDialog(it)
