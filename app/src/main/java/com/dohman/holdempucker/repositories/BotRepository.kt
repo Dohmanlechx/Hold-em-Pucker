@@ -54,31 +54,26 @@ class BotRepository @Inject constructor(
                     return if (playingCard.beats(teamBottom[PLAYER_CENTER]?.rank!!)) PLAYER_CENTER
                     else attackTheStrongest(possibleMoves)
                 }
-            }
-
-            else if (possibleMoves.contains(PLAYER_GOALIE)) {
+            } else if (possibleMoves.contains(PLAYER_GOALIE)) {
                 // Second, check if you can attack the goalie and if the playing card is equal to 10 or stronger. If yes, attack goalie.
                 return if (playingCard.beats(10)) PLAYER_GOALIE
                 else attackTheStrongest(possibleMoves)
-            }
-
-            else if (possibleMoves.contains(PLAYER_DEFENDER_LEFT)
-                && teamBottom[PLAYER_DEFENDER_LEFT]?.beats(8)!!) {
+            } else if (possibleMoves.contains(PLAYER_DEFENDER_LEFT)
+                && teamBottom[PLAYER_DEFENDER_LEFT]?.beats(8)!!
+            ) {
                 // Check if any defender is free to attack, then check if its rank is equal to 8 or stronger.
                 return PLAYER_DEFENDER_LEFT
-            }
-
-            else if (possibleMoves.contains(PLAYER_DEFENDER_RIGHT)
-                && teamBottom[PLAYER_DEFENDER_RIGHT]?.beats(8)!!) {
+            } else if (possibleMoves.contains(PLAYER_DEFENDER_RIGHT)
+                && teamBottom[PLAYER_DEFENDER_RIGHT]?.beats(8)!!
+            ) {
                 return PLAYER_DEFENDER_RIGHT
-            }
-
-            else {
+            } else {
                 // Else, attack the strongest available card.
                 return attackTheStrongest(possibleMoves)
             }
         }
 
+        // When none of the cases above suits, this runs
         return attackTheStrongest(possibleMoves)
     }
 
