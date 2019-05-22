@@ -23,12 +23,12 @@ object Animations {
 
     fun stopAllAnimations() = listOfAllAnimations.let {
         it.forEach { anim -> anim.cancel() }
-        it.clear()
+        if (it.isNotEmpty()) it.clear()
     }
 
     fun stopAllPulsingCards() = listOfPulseAnimations.let {
         it.forEach { anim -> anim.cancel() }
-        it.clear()
+        if (it.isNotEmpty()) it.clear()
     }
 
     /*
@@ -297,7 +297,7 @@ object Animations {
             .thenAnimate(fadingScreen)
                 .alpha(0.3f, 0.0f)
                 .duration(1000)
-                .onStart { fNotifyMessage.invoke("of rank ${Util.rankToWord(goalieCard?.rank)} and it's NO GOAL!") }
+                .onStart { fNotifyMessage.invoke("of rank ${Util.rankToWord(goalieCard?.rank)}!\nNO GOAL!") }
             .thenAnimate(attacker, goalie)
                 .translationX(screenWidth.toFloat())
                 .startDelay(500)

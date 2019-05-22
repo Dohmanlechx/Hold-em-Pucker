@@ -472,13 +472,14 @@ class GameFragment : Fragment(), View.OnClickListener {
                         // OnStop
                         vm.notifyToggleTurn()
                         restoreFlipViewsPosition()
-                        vm.removeCardFromDeck()
 
                         if (!vm.isThisTeamReady()) {
                             updateMessageBox("Please choose a position.")
                             isOngoingGame = false
                             isRestoringPlayers = true
                         }
+
+                        vm.removeCardFromDeck()
 
                         if (isOngoingGame && !GameLogic.isTherePossibleMove(vm.firstCardInDeck)) {
                             vm.triggerBadCard()

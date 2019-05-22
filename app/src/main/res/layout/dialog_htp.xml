@@ -19,7 +19,7 @@
             android:layout_height="match_parent"
             android:layout_marginStart="16dp"
             android:fontFamily="@font/press_start_2p"
-            android:gravity="start|center_vertical"
+            android:gravity="center_vertical"
             android:text="@string/one"
             android:textColor="@color/white"
             android:textSize="40sp"
@@ -34,7 +34,7 @@
             android:paddingEnd="16dp"
             android:text="@string/htp_how_game_works"
             android:textColor="@color/white"
-            android:textSize="16sp" />
+            android:textSize="14sp" />
 
     </LinearLayout>
 
@@ -50,7 +50,7 @@
             android:layout_height="match_parent"
             android:layout_marginStart="16dp"
             android:fontFamily="@font/press_start_2p"
-            android:gravity="start|center_vertical"
+            android:gravity="center_vertical"
             android:text="@string/two"
             android:textColor="@color/white"
             android:textSize="40sp"
@@ -65,7 +65,7 @@
             android:paddingEnd="16dp"
             android:text="@string/htp_add_players"
             android:textColor="@color/white"
-            android:textSize="16sp" />
+            android:textSize="14sp" />
 
     </LinearLayout>
 
@@ -81,7 +81,7 @@
             android:layout_height="match_parent"
             android:layout_marginStart="16dp"
             android:fontFamily="@font/press_start_2p"
-            android:gravity="start|center_vertical"
+            android:gravity="center_vertical"
             android:text="@string/three"
             android:textColor="@color/white"
             android:textSize="40sp"
@@ -96,7 +96,7 @@
             android:paddingEnd="16dp"
             android:text="@string/htp_attack_players"
             android:textColor="@color/white"
-            android:textSize="16sp" />
+            android:textSize="14sp" />
 
     </LinearLayout>
 
@@ -112,7 +112,7 @@
             android:layout_height="match_parent"
             android:layout_marginStart="16dp"
             android:fontFamily="@font/press_start_2p"
-            android:gravity="start|center_vertical"
+            android:gravity="center_vertical"
             android:text="@string/four"
             android:textColor="@color/white"
             android:textSize="40sp"
@@ -127,7 +127,7 @@
             android:paddingEnd="16dp"
             android:text="@string/htp_restore_players"
             android:textColor="@color/white"
-            android:textSize="16sp" />
+            android:textSize="14sp" />
 
     </LinearLayout>
 
