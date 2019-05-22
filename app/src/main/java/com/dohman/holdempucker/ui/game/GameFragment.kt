@@ -431,8 +431,9 @@ class GameFragment : Fragment(), View.OnClickListener {
     * */
 
     private fun onFlipPlayingCardEnd(isBadCard: Boolean) {
-        flip_view.flipTheView()
+        if (flip_view == null) return
 
+        flip_view.flipTheView()
         // Bot's turn
         if (isBotMoving() && !isBadCard) {
             // Adding player

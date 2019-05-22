@@ -34,6 +34,10 @@ class MainMenuFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         txt_version.text = String.format(getString(R.string.version, BuildConfig.VERSION_NAME))
+    }
+
+    override fun onResume() {
+        super.onResume()
 
         btn_how_to_play.setOnClickListener {
             if (!isHowToPlayDialogShown) showHowToPlayDialog(it)
@@ -81,6 +85,8 @@ class MainMenuFragment : Fragment() {
     }
 
     private fun navigateToGameFragment(button: View) {
+        removeAllOnClickListeners()
+
         clearTeams()
         period = 1
 
@@ -88,5 +94,12 @@ class MainMenuFragment : Fragment() {
         Animations.animateButton(button) {
             view?.findNavController()?.navigate(R.id.action_mainMenuFragment_to_gameFragment)
         }
+    }
+
+    private fun removeAllOnClickListeners() {
+        btn_how_to_play.setOnClickListener(null)
+        btn_easy_mode.setOnClickListener(null)
+        btn_hard_mode.setOnClickListener(null)
+        btn_multiplayer.setOnClickListener(null)
     }
 }
