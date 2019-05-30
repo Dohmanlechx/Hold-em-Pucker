@@ -89,6 +89,8 @@ class GameViewModel : ViewModel() {
 //        isMyTeamOnlineBottom = !onlineRepo.hasPlayerInLobby()
 //    }
 
+    fun clearAllValueEventListeners() = onlineRepo.clearAllListeners()
+
     /*
     * Notify functions
     * */

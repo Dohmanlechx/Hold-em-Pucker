@@ -108,9 +108,13 @@ class GameFragment : Fragment(), View.OnClickListener {
         }
 
         setupMessageRecycler()
-        updateMessageBox("Press anywhere to start the game! Period: $period", isNeutralMessage = true)
 
-        whole_view.setOnClickListener { initGame() }
+        if (currentGameMode == Constants.GameMode.ONLINE) {
+            // FIXME
+        } else {
+            updateMessageBox("Press anywhere to start the game! Period: $period", isNeutralMessage = true)
+            whole_view.setOnClickListener { initGame() }
+        }
     }
 
     override fun onResume() {
@@ -124,6 +128,7 @@ class GameFragment : Fragment(), View.OnClickListener {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        vm.clearAllValueEventListeners()
         Animations.stopAllAnimations()
         Animations.stopAllPulsingCards()
     }

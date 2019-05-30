@@ -70,7 +70,7 @@ class OnlinePlayRepository @Inject constructor(
     }
 
     private fun createLobby(cardDeck: List<Card>?) {
-        lobbyId = db.push().key!! // Cant be null, since db is working here
+        lobbyId = db.push().key!! // Can't be null, since db is working here
         val lobby = OnlineLobby(lobbyId, "", "taken", -1, -1, cardDeck)
 
         db.child(lobbyId).setValue(lobby)
@@ -87,6 +87,8 @@ class OnlinePlayRepository @Inject constructor(
             override fun onCancelled(p0: DatabaseError) {}
         }))
     }
+
+    fun clearAllListeners() = listOfListeners.clear()
 }
 
 
