@@ -23,6 +23,7 @@ import com.dohman.holdempucker.util.Constants.Companion.teamTop
 import com.dohman.holdempucker.util.Constants.Companion.teamTopScore
 import com.dohman.holdempucker.util.Constants.Companion.isVsBotMode
 import com.dohman.holdempucker.util.Constants.Companion.isMyTeamOnlineBottom
+import com.dohman.holdempucker.util.Constants.Companion.isOpponentFound
 import com.dohman.holdempucker.util.Constants.Companion.whoseTeamStartedLastPeriod
 import com.dohman.holdempucker.util.Constants.Companion.whoseTurn
 import com.dohman.holdempucker.util.Constants.WhoseTurn.Companion.isTeamBottomTurn
@@ -49,7 +50,9 @@ class GameViewModel : ViewModel() {
     val pickedCardNotifier = MutableLiveData<Int>()
     val cardsCountNotifier = MutableLiveData<Int>()
     val badCardNotifier = MutableLiveData<Boolean>()
+    // Online
     val onlineOpponentInputNotifier = MutableLiveData<Int>()
+    val onlineOpponentFoundNotifier = MutableLiveData<Boolean>()
 
     init {
         RepositoryComponent.inject(this)
@@ -74,6 +77,10 @@ class GameViewModel : ViewModel() {
         if (currentGameMode == Constants.GameMode.ONLINE) {
             onlineRepo.searchForLobby(cardDeck)
 //            onlineTeamDecider()
+            onlineRepo.opponentFound.observeForever {
+                isOpponentFound = it
+                if (it) onlineOpponentFoundNotifier.value = it
+            }
             //onlineRepo.opponentInput.observeForever { onlineOpponentInputNotifier.value = it }
         }
     }

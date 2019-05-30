@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.WindowManager
 import androidx.appcompat.app.AlertDialog
 import androidx.navigation.findNavController
+import com.dohman.holdempucker.util.Constants.Companion.lobbyId
 
 class MainActivity : AppCompatActivity() {
 
@@ -23,7 +24,10 @@ class MainActivity : AppCompatActivity() {
         this.setTitle(getString(R.string.dialog_back_header))
         this.setMessage(getString(R.string.dialog_back_message))
 
-        setPositiveButton(getString(R.string.dialog_back_positive)) { _, _ -> findNavController(R.id.nav_host_fragment).popBackStack() }
+        setPositiveButton(getString(R.string.dialog_back_positive)) { _, _ ->
+            findNavController(R.id.nav_host_fragment).popBackStack()
+            lobbyId = ""
+        }
         setNegativeButton(getString(R.string.dialog_back_negative)) { _, _ -> }
 
         this.create()

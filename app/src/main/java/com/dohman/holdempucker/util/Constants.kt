@@ -10,6 +10,15 @@ class Constants {
         const val TAG_GAMEACTIVITY = "DBG: GameFragment.kt"
         const val TAG_GAMEVIEWMODEL = "DBG: GameViewModel.kt"
 
+        // Game Mode
+        var currentGameMode = GameMode.NONE
+
+        // Online
+        var lobbyId = ""
+        var isOpponentFound = false
+        var isGameLive = currentGameMode == GameMode.ONLINE && isOpponentFound
+        var isMyTeamOnlineBottom: Boolean = false
+
         // Booleans
         var isVsBotMode = false
         var isOngoingGame = false // Set to true when all cards are laid out
@@ -18,7 +27,6 @@ class Constants {
         var areTeamsReadyToStartPeriod = false // Set to true as soon as both teams are full in the very beginning
 
         // Objects
-        var isMyTeamOnlineBottom: Boolean = false
         val teamTop = arrayOfNulls<Card>(6)
         val teamBottom = arrayOfNulls<Card>(6)
 
@@ -45,9 +53,6 @@ class Constants {
         // Whose turn
         var whoseTurn = WhoseTurn.BOTTOM
         var whoseTeamStartedLastPeriod = whoseTurn
-
-        // Game Mode
-        var currentGameMode = GameMode.NONE
 
         // Cases
         val cases = mutableListOf<List<Int>>().apply {

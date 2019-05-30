@@ -25,6 +25,7 @@ import com.dohman.holdempucker.util.Constants.Companion.teamTop
 import com.dohman.holdempucker.util.Constants.Companion.teamTopScore
 import com.dohman.holdempucker.util.Constants.Companion.PLAYER_GOALIE
 import com.dohman.holdempucker.util.Constants.Companion.currentGameMode
+import com.dohman.holdempucker.util.Constants.Companion.isGameLive
 import com.dohman.holdempucker.util.Constants.WhoseTurn.Companion.isBotMoving
 import com.dohman.holdempucker.util.Constants.WhoseTurn.Companion.isTeamBottomTurn
 import com.mikepenz.fastadapter.FastAdapter
@@ -69,10 +70,13 @@ class GameFragment : Fragment(), View.OnClickListener {
                 flipNewCard(vm.resIdOfCard(vm.firstCardInDeck), isBadCard = true)
                 vm.notifyMessage("Aw, too weak card! It goes out!")
             })
+
+        // Online
         vm.onlineOpponentInputNotifier.observe(this, Observer { input ->
             if (isRestoringPlayers) animateAddPlayer(teamTopViews[input], teamTop, input)
             else prepareAttackPlayer(teamBottom, input, teamBottomViews[input])
         })
+        vm.onlineOpponentFoundNotifier.observe(this, Observer { if (it) v_progressbar.visibility = View.GONE })
         // End of Observables
 
         return inflater.inflate(R.layout.game_fragment, container, false)
@@ -114,6 +118,8 @@ class GameFragment : Fragment(), View.OnClickListener {
         vm.setGameMode()
         storeAllViews()
         setOnClickListeners()
+
+        if (!isGameLive) v_progressbar.visibility = View.VISIBLE
     }
 
     override fun onDestroyView() {
