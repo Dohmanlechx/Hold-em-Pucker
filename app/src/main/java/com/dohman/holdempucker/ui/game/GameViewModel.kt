@@ -72,7 +72,7 @@ class GameViewModel : ViewModel() {
         }
 
         if (currentGameMode == Constants.GameMode.ONLINE) {
-            onlineRepo.joinLobby(cardDeck)
+            onlineRepo.searchForLobby(cardDeck)
 //            onlineTeamDecider()
             //onlineRepo.opponentInput.observeForever { onlineOpponentInputNotifier.value = it }
         }
