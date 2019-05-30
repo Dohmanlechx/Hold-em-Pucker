@@ -9,6 +9,7 @@ import com.dohman.holdempucker.cards.Card
 import com.dohman.holdempucker.dagger.RepositoryComponent
 import com.dohman.holdempucker.repositories.BotRepository
 import com.dohman.holdempucker.repositories.CardRepository
+import com.dohman.holdempucker.repositories.OnlinePlayRepository
 import com.dohman.holdempucker.repositories.ResourceRepository
 import com.dohman.holdempucker.util.Constants
 import com.dohman.holdempucker.util.Constants.Companion.areTeamsReadyToStartPeriod
@@ -21,6 +22,7 @@ import com.dohman.holdempucker.util.Constants.Companion.teamBottomScore
 import com.dohman.holdempucker.util.Constants.Companion.teamTop
 import com.dohman.holdempucker.util.Constants.Companion.teamTopScore
 import com.dohman.holdempucker.util.Constants.Companion.isVsBotMode
+import com.dohman.holdempucker.util.Constants.Companion.myTeamOnline
 import com.dohman.holdempucker.util.Constants.Companion.whoseTeamStartedLastPeriod
 import com.dohman.holdempucker.util.Constants.Companion.whoseTurn
 import com.dohman.holdempucker.util.Constants.WhoseTurn.Companion.isTeamBottomTurn
@@ -35,6 +37,8 @@ class GameViewModel : ViewModel() {
     lateinit var cardRepo: CardRepository
     @Inject
     lateinit var botRepo: BotRepository
+    @Inject
+    lateinit var onlineRepo: OnlinePlayRepository
 
     var cardDeck = mutableListOf<Card>()
     var firstCardInDeck: Card
@@ -45,6 +49,7 @@ class GameViewModel : ViewModel() {
     val pickedCardNotifier = MutableLiveData<Int>()
     val cardsCountNotifier = MutableLiveData<Int>()
     val badCardNotifier = MutableLiveData<Boolean>()
+    val onlineOpponentInputNotifier = MutableLiveData<Int>()
 
     init {
         RepositoryComponent.inject(this)
@@ -63,9 +68,17 @@ class GameViewModel : ViewModel() {
         isVsBotMode = when (currentGameMode) {
             Constants.GameMode.RANDOM -> true
             Constants.GameMode.DEVELOPER -> true
-            Constants.GameMode.FRIEND -> false
             else -> false
         }
+
+        if (currentGameMode == Constants.GameMode.ONLINE) {
+            onlineRepo.joinLobby()
+            onlineTeamDecider()
+        }
+    }
+
+    private fun onlineTeamDecider() {
+        myTeamOnline = if (onlineRepo.hasPlayerInLobby()) teamTop else teamBottom
     }
 
     /*

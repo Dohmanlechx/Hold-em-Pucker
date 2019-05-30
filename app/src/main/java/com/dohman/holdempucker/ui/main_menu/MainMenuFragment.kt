@@ -54,7 +54,8 @@ class MainMenuFragment : Fragment() {
         }
 
         btn_multiplayer.setOnClickListener {
-            currentGameMode = Constants.GameMode.FRIEND
+            //currentGameMode = Constants.GameMode.FRIEND
+            currentGameMode = Constants.GameMode.ONLINE
             navigateToGameFragment(it)
         }
     }

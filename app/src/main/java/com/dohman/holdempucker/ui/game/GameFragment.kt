@@ -68,6 +68,10 @@ class GameFragment : Fragment(), View.OnClickListener {
                 flipNewCard(vm.resIdOfCard(vm.firstCardInDeck), isBadCard = true)
                 vm.notifyMessage("Aw, too weak card! It goes out!")
             })
+        vm.onlineOpponentInputNotifier.observe(this, Observer { input ->
+            if (isRestoringPlayers) animateAddPlayer(teamTopViews[input], teamTop, input)
+            else prepareAttackPlayer(teamBottom, input, teamBottomViews[input])
+        })
         // End of Observables
 
         return inflater.inflate(R.layout.game_fragment, container, false)
