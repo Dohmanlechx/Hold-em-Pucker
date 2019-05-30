@@ -22,7 +22,7 @@ import com.dohman.holdempucker.util.Constants.Companion.teamBottomScore
 import com.dohman.holdempucker.util.Constants.Companion.teamTop
 import com.dohman.holdempucker.util.Constants.Companion.teamTopScore
 import com.dohman.holdempucker.util.Constants.Companion.isVsBotMode
-import com.dohman.holdempucker.util.Constants.Companion.myTeamOnline
+import com.dohman.holdempucker.util.Constants.Companion.isMyTeamOnlineBottom
 import com.dohman.holdempucker.util.Constants.Companion.whoseTeamStartedLastPeriod
 import com.dohman.holdempucker.util.Constants.Companion.whoseTurn
 import com.dohman.holdempucker.util.Constants.WhoseTurn.Companion.isTeamBottomTurn
@@ -78,7 +78,7 @@ class GameViewModel : ViewModel() {
     }
 
     private fun onlineTeamDecider() {
-        myTeamOnline = if (onlineRepo.hasPlayerInLobby()) teamTop else teamBottom
+        isMyTeamOnlineBottom = !onlineRepo.hasPlayerInLobby()
     }
 
     /*
@@ -96,6 +96,10 @@ class GameViewModel : ViewModel() {
 
     fun notifyMessage(message: String, isNeutralMessage: Boolean = false) {
         messageNotifier.value = Pair(message, isNeutralMessage)
+    }
+
+    fun notifyOnlineInput(input: Int) {
+        onlineRepo.updateInput(isMyTeamOnlineBottom, input)
     }
 
     /*

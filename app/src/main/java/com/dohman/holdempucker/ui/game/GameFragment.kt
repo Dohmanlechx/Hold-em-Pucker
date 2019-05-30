@@ -24,6 +24,7 @@ import com.dohman.holdempucker.util.Constants.Companion.teamBottomScore
 import com.dohman.holdempucker.util.Constants.Companion.teamTop
 import com.dohman.holdempucker.util.Constants.Companion.teamTopScore
 import com.dohman.holdempucker.util.Constants.Companion.PLAYER_GOALIE
+import com.dohman.holdempucker.util.Constants.Companion.currentGameMode
 import com.dohman.holdempucker.util.Constants.WhoseTurn.Companion.isBotMoving
 import com.dohman.holdempucker.util.Constants.WhoseTurn.Companion.isTeamBottomTurn
 import com.mikepenz.fastadapter.FastAdapter
@@ -637,5 +638,7 @@ class GameFragment : Fragment(), View.OnClickListener {
                 }
             }
         }
+
+        if (currentGameMode == Constants.GameMode.ONLINE) vm.notifyOnlineInput(spotIndex)
     }
 }

@@ -1,5 +1,6 @@
 package com.dohman.holdempucker.repositories
 
+import com.dohman.holdempucker.util.Constants.Companion.isMyTeamOnlineBottom
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
@@ -16,9 +17,29 @@ class OnlinePlayRepository @Inject constructor(
     }
 
     fun joinLobby() {
-        if (!hasPlayerInLobby()) {
-            firebaseRef.child("hasPlayer").setValue("true")
-        }
+        firebaseRef.child("players").child("playerBottom").addListenerForSingleValueEvent(
+            object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val value = snapshot.value
+                    if (value == "none") {
+                        seizeBottomSpot()
+                    } else {
+                        seizeTopSpot()
+                    }
+                }
+                override fun onCancelled(error: DatabaseError) {}
+            }
+        )
+    }
+
+    fun seizeBottomSpot() {
+        firebaseRef.child("players").child("playerBottom").setValue("seized")
+        isMyTeamOnlineBottom = true
+    }
+
+    fun seizeTopSpot() {
+        firebaseRef.child("players").child("playerTop").setValue("seized")
+        isMyTeamOnlineBottom = false
     }
 
     fun hasPlayerInLobby(): Boolean {

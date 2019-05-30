@@ -18,7 +18,7 @@ class Constants {
         var areTeamsReadyToStartPeriod = false // Set to true as soon as both teams are full in the very beginning
 
         // Objects
-        var myTeamOnline: Array<Card?> = emptyArray()
+        var isMyTeamOnlineBottom: Boolean = false
         val teamTop = arrayOfNulls<Card>(6)
         val teamBottom = arrayOfNulls<Card>(6)
 
