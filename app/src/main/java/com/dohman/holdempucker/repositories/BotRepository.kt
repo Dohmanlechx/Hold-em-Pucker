@@ -1,6 +1,6 @@
 package com.dohman.holdempucker.repositories
 
-import com.dohman.holdempucker.cards.Card
+import com.dohman.holdempucker.models.Card
 import com.dohman.holdempucker.util.Constants
 import com.dohman.holdempucker.util.Constants.Companion.PLAYER_CENTER
 import com.dohman.holdempucker.util.Constants.Companion.PLAYER_DEFENDER_LEFT

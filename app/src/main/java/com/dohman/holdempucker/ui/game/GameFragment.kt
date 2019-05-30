@@ -11,7 +11,7 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.dohman.holdempucker.R
-import com.dohman.holdempucker.cards.Card
+import com.dohman.holdempucker.models.Card
 import com.dohman.holdempucker.ui.items.MessageTextItem
 import com.dohman.holdempucker.util.*
 import com.dohman.holdempucker.util.Constants.Companion.isOngoingGame

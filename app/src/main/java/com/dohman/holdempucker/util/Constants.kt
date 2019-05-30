@@ -1,6 +1,6 @@
 package com.dohman.holdempucker.util
 
-import com.dohman.holdempucker.cards.Card
+import com.dohman.holdempucker.models.Card
 
 class Constants {
     companion object {

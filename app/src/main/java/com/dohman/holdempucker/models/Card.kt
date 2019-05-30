@@ -1,4 +1,4 @@
-package com.dohman.holdempucker.cards
+package com.dohman.holdempucker.models
 
 class Card {
     var suit: Suits? = null

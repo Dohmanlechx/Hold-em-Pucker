@@ -5,7 +5,7 @@ import androidx.appcompat.widget.AppCompatImageView
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.dohman.holdempucker.R
-import com.dohman.holdempucker.cards.Card
+import com.dohman.holdempucker.models.Card
 import com.dohman.holdempucker.dagger.RepositoryComponent
 import com.dohman.holdempucker.repositories.BotRepository
 import com.dohman.holdempucker.repositories.CardRepository
@@ -72,14 +72,15 @@ class GameViewModel : ViewModel() {
         }
 
         if (currentGameMode == Constants.GameMode.ONLINE) {
-            onlineRepo.joinLobby()
-            onlineTeamDecider()
+            onlineRepo.joinLobby(cardDeck)
+//            onlineTeamDecider()
+            //onlineRepo.opponentInput.observeForever { onlineOpponentInputNotifier.value = it }
         }
     }
 
-    private fun onlineTeamDecider() {
-        isMyTeamOnlineBottom = !onlineRepo.hasPlayerInLobby()
-    }
+//    private fun onlineTeamDecider() {
+//        isMyTeamOnlineBottom = !onlineRepo.hasPlayerInLobby()
+//    }
 
     /*
     * Notify functions

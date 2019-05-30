@@ -1,6 +1,6 @@
 package com.dohman.holdempucker.util
 
-import com.dohman.holdempucker.cards.Card
+import com.dohman.holdempucker.models.Card
 import com.dohman.holdempucker.util.Constants.Companion.PLAYER_DEFENDER_LEFT
 import com.dohman.holdempucker.util.Constants.Companion.PLAYER_DEFENDER_RIGHT
 import com.dohman.holdempucker.util.Constants.Companion.PLAYER_GOALIE

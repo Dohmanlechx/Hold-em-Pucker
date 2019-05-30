@@ -5,7 +5,7 @@ import android.view.animation.AnticipateInterpolator
 import android.view.animation.OvershootInterpolator
 import androidx.interpolator.view.animation.LinearOutSlowInInterpolator
 import com.airbnb.lottie.LottieAnimationView
-import com.dohman.holdempucker.cards.Card
+import com.dohman.holdempucker.models.Card
 import com.dohman.holdempucker.util.Constants.Companion.possibleMovesIndexes
 import com.dohman.holdempucker.util.Constants.Companion.whoseTurn
 import com.dohman.holdempucker.util.Constants.WhoseTurn.Companion.isBotMoving

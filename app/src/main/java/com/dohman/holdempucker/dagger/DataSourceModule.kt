@@ -11,5 +11,5 @@ class DataSourceModule(/* Stuff like URLs here*/) {
 
     @Provides
     @Singleton
-    fun getFirebaseRef(): DatabaseReference = FirebaseDatabase.getInstance().getReference("room")
+    fun getFirebaseRef(): DatabaseReference = FirebaseDatabase.getInstance().getReference("lobbies")
 }
