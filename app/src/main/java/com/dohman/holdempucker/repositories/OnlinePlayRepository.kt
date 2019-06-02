@@ -70,7 +70,7 @@ class OnlinePlayRepository @Inject constructor(
         // Joining correct lobby
         db.child(lobbyId).child("topPlayer").setValue("taken")
         // Retrieving the card deck
-        getCardDeckInstance()
+        createCardDeckInstance()
     }
 
     private fun createLobby(cardDeck: List<Card>?) {
@@ -85,16 +85,15 @@ class OnlinePlayRepository @Inject constructor(
         waitForOpponent()
     }
 
-    private fun getCardDeckInstance() {
-        val cardsByOrder = db.child(lobbyId).child("cardDeck").orderByPriority()
-        cardsByOrder.addListenerForSingleValueEvent(object : ValueEventListener {
+    private fun createCardDeckInstance() {
+        db.child(lobbyId).child("cardDeck").addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val cardList: MutableList<Card> = mutableListOf()
 
-                val cards = snapshot.children
-                // Firebase doesn't know how to cast to own classes, only primitive types
+                val cardsAsChildren = snapshot.children
+                // Firebase doesn't know how to cast to own classes, only primitive types, HashMap is one of them
                 val hashMap = HashMap<String, Card>()
-                cards.forEach { hashMap[it.key!!] = it.getValue(Card::class.java)!! }
+                cardsAsChildren.forEach { hashMap[it.key!!] = it.getValue(Card::class.java)!! }
 
                 val arrayListOfCards: ArrayList<Card> = ArrayList(hashMap.values)
                 arrayListOfCards.forEach { cardList.add(it) }

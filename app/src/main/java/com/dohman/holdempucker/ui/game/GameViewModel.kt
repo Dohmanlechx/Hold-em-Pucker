@@ -85,10 +85,9 @@ class GameViewModel : ViewModel() {
             }
             //onlineRepo.opponentInput.observeForever { onlineOpponentInputNotifier.value = it }
             onlineRepo.cardDeckForJoiner.observeForever {
+                // Replacing the whole card deck with the new one from Firebase
                 cardDeck = it.toMutableList()
-                cardDeck.forEach { card ->
-                    Log.d(TAG_GAMEVIEWMODEL, "${card.suit}, ${card.rank}, ${card.src}")
-                }
+                firstCardInDeck = cardDeck.first()
             }
         }
     }

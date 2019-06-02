@@ -109,12 +109,12 @@ class GameFragment : Fragment(), View.OnClickListener {
 
         setupMessageRecycler()
 
-//        if (currentGameMode == Constants.GameMode.ONLINE) {
-//            // FIXME
-//        } else {
+        if (currentGameMode == Constants.GameMode.ONLINE) {
+            // FIXME
+        } else {
             updateMessageBox("Press anywhere to start the game! Period: $period", isNeutralMessage = true)
             whole_view.setOnClickListener { initGame() }
-//        }
+        }
     }
 
     override fun onResume() {
