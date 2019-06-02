@@ -57,26 +57,26 @@ class GameFragment : Fragment(), View.OnClickListener {
         vm = ViewModelProviders.of(this).get(GameViewModel::class.java)
 
         // Observables
-        vm.messageNotifier.observe(this, Observer { updateMessageBox(it.first, it.second) })
-        vm.halfTimeNotifier.observe(this, Observer {
+        vm.messageNotifier.observe(viewLifecycleOwner, Observer { updateMessageBox(it.first, it.second) })
+        vm.halfTimeNotifier.observe(viewLifecycleOwner, Observer {
             if (isNextPeriodReady(it)) addGoalieView(true, withStartDelay = true)
         })
-        vm.whoseTurnNotifier.observe(this, Observer { Animations.animatePuck(puck, it) })
-        vm.pickedCardNotifier.observe(this, Observer { flipNewCard(it) })
-        vm.cardsCountNotifier.observe(this, Observer { cards_left.text = it.toString() })
+        vm.whoseTurnNotifier.observe(viewLifecycleOwner, Observer { Animations.animatePuck(puck, it) })
+        vm.pickedCardNotifier.observe(viewLifecycleOwner, Observer { flipNewCard(it) })
+        vm.cardsCountNotifier.observe(viewLifecycleOwner, Observer { cards_left.text = it.toString() })
         vm.badCardNotifier.observe(
-            this,
+            viewLifecycleOwner,
             Observer {
                 flipNewCard(vm.resIdOfCard(vm.firstCardInDeck), isBadCard = true)
                 vm.notifyMessage("Aw, too weak card! It goes out!")
             })
 
         // Online
-        vm.onlineOpponentInputNotifier.observe(this, Observer { input ->
+        vm.onlineOpponentInputNotifier.observe(viewLifecycleOwner, Observer { input ->
             if (isRestoringPlayers) animateAddPlayer(teamTopViews[input], teamTop, input)
             else prepareAttackPlayer(teamBottom, input, teamBottomViews[input])
         })
-        vm.onlineOpponentFoundNotifier.observe(this, Observer { if (it) v_progressbar.visibility = View.GONE })
+        vm.onlineOpponentFoundNotifier.observe(viewLifecycleOwner, Observer { if (it) v_progressbar.visibility = View.GONE })
         // End of Observables
 
         return inflater.inflate(R.layout.game_fragment, container, false)
@@ -109,12 +109,12 @@ class GameFragment : Fragment(), View.OnClickListener {
 
         setupMessageRecycler()
 
-        if (currentGameMode == Constants.GameMode.ONLINE) {
-            // FIXME
-        } else {
+//        if (currentGameMode == Constants.GameMode.ONLINE) {
+//            // FIXME
+//        } else {
             updateMessageBox("Press anywhere to start the game! Period: $period", isNeutralMessage = true)
             whole_view.setOnClickListener { initGame() }
-        }
+//        }
     }
 
     override fun onResume() {

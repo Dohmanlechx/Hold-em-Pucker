@@ -1,5 +1,6 @@
 package com.dohman.holdempucker.ui.game
 
+import android.util.Log
 import android.view.View
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.lifecycle.MutableLiveData
@@ -12,6 +13,7 @@ import com.dohman.holdempucker.repositories.CardRepository
 import com.dohman.holdempucker.repositories.OnlinePlayRepository
 import com.dohman.holdempucker.repositories.ResourceRepository
 import com.dohman.holdempucker.util.Constants
+import com.dohman.holdempucker.util.Constants.Companion.TAG_GAMEVIEWMODEL
 import com.dohman.holdempucker.util.Constants.Companion.areTeamsReadyToStartPeriod
 import com.dohman.holdempucker.util.Constants.Companion.currentGameMode
 import com.dohman.holdempucker.util.Constants.Companion.isOngoingGame
@@ -82,6 +84,12 @@ class GameViewModel : ViewModel() {
                 if (it) onlineOpponentFoundNotifier.value = it
             }
             //onlineRepo.opponentInput.observeForever { onlineOpponentInputNotifier.value = it }
+            onlineRepo.cardDeckForJoiner.observeForever {
+                cardDeck = it.toMutableList()
+                cardDeck.forEach { card ->
+                    Log.d(TAG_GAMEVIEWMODEL, "${card.suit}, ${card.rank}, ${card.src}")
+                }
+            }
         }
     }
 

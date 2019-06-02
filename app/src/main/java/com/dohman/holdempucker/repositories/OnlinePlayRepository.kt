@@ -17,6 +17,7 @@ class OnlinePlayRepository @Inject constructor(
 
     val opponentInput: MutableLiveData<Int> = MutableLiveData()
     val opponentFound: MutableLiveData<Boolean> = MutableLiveData()
+    var cardDeckForJoiner: MutableLiveData<List<Card>> = MutableLiveData()
 
     init {
         opponentFound.value = false
@@ -41,7 +42,7 @@ class OnlinePlayRepository @Inject constructor(
         else db.child("topInput").setValue(input)
     }
 
-    fun searchForLobby(cardDeck: List<Card>?) {
+    fun searchForLobby(cardDeck: List<Card>) {
         var foundLobby = false
 
         db.addListenerForSingleValueEvent(object : ValueEventListener {
@@ -66,16 +67,43 @@ class OnlinePlayRepository @Inject constructor(
 
     private fun joinThisLobby() {
         opponentFound.value = true
+        // Joining correct lobby
         db.child(lobbyId).child("topPlayer").setValue("taken")
+        // Retrieving the card deck
+        getCardDeckInstance()
     }
 
     private fun createLobby(cardDeck: List<Card>?) {
         lobbyId = db.push().key!! // Can't be null, since db is working here
-        val lobby = OnlineLobby(lobbyId, "", "taken", -1, -1, cardDeck)
 
+        // Setting id on all the cards, so the opponent would retrieve the card deck in correct order
+        cardDeck?.forEachIndexed { index, card -> card.idForOnline = index }
+
+        val lobby = OnlineLobby(lobbyId, "", "taken", -1, -1, cardDeck)
         db.child(lobbyId).setValue(lobby)
 
         waitForOpponent()
+    }
+
+    private fun getCardDeckInstance() {
+        val cardsByOrder = db.child(lobbyId).child("cardDeck").orderByPriority()
+        cardsByOrder.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val cardList: MutableList<Card> = mutableListOf()
+
+                val cards = snapshot.children
+                // Firebase doesn't know how to cast to own classes, only primitive types
+                val hashMap = HashMap<String, Card>()
+                cards.forEach { hashMap[it.key!!] = it.getValue(Card::class.java)!! }
+
+                val arrayListOfCards: ArrayList<Card> = ArrayList(hashMap.values)
+                arrayListOfCards.forEach { cardList.add(it) }
+
+                cardDeckForJoiner.value = cardList.sortedBy { it.idForOnline }
+            }
+
+            override fun onCancelled(p0: DatabaseError) {}
+        })
     }
 
     private fun waitForOpponent() {
