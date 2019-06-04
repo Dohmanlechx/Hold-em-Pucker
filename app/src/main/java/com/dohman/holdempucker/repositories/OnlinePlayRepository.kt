@@ -3,6 +3,7 @@ package com.dohman.holdempucker.repositories
 import androidx.lifecycle.MutableLiveData
 import com.dohman.holdempucker.models.Card
 import com.dohman.holdempucker.models.OnlineLobby
+import com.dohman.holdempucker.util.Constants.Companion.isMyTeamOnlineBottom
 import com.dohman.holdempucker.util.Constants.Companion.lobbyId
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -23,6 +24,8 @@ class OnlinePlayRepository @Inject constructor(
         opponentFound.value = false
     }
 
+    private fun thisLobby() = db.child(lobbyId)
+
     private fun observeOpponentInput(myTeamIsBottom: Boolean) {
         val path = if (myTeamIsBottom) "topInput" else "bottomInput"
 
@@ -37,12 +40,12 @@ class OnlinePlayRepository @Inject constructor(
         }))
     }
 
-    fun updateInput(myTeamIsBottom: Boolean, input: Int) {
-        if (myTeamIsBottom) db.child("bottomInput").setValue(input)
-        else db.child("topInput").setValue(input)
+    fun updateInput(input: Int) {
+        if (isMyTeamOnlineBottom) thisLobby().child("bottomInput").setValue(input)
+        else thisLobby().child("topInput").setValue(input)
     }
 
-    fun searchForLobby(cardDeck: List<Card>) {
+    fun searchForLobbyOrCreateOne(cardDeck: List<Card>, fFoundLobby: (Boolean) -> Unit) {
         var foundLobby = false
 
         db.addListenerForSingleValueEvent(object : ValueEventListener {
@@ -52,13 +55,18 @@ class OnlinePlayRepository @Inject constructor(
                     if (lobby.child("topPlayer").value == "") {
                         // There is bottom player in lobby waiting, go ahead and join
                         lobbyId = lobby.child("id").value as String
-                        joinThisLobby()
                         foundLobby = true
+                        fFoundLobby.invoke(true)
+                        joinThisLobby()
                         break
                     }
                 }
 
-                if (!foundLobby) createLobby(cardDeck)
+                if (!foundLobby) {
+                    fFoundLobby.invoke(false)
+                    createLobby(cardDeck)
+                    waitForOpponent()
+                }
             }
 
             override fun onCancelled(error: DatabaseError) {}
@@ -67,10 +75,8 @@ class OnlinePlayRepository @Inject constructor(
 
     private fun joinThisLobby() {
         opponentFound.value = true
-        // Joining correct lobby
-        db.child(lobbyId).child("topPlayer").setValue("taken")
-        // Retrieving the card deck
-        createCardDeckInstance()
+        thisLobby().child("topPlayer").setValue("taken")
+        retrieveCardDeckFromLobby()
     }
 
     private fun createLobby(cardDeck: List<Card>?) {
@@ -80,13 +86,11 @@ class OnlinePlayRepository @Inject constructor(
         cardDeck?.forEachIndexed { index, card -> card.idForOnline = index }
 
         val lobby = OnlineLobby(lobbyId, "", "taken", -1, -1, cardDeck)
-        db.child(lobbyId).setValue(lobby)
-
-        waitForOpponent()
+        thisLobby().setValue(lobby)
     }
 
-    private fun createCardDeckInstance() {
-        db.child(lobbyId).child("cardDeck").addListenerForSingleValueEvent(object : ValueEventListener {
+    private fun retrieveCardDeckFromLobby() {
+        thisLobby().child("cardDeck").addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val cardList: MutableList<Card> = mutableListOf()
 
@@ -106,7 +110,7 @@ class OnlinePlayRepository @Inject constructor(
     }
 
     private fun waitForOpponent() {
-        listOfListeners.add(db.child(lobbyId).child("topPlayer").addValueEventListener(object : ValueEventListener {
+        listOfListeners.add(thisLobby().child("topPlayer").addValueEventListener(object : ValueEventListener {
             override fun onDataChange(topPlayerChild: DataSnapshot) {
                 if (topPlayerChild.value != "") opponentFound.value = true
             }
@@ -116,6 +120,7 @@ class OnlinePlayRepository @Inject constructor(
     }
 
     fun clearAllListeners() = listOfListeners.clear()
+
 }
 
 

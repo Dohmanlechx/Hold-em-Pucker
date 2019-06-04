@@ -1,9 +1,9 @@
 package com.dohman.holdempucker.ui.game
 
-import android.util.Log
 import android.view.View
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import com.dohman.holdempucker.R
 import com.dohman.holdempucker.models.Card
@@ -13,7 +13,6 @@ import com.dohman.holdempucker.repositories.CardRepository
 import com.dohman.holdempucker.repositories.OnlinePlayRepository
 import com.dohman.holdempucker.repositories.ResourceRepository
 import com.dohman.holdempucker.util.Constants
-import com.dohman.holdempucker.util.Constants.Companion.TAG_GAMEVIEWMODEL
 import com.dohman.holdempucker.util.Constants.Companion.areTeamsReadyToStartPeriod
 import com.dohman.holdempucker.util.Constants.Companion.currentGameMode
 import com.dohman.holdempucker.util.Constants.Companion.isOngoingGame
@@ -55,6 +54,10 @@ class GameViewModel : ViewModel() {
     // Online
     val onlineOpponentInputNotifier = MutableLiveData<Int>()
     val onlineOpponentFoundNotifier = MutableLiveData<Boolean>()
+    private val cardDeckObserver = Observer<List<Card>> {
+        cardDeck = it.toMutableList()
+        firstCardInDeck = cardDeck.first()
+    }
 
     init {
         RepositoryComponent.inject(this)
@@ -76,25 +79,34 @@ class GameViewModel : ViewModel() {
             else -> false
         }
 
-        if (currentGameMode == Constants.GameMode.ONLINE) {
-            onlineRepo.searchForLobby(cardDeck)
-//            onlineTeamDecider()
-            onlineRepo.opponentFound.observeForever {
-                isOpponentFound = it
-                if (it) onlineOpponentFoundNotifier.value = it
-            }
-            //onlineRepo.opponentInput.observeForever { onlineOpponentInputNotifier.value = it }
-            onlineRepo.cardDeckForJoiner.observeForever {
-                // Replacing the whole card deck with the new one from Firebase
-                cardDeck = it.toMutableList()
-                firstCardInDeck = cardDeck.first()
-            }
-        }
+        if (currentGameMode == Constants.GameMode.ONLINE) setupOnlineGame()
     }
 
-//    private fun onlineTeamDecider() {
-//        isMyTeamOnlineBottom = !onlineRepo.hasPlayerInLobby()
-//    }
+    override fun onCleared() {
+        super.onCleared()
+        onlineRepo.cardDeckForJoiner.removeObserver(cardDeckObserver)
+    }
+
+    /*
+    * Online functions
+    * */
+
+    private fun setupOnlineGame() {
+        onlineRepo.searchForLobbyOrCreateOne(cardDeck = cardDeck) { foundLobby ->
+            if (foundLobby) setObserverForTeamTop()
+        }
+        onlineRepo.opponentFound.observeForever {
+            isOpponentFound = it
+            if (it) onlineOpponentFoundNotifier.value = it
+        }
+        //onlineRepo.opponentInput.observeForever { onlineOpponentInputNotifier.value = it }
+
+    }
+
+    private fun setObserverForTeamTop() {
+        isMyTeamOnlineBottom = false
+        onlineRepo.cardDeckForJoiner.observeForever(cardDeckObserver)
+    }
 
     fun clearAllValueEventListeners() = onlineRepo.clearAllListeners()
 
@@ -115,9 +127,7 @@ class GameViewModel : ViewModel() {
         messageNotifier.value = Pair(message, isNeutralMessage)
     }
 
-    fun notifyOnlineInput(input: Int) {
-        onlineRepo.updateInput(isMyTeamOnlineBottom, input)
-    }
+    fun notifyOnlineInput(input: Int) = onlineRepo.updateInput(input)
 
     /*
     * Card deck functions

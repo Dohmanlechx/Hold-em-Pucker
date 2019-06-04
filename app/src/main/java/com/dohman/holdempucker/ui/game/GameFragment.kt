@@ -26,6 +26,7 @@ import com.dohman.holdempucker.util.Constants.Companion.teamTopScore
 import com.dohman.holdempucker.util.Constants.Companion.PLAYER_GOALIE
 import com.dohman.holdempucker.util.Constants.Companion.currentGameMode
 import com.dohman.holdempucker.util.Constants.Companion.isGameLive
+import com.dohman.holdempucker.util.Constants.Companion.isMyTeamOnlineBottom
 import com.dohman.holdempucker.util.Constants.WhoseTurn.Companion.isBotMoving
 import com.dohman.holdempucker.util.Constants.WhoseTurn.Companion.isTeamBottomTurn
 import com.mikepenz.fastadapter.FastAdapter
@@ -109,12 +110,15 @@ class GameFragment : Fragment(), View.OnClickListener {
 
         setupMessageRecycler()
 
-        if (currentGameMode == Constants.GameMode.ONLINE) {
-            // FIXME
-        } else {
-            updateMessageBox("Press anywhere to start the game! Period: $period", isNeutralMessage = true)
-            whole_view.setOnClickListener { initGame() }
-        }
+//        if (currentGameMode == Constants.GameMode.ONLINE) {
+//            // FIXME
+//        } else {
+//            updateMessageBox("Press anywhere to start the game! Period: $period", isNeutralMessage = true)
+//            whole_view.setOnClickListener { initGame() }
+//        }
+
+        updateMessageBox("Press anywhere to start the game! Period: $period", isNeutralMessage = true)
+        whole_view.setOnClickListener { initGame() }
     }
 
     override fun onResume() {
@@ -148,6 +152,8 @@ class GameFragment : Fragment(), View.OnClickListener {
 
         addGoalieView(bottom = true)
         whole_view.visibility = View.GONE
+
+        online_team.text = if (isMyTeamOnlineBottom) "Your team is BOTTOM/GREEN" else "Your team is TOP/PURPLE"
     }
 
     /*
