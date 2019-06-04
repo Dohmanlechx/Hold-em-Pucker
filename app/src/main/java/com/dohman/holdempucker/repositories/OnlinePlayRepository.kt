@@ -16,6 +16,7 @@ class OnlinePlayRepository @Inject constructor(
     enum class MyOnlineTeam {
         UNDEFINED, BOTTOM, TOP
     }
+
     var myOnlineTeam: Enum<MyOnlineTeam>
     fun isMyTeamBottom(): Boolean = myOnlineTeam == MyOnlineTeam.BOTTOM
 
@@ -23,7 +24,6 @@ class OnlinePlayRepository @Inject constructor(
 
     val opponentInput: MutableLiveData<Int> = MutableLiveData()
     val opponentFound: MutableLiveData<Boolean> = MutableLiveData()
-    var cardDeckForJoiner: MutableLiveData<List<Card>> = MutableLiveData()
 
     init {
         myOnlineTeam = MyOnlineTeam.UNDEFINED
@@ -84,7 +84,6 @@ class OnlinePlayRepository @Inject constructor(
     private fun joinThisLobby() {
         opponentFound.value = true
         thisLobby().child("topPlayer").setValue("taken")
-        retrieveCardDeckFromLobby()
     }
 
     private fun createLobby(cardDeck: List<Card>?) {
@@ -97,7 +96,7 @@ class OnlinePlayRepository @Inject constructor(
         thisLobby().setValue(lobby)
     }
 
-    private fun retrieveCardDeckFromLobby() {
+    fun retrieveCardDeckFromLobby(fReturnedCardDeck: (List<Card>) -> Unit) {
         thisLobby().child("cardDeck").addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val cardList: MutableList<Card> = mutableListOf()
@@ -110,7 +109,7 @@ class OnlinePlayRepository @Inject constructor(
                 val arrayListOfCards: ArrayList<Card> = ArrayList(hashMap.values)
                 arrayListOfCards.forEach { cardList.add(it) }
 
-                cardDeckForJoiner.value = cardList.sortedBy { it.idForOnline }
+                fReturnedCardDeck.invoke(cardList.sortedBy { it.idForOnline })
             }
 
             override fun onCancelled(p0: DatabaseError) {}

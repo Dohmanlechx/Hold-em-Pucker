@@ -53,10 +53,6 @@ class GameViewModel : ViewModel() {
     // Online
     val onlineOpponentInputNotifier = MutableLiveData<Int>()
     val onlineOpponentFoundNotifier = MutableLiveData<Boolean>()
-    private val cardDeckObserver = Observer<List<Card>> {
-        cardDeck = it.toMutableList()
-        firstCardInDeck = cardDeck.first()
-    }
 
     init {
         RepositoryComponent.inject(this)
@@ -81,18 +77,18 @@ class GameViewModel : ViewModel() {
         if (currentGameMode == Constants.GameMode.ONLINE) setupOnlineGame()
     }
 
-    override fun onCleared() {
-        super.onCleared()
-        onlineRepo.cardDeckForJoiner.removeObserver(cardDeckObserver)
-    }
-
     /*
     * Online functions
     * */
 
     private fun setupOnlineGame() {
         onlineRepo.searchForLobbyOrCreateOne(cardDeck = cardDeck) {
-            if (!onlineRepo.isMyTeamBottom()) onlineRepo.cardDeckForJoiner.observeForever(cardDeckObserver)
+            if (!onlineRepo.isMyTeamBottom()) {
+                onlineRepo.retrieveCardDeckFromLobby { newCardDeck ->
+                    cardDeck = newCardDeck.toMutableList()
+                    firstCardInDeck = cardDeck.first()
+                }
+            }
         }
 
         onlineRepo.opponentFound.observeForever {
