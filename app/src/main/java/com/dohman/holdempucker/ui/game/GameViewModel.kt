@@ -89,19 +89,23 @@ class GameViewModel : ViewModel() {
                     firstCardInDeck = cardDeck.first()
                 }
             }
+
+            // Started here since by then, lobbyId is set
+            onlineRepo.observeOpponentInput()
         }
 
         onlineRepo.opponentFound.observeForever {
             isOpponentFound = it
             if (it) onlineOpponentFoundNotifier.value = it
         }
-        //onlineRepo.opponentInput.observeForever { onlineOpponentInputNotifier.value = it }
+
+        onlineRepo.opponentInput.observeForever { onlineOpponentInputNotifier.value = it }
 
     }
 
     fun isMyOnlineTeamBottom() = onlineRepo.isMyTeamBottom()
 
-    fun clearAllValueEventListeners() = onlineRepo.clearAllListeners()
+    fun clearAllValueEventListeners() = onlineRepo.removeAllValueEventListeners()
 
     /*
     * Notify functions

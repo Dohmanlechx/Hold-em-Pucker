@@ -26,6 +26,7 @@ import com.dohman.holdempucker.util.Constants.Companion.teamTopScore
 import com.dohman.holdempucker.util.Constants.Companion.PLAYER_GOALIE
 import com.dohman.holdempucker.util.Constants.Companion.currentGameMode
 import com.dohman.holdempucker.util.Constants.Companion.isGameLive
+import com.dohman.holdempucker.util.Constants.Companion.lobbyId
 import com.dohman.holdempucker.util.Constants.WhoseTurn.Companion.isBotMoving
 import com.dohman.holdempucker.util.Constants.WhoseTurn.Companion.isTeamBottomTurn
 import com.mikepenz.fastadapter.FastAdapter
@@ -73,10 +74,30 @@ class GameFragment : Fragment(), View.OnClickListener {
 
         // Online
         vm.onlineOpponentInputNotifier.observe(viewLifecycleOwner, Observer { input ->
-            if (isRestoringPlayers) animateAddPlayer(teamTopViews[input], teamTop, input)
-            else prepareAttackPlayer(teamBottom, input, teamBottomViews[input])
+            when (vm.isMyOnlineTeamBottom()) {
+                true -> {
+                    if (isRestoringPlayers) {
+                        animateAddPlayer(teamTopViews[input], teamTop, input)
+                    }
+                    else {
+                        if (input == PLAYER_GOALIE) tempGoalieCard = teamBottom[PLAYER_GOALIE]
+                        prepareAttackPlayer(teamBottom, input, teamBottomViews[input])
+                    }
+                }
+                false -> {
+                    if (isRestoringPlayers) {
+                        animateAddPlayer(teamBottomViews[input], teamBottom, input)
+                    }
+                    else {
+                        if (input == PLAYER_GOALIE) tempGoalieCard = teamTop[PLAYER_GOALIE]
+                        prepareAttackPlayer(teamTop, input, teamTopViews[input])
+                    }
+                }
+            }
         })
-        vm.onlineOpponentFoundNotifier.observe(viewLifecycleOwner, Observer { if (it) v_progressbar.visibility = View.GONE })
+        vm.onlineOpponentFoundNotifier.observe(
+            viewLifecycleOwner,
+            Observer { if (it) v_progressbar.visibility = View.GONE })
         // End of Observables
 
         return inflater.inflate(R.layout.game_fragment, container, false)
@@ -132,6 +153,7 @@ class GameFragment : Fragment(), View.OnClickListener {
     override fun onDestroyView() {
         super.onDestroyView()
         vm.clearAllValueEventListeners()
+        lobbyId = ""
         Animations.stopAllAnimations()
         Animations.stopAllPulsingCards()
     }
@@ -152,7 +174,9 @@ class GameFragment : Fragment(), View.OnClickListener {
         addGoalieView(bottom = true)
         whole_view.visibility = View.GONE
 
-        online_team.text = if (vm.isMyOnlineTeamBottom()) "Your team is BOTTOM/GREEN" else "Your team is TOP/PURPLE"
+        online_team.text =
+            if (vm.isMyOnlineTeamBottom()) "Your team is BOTTOM/GREEN\nLobbyid: $lobbyId" else "Your team is TOP/PURPLE\n" +
+                    "Lobbyid: $lobbyId"
     }
 
     /*
@@ -468,11 +492,11 @@ class GameFragment : Fragment(), View.OnClickListener {
                 when (val chosenIndex = vm.botChooseIndexToAttack(possibleMovesIndexes)) {
                     -1 -> { /* Do nothing */
                     }
-                    5 -> {
-                        tempGoalieCard = teamBottom[5]
-                        if (vm.canAttack(teamBottom, 5, card_bm_goalie)) prepareAttackPlayer(
+                    PLAYER_GOALIE -> {
+                        tempGoalieCard = teamBottom[PLAYER_GOALIE]
+                        if (vm.canAttack(teamBottom, PLAYER_GOALIE, card_bm_goalie)) prepareAttackPlayer(
                             teamBottom,
-                            5,
+                            PLAYER_GOALIE,
                             card_bm_goalie
                         )
                         else prepareGoalieSaved(card_bm_goalie)
