@@ -20,8 +20,13 @@ class OnlinePlayRepository @Inject constructor(
     var myOnlineTeam: Enum<MyOnlineTeam>
     fun isMyTeamBottom(): Boolean = myOnlineTeam == MyOnlineTeam.BOTTOM
 
-    val opponentInput: MutableLiveData<Int> = MutableLiveData()
-    val opponentFound: MutableLiveData<Boolean> = MutableLiveData()
+    // All paths in a lobby reference
+    private val pathBottomInput = "bottomInput"
+    private val pathBottomPlayer = "bottomPlayer"
+    private val pathCardDeck = "cardDeck"
+    private val pathId = "id"
+    private val pathTopInput = "topInput"
+    private val pathTopPlayer = "topPlayer"
 
     private var path: String = ""
     private val vlForInput = object : ValueEventListener {
@@ -41,6 +46,9 @@ class OnlinePlayRepository @Inject constructor(
         override fun onCancelled(p0: DatabaseError) {}
     }
 
+    val opponentInput: MutableLiveData<Int> = MutableLiveData()
+    val opponentFound: MutableLiveData<Boolean> = MutableLiveData()
+
     init {
         myOnlineTeam = MyOnlineTeam.UNDEFINED
         opponentFound.value = false
@@ -49,13 +57,13 @@ class OnlinePlayRepository @Inject constructor(
     private fun thisLobby() = db.child(lobbyId)
 
     fun observeOpponentInput() {
-        path = if (isMyTeamBottom()) "topInput" else "bottomInput"
+        path = if (isMyTeamBottom()) pathTopInput else pathBottomInput
         thisLobby().child(path).addValueEventListener(vlForInput)
     }
 
     fun updateInput(input: Int) {
         val ref: DatabaseReference =
-            if (isMyTeamBottom()) thisLobby().child("bottomInput") else thisLobby().child("topInput")
+            if (isMyTeamBottom()) thisLobby().child(pathBottomInput) else thisLobby().child(pathTopInput)
 
         ref.apply {
             // Firebase won't notify in the database if the value of value is same as last one
@@ -70,9 +78,9 @@ class OnlinePlayRepository @Inject constructor(
         db.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 for (lobby in dataSnapshot.children) {
-                    if (lobby.child("topPlayer").value == "") {
+                    if (lobby.child(pathTopPlayer).value == "") {
                         // There is bottom player in lobby waiting, go ahead and join
-                        lobbyId = lobby.child("id").value as String
+                        lobbyId = lobby.child(pathId).value as String
                         foundLobby = true
                         myOnlineTeam = MyOnlineTeam.TOP
                         joinThisLobby()
@@ -95,7 +103,7 @@ class OnlinePlayRepository @Inject constructor(
 
     private fun joinThisLobby() {
         opponentFound.value = true
-        thisLobby().child("topPlayer").setValue("taken")
+        thisLobby().child(pathTopPlayer).setValue("taken")
     }
 
     private fun createLobby(cardDeck: List<Card>?) {
@@ -109,7 +117,7 @@ class OnlinePlayRepository @Inject constructor(
     }
 
     fun retrieveCardDeckFromLobby(fReturnedCardDeck: (List<Card>) -> Unit) {
-        thisLobby().child("cardDeck").addListenerForSingleValueEvent(object : ValueEventListener {
+        thisLobby().child(pathCardDeck).addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val cardList: MutableList<Card> = mutableListOf()
 
@@ -129,28 +137,11 @@ class OnlinePlayRepository @Inject constructor(
     }
 
     private fun waitForOpponent() {
-        thisLobby().child("topPlayer").addValueEventListener(vlForOpponentAwaiting)
+        thisLobby().child(pathTopPlayer).addValueEventListener(vlForOpponentAwaiting)
     }
 
     fun removeAllValueEventListeners() {
         thisLobby().child(path).removeEventListener(vlForInput)
-        thisLobby().child("topPlayer").removeEventListener(vlForOpponentAwaiting)
+        thisLobby().child(pathTopPlayer).removeEventListener(vlForOpponentAwaiting)
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
