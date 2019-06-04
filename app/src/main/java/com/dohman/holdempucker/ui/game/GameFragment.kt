@@ -26,7 +26,6 @@ import com.dohman.holdempucker.util.Constants.Companion.teamTopScore
 import com.dohman.holdempucker.util.Constants.Companion.PLAYER_GOALIE
 import com.dohman.holdempucker.util.Constants.Companion.currentGameMode
 import com.dohman.holdempucker.util.Constants.Companion.isGameLive
-import com.dohman.holdempucker.util.Constants.Companion.isMyTeamOnlineBottom
 import com.dohman.holdempucker.util.Constants.WhoseTurn.Companion.isBotMoving
 import com.dohman.holdempucker.util.Constants.WhoseTurn.Companion.isTeamBottomTurn
 import com.mikepenz.fastadapter.FastAdapter
@@ -153,7 +152,7 @@ class GameFragment : Fragment(), View.OnClickListener {
         addGoalieView(bottom = true)
         whole_view.visibility = View.GONE
 
-        online_team.text = if (isMyTeamOnlineBottom) "Your team is BOTTOM/GREEN" else "Your team is TOP/PURPLE"
+        online_team.text = if (vm.isMyOnlineTeamBottom()) "Your team is BOTTOM/GREEN" else "Your team is TOP/PURPLE"
     }
 
     /*

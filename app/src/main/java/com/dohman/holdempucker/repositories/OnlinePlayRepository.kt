@@ -3,7 +3,6 @@ package com.dohman.holdempucker.repositories
 import androidx.lifecycle.MutableLiveData
 import com.dohman.holdempucker.models.Card
 import com.dohman.holdempucker.models.OnlineLobby
-import com.dohman.holdempucker.util.Constants.Companion.isMyTeamOnlineBottom
 import com.dohman.holdempucker.util.Constants.Companion.lobbyId
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -14,6 +13,12 @@ import javax.inject.Inject
 class OnlinePlayRepository @Inject constructor(
     private val db: DatabaseReference
 ) {
+    enum class MyOnlineTeam {
+        UNDEFINED, BOTTOM, TOP
+    }
+    var myOnlineTeam: Enum<MyOnlineTeam>
+    fun isMyTeamBottom(): Boolean = myOnlineTeam == MyOnlineTeam.BOTTOM
+
     private val listOfListeners = mutableListOf<ValueEventListener>()
 
     val opponentInput: MutableLiveData<Int> = MutableLiveData()
@@ -21,6 +26,7 @@ class OnlinePlayRepository @Inject constructor(
     var cardDeckForJoiner: MutableLiveData<List<Card>> = MutableLiveData()
 
     init {
+        myOnlineTeam = MyOnlineTeam.UNDEFINED
         opponentFound.value = false
     }
 
@@ -41,11 +47,11 @@ class OnlinePlayRepository @Inject constructor(
     }
 
     fun updateInput(input: Int) {
-        if (isMyTeamOnlineBottom) thisLobby().child("bottomInput").setValue(input)
+        if (isMyTeamBottom()) thisLobby().child("bottomInput").setValue(input)
         else thisLobby().child("topInput").setValue(input)
     }
 
-    fun searchForLobbyOrCreateOne(cardDeck: List<Card>, fFoundLobby: (Boolean) -> Unit) {
+    fun searchForLobbyOrCreateOne(cardDeck: List<Card>, fFirebaseTaskDone: () -> Unit) {
         var foundLobby = false
 
         db.addListenerForSingleValueEvent(object : ValueEventListener {
@@ -56,17 +62,19 @@ class OnlinePlayRepository @Inject constructor(
                         // There is bottom player in lobby waiting, go ahead and join
                         lobbyId = lobby.child("id").value as String
                         foundLobby = true
-                        fFoundLobby.invoke(true)
+                        myOnlineTeam = MyOnlineTeam.TOP
                         joinThisLobby()
                         break
                     }
                 }
 
                 if (!foundLobby) {
-                    fFoundLobby.invoke(false)
+                    myOnlineTeam = MyOnlineTeam.BOTTOM
                     createLobby(cardDeck)
                     waitForOpponent()
                 }
+
+                fFirebaseTaskDone.invoke()
             }
 
             override fun onCancelled(error: DatabaseError) {}

@@ -17,7 +17,6 @@ class Constants {
         var lobbyId = ""
         var isOpponentFound = false
         var isGameLive = currentGameMode == GameMode.ONLINE && isOpponentFound
-        var isMyTeamOnlineBottom: Boolean = false
 
         // Booleans
         var isVsBotMode = false
@@ -96,6 +95,6 @@ class Constants {
     }
 
     enum class GameMode {
-        NONE, RANDOM, DEVELOPER, FRIEND, ONLINE;
+        NONE, RANDOM, DEVELOPER, FRIEND, ONLINE
     }
 }

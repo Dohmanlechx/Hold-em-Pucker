@@ -23,7 +23,6 @@ import com.dohman.holdempucker.util.Constants.Companion.teamBottomScore
 import com.dohman.holdempucker.util.Constants.Companion.teamTop
 import com.dohman.holdempucker.util.Constants.Companion.teamTopScore
 import com.dohman.holdempucker.util.Constants.Companion.isVsBotMode
-import com.dohman.holdempucker.util.Constants.Companion.isMyTeamOnlineBottom
 import com.dohman.holdempucker.util.Constants.Companion.isOpponentFound
 import com.dohman.holdempucker.util.Constants.Companion.whoseTeamStartedLastPeriod
 import com.dohman.holdempucker.util.Constants.Companion.whoseTurn
@@ -92,9 +91,10 @@ class GameViewModel : ViewModel() {
     * */
 
     private fun setupOnlineGame() {
-        onlineRepo.searchForLobbyOrCreateOne(cardDeck = cardDeck) { foundLobby ->
-            if (foundLobby) setObserverForTeamTop()
+        onlineRepo.searchForLobbyOrCreateOne(cardDeck = cardDeck) {
+            if (!onlineRepo.isMyTeamBottom()) onlineRepo.cardDeckForJoiner.observeForever(cardDeckObserver)
         }
+
         onlineRepo.opponentFound.observeForever {
             isOpponentFound = it
             if (it) onlineOpponentFoundNotifier.value = it
@@ -103,10 +103,7 @@ class GameViewModel : ViewModel() {
 
     }
 
-    private fun setObserverForTeamTop() {
-        isMyTeamOnlineBottom = false
-        onlineRepo.cardDeckForJoiner.observeForever(cardDeckObserver)
-    }
+    fun isMyOnlineTeamBottom() = onlineRepo.isMyTeamBottom()
 
     fun clearAllValueEventListeners() = onlineRepo.clearAllListeners()
 
