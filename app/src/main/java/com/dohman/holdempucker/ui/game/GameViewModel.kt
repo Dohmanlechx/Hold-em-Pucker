@@ -53,6 +53,13 @@ class GameViewModel : ViewModel() {
     // Online
     val onlineOpponentInputNotifier = MutableLiveData<Int>()
     val onlineOpponentFoundNotifier = MutableLiveData<Boolean>()
+    private val opponentFoundObserver = Observer<Boolean> { found ->
+        isOpponentFound = found
+        if (found) onlineOpponentFoundNotifier.value = found
+    }
+    private val inputObserver = Observer<Int> { input ->
+        onlineOpponentInputNotifier.value = input.takeIf { it in 0..5 }
+    }
 
     init {
         RepositoryComponent.inject(this)
@@ -77,6 +84,15 @@ class GameViewModel : ViewModel() {
         if (currentGameMode == Constants.GameMode.ONLINE) setupOnlineGame()
     }
 
+    override fun onCleared() {
+        super.onCleared()
+
+        onlineRepo.opponentFound.removeObserver(opponentFoundObserver)
+        onlineRepo.opponentInput.removeObserver(inputObserver)
+        onlineRepo.removeLobbyFromDatabase()
+        onlineRepo.resetValues()
+    }
+
     /*
     * Online functions
     * */
@@ -94,12 +110,8 @@ class GameViewModel : ViewModel() {
             onlineRepo.observeOpponentInput()
         }
 
-        onlineRepo.opponentFound.observeForever {
-            isOpponentFound = it
-            if (it) onlineOpponentFoundNotifier.value = it
-        }
-
-        onlineRepo.opponentInput.observeForever { onlineOpponentInputNotifier.value = it }
+        onlineRepo.opponentFound.observeForever(opponentFoundObserver)
+        onlineRepo.opponentInput.observeForever(inputObserver)
 
     }
 

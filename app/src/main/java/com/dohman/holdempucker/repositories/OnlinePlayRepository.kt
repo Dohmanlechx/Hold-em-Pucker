@@ -56,6 +56,8 @@ class OnlinePlayRepository @Inject constructor(
 
     private fun thisLobby() = db.child(lobbyId)
 
+    fun removeLobbyFromDatabase() = thisLobby().setValue(null)
+
     fun observeOpponentInput() {
         path = if (isMyTeamBottom()) pathTopInput else pathBottomInput
         thisLobby().child(path).addValueEventListener(vlForInput)
@@ -138,6 +140,12 @@ class OnlinePlayRepository @Inject constructor(
 
     private fun waitForOpponent() {
         thisLobby().child(pathTopPlayer).addValueEventListener(vlForOpponentAwaiting)
+    }
+
+    fun resetValues() {
+        myOnlineTeam = MyOnlineTeam.UNDEFINED
+        opponentInput.postValue(-1)
+        opponentFound.postValue(false)
     }
 
     fun removeAllValueEventListeners() {

@@ -74,30 +74,39 @@ class GameFragment : Fragment(), View.OnClickListener {
 
         // Online
         vm.onlineOpponentInputNotifier.observe(viewLifecycleOwner, Observer { input ->
-            when (vm.isMyOnlineTeamBottom()) {
-                true -> {
-                    if (isRestoringPlayers) {
-                        animateAddPlayer(teamTopViews[input], teamTop, input)
+            input?.let {
+                when (vm.isMyOnlineTeamBottom()) {
+                    true -> {
+                        if (isRestoringPlayers) {
+                            animateAddPlayer(teamTopViews[input], teamTop, input)
+                        } else {
+                            if (input == PLAYER_GOALIE) tempGoalieCard = teamBottom[PLAYER_GOALIE]
+                            prepareAttackPlayer(teamBottom, input, teamBottomViews[input])
+                        }
                     }
-                    else {
-                        if (input == PLAYER_GOALIE) tempGoalieCard = teamBottom[PLAYER_GOALIE]
-                        prepareAttackPlayer(teamBottom, input, teamBottomViews[input])
-                    }
-                }
-                false -> {
-                    if (isRestoringPlayers) {
-                        animateAddPlayer(teamBottomViews[input], teamBottom, input)
-                    }
-                    else {
-                        if (input == PLAYER_GOALIE) tempGoalieCard = teamTop[PLAYER_GOALIE]
-                        prepareAttackPlayer(teamTop, input, teamTopViews[input])
+                    false -> {
+                        if (isRestoringPlayers) {
+                            animateAddPlayer(teamBottomViews[input], teamBottom, input)
+                        } else {
+                            if (input == PLAYER_GOALIE) tempGoalieCard = teamTop[PLAYER_GOALIE]
+                            prepareAttackPlayer(teamTop, input, teamTopViews[input])
+                        }
                     }
                 }
             }
         })
         vm.onlineOpponentFoundNotifier.observe(
             viewLifecycleOwner,
-            Observer { if (it) v_progressbar.visibility = View.GONE })
+            Observer { found ->
+                if (found) {
+                    v_progressbar.visibility = View.GONE
+                    initGame()
+
+                    online_team.text =
+                        if (vm.isMyOnlineTeamBottom()) "Your team is BOTTOM/GREEN\nLobbyid: $lobbyId" else "Your team is TOP/PURPLE\n" +
+                                "Lobbyid: $lobbyId"
+                }
+            })
         // End of Observables
 
         return inflater.inflate(R.layout.game_fragment, container, false)
@@ -130,15 +139,12 @@ class GameFragment : Fragment(), View.OnClickListener {
 
         setupMessageRecycler()
 
-//        if (currentGameMode == Constants.GameMode.ONLINE) {
-//            // FIXME
-//        } else {
-//            updateMessageBox("Press anywhere to start the game! Period: $period", isNeutralMessage = true)
-//            whole_view.setOnClickListener { initGame() }
-//        }
+        if (currentGameMode == Constants.GameMode.ONLINE) {
 
-        updateMessageBox("Press anywhere to start the game! Period: $period", isNeutralMessage = true)
-        whole_view.setOnClickListener { initGame() }
+        } else {
+            updateMessageBox("Press anywhere to start the game! Period: $period", isNeutralMessage = true)
+            whole_view.setOnClickListener { initGame() }
+        }
     }
 
     override fun onResume() {
@@ -173,10 +179,6 @@ class GameFragment : Fragment(), View.OnClickListener {
 
         addGoalieView(bottom = true)
         whole_view.visibility = View.GONE
-
-        online_team.text =
-            if (vm.isMyOnlineTeamBottom()) "Your team is BOTTOM/GREEN\nLobbyid: $lobbyId" else "Your team is TOP/PURPLE\n" +
-                    "Lobbyid: $lobbyId"
     }
 
     /*

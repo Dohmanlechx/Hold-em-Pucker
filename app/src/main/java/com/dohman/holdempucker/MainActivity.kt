@@ -26,7 +26,6 @@ class MainActivity : AppCompatActivity() {
 
         setPositiveButton(getString(R.string.dialog_back_positive)) { _, _ ->
             findNavController(R.id.nav_host_fragment).popBackStack()
-            lobbyId = ""
         }
         setNegativeButton(getString(R.string.dialog_back_negative)) { _, _ -> }
 
