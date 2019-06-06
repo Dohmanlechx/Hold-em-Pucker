@@ -4,10 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import com.dohman.holdempucker.models.Card
 import com.dohman.holdempucker.models.OnlineLobby
 import com.dohman.holdempucker.util.Constants.Companion.lobbyId
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.*
 import javax.inject.Inject
 
 class OnlinePlayRepository @Inject constructor(
@@ -56,7 +53,7 @@ class OnlinePlayRepository @Inject constructor(
 
     private fun thisLobby() = db.child(lobbyId)
 
-    fun removeLobbyFromDatabase() = thisLobby().setValue(null)
+    fun removeLobbyFromDatabase() = thisLobby().removeValue()
 
     fun observeOpponentInput() {
         path = if (isMyTeamBottom()) pathTopInput else pathBottomInput

@@ -14,6 +14,7 @@ import com.dohman.holdempucker.ui.how_to_play.HowToPlayDialogFragment.Companion.
 import com.dohman.holdempucker.util.Animations
 import com.dohman.holdempucker.util.Constants
 import com.dohman.holdempucker.util.Constants.Companion.currentGameMode
+import com.dohman.holdempucker.util.Constants.Companion.lobbyId
 import com.dohman.holdempucker.util.Constants.Companion.period
 import com.dohman.holdempucker.util.Constants.Companion.teamBottom
 import com.dohman.holdempucker.util.Constants.Companion.teamTop
@@ -55,6 +56,7 @@ class MainMenuFragment : Fragment() {
 
         btn_multiplayer.setOnClickListener {
             //currentGameMode = Constants.GameMode.FRIEND
+            lobbyId = ""
             currentGameMode = Constants.GameMode.ONLINE
             navigateToGameFragment(it)
         }

@@ -159,7 +159,6 @@ class GameFragment : Fragment(), View.OnClickListener {
     override fun onDestroyView() {
         super.onDestroyView()
         vm.clearAllValueEventListeners()
-        lobbyId = ""
         Animations.stopAllAnimations()
         Animations.stopAllPulsingCards()
     }
