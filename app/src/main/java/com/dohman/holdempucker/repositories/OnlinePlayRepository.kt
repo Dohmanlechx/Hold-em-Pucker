@@ -18,6 +18,7 @@ class OnlinePlayRepository @Inject constructor(
     fun isMyTeamBottom(): Boolean = myOnlineTeam == MyOnlineTeam.BOTTOM
 
     // All paths in a lobby reference
+    private val pathPeriod = "period"
     private val pathBottomInput = "bottomInput"
     private val pathBottomPlayer = "bottomPlayer"
     private val pathCardDeck = "cardDeck"
@@ -26,6 +27,16 @@ class OnlinePlayRepository @Inject constructor(
     private val pathTopPlayer = "topPlayer"
 
     private var path: String = ""
+
+    // FIXME: Probably problem here
+    private val vlForPeriod = object : ValueEventListener {
+        override fun onDataChange(newPeriod: DataSnapshot) {
+            period.value = newPeriod.value as? Int
+        }
+
+        override fun onCancelled(p0: DatabaseError) {}
+    }
+
     private val vlForInput = object : ValueEventListener {
         override fun onDataChange(inputChild: DataSnapshot) {
             val input = (inputChild.value as? Long)?.toInt()
@@ -43,12 +54,36 @@ class OnlinePlayRepository @Inject constructor(
         override fun onCancelled(p0: DatabaseError) {}
     }
 
+    private val vlForOnlineCardDeck = object : ValueEventListener {
+        override fun onDataChange(snapshot: DataSnapshot) {
+            val cardList: MutableList<Card> = mutableListOf()
+
+            val cardsAsChildren = snapshot.children
+            // Firebase doesn't know how to cast to own classes, only primitive types, HashMap is one of them
+            val hashMap = HashMap<String, Card>()
+            cardsAsChildren.forEach { hashMap[it.key!!] = it.getValue(Card::class.java)!! }
+
+            val arrayListOfCards: ArrayList<Card> = ArrayList(hashMap.values)
+            arrayListOfCards.forEach { cardList.add(it) }
+
+            onlineCardDeck.value = cardList.sortedBy { it.idForOnline }
+            //fReturnedCardDeck.invoke(cardList.sortedBy { it.idForOnline })
+        }
+
+        override fun onCancelled(p0: DatabaseError) {}
+    }
+
+    val period: MutableLiveData<Int> = MutableLiveData()
     val opponentInput: MutableLiveData<Int> = MutableLiveData()
     val opponentFound: MutableLiveData<Boolean> = MutableLiveData()
+    val onlineCardDeck: MutableLiveData<List<Card>> = MutableLiveData()
 
     init {
         myOnlineTeam = MyOnlineTeam.UNDEFINED
+        period.value = 1
         opponentFound.value = false
+
+        thisLobby().child(pathPeriod).addValueEventListener(vlForPeriod)
     }
 
     private fun thisLobby() = db.child(lobbyId)
@@ -108,32 +143,32 @@ class OnlinePlayRepository @Inject constructor(
     private fun createLobby(cardDeck: List<Card>?) {
         lobbyId = db.push().key!! // Can't be null, since db is working here
 
-        // Setting id on all the cards, so the opponent would retrieve the card deck in correct order
-        cardDeck?.forEachIndexed { index, card -> card.idForOnline = index }
+        val sortedCardDeck = getSortedCardDeck(cardDeck)
 
-        val lobby = OnlineLobby(lobbyId, "", "taken", -1, -1, cardDeck)
+        val lobby = OnlineLobby(lobbyId, 1, "", "taken", -1, -1, sortedCardDeck)
         thisLobby().setValue(lobby)
     }
 
-    fun retrieveCardDeckFromLobby(fReturnedCardDeck: (List<Card>) -> Unit) {
-        thisLobby().child(pathCardDeck).addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                val cardList: MutableList<Card> = mutableListOf()
-
-                val cardsAsChildren = snapshot.children
-                // Firebase doesn't know how to cast to own classes, only primitive types, HashMap is one of them
-                val hashMap = HashMap<String, Card>()
-                cardsAsChildren.forEach { hashMap[it.key!!] = it.getValue(Card::class.java)!! }
-
-                val arrayListOfCards: ArrayList<Card> = ArrayList(hashMap.values)
-                arrayListOfCards.forEach { cardList.add(it) }
-
-                fReturnedCardDeck.invoke(cardList.sortedBy { it.idForOnline })
-            }
-
-            override fun onCancelled(p0: DatabaseError) {}
-        })
+    fun storeCardDeckInLobby(cardDeck: List<Card>?) {
+        cardDeck?.forEachIndexed { index, card -> card.idForOnline = index }
+        thisLobby().child(pathCardDeck).setValue(cardDeck)
     }
+
+    private fun getSortedCardDeck(cardDeck: List<Card>?): List<Card>? {
+        cardDeck?.forEachIndexed { index, card -> card.idForOnline = index }
+        return cardDeck?.sortedBy { it.idForOnline }
+    }
+
+    fun observeLobbyCardDeck() {
+        thisLobby().child(pathCardDeck).addValueEventListener(vlForOnlineCardDeck)
+    }
+
+    fun hasCardDeckBeenRetrievedCorrectly(cardDeck: List<Card>): Boolean {
+        val cardDeckFromLobby = onlineCardDeck.value
+        return cardDeck == cardDeckFromLobby
+    }
+
+    fun retrieveCardDeckFromLobby() = onlineCardDeck.value
 
     private fun waitForOpponent() {
         thisLobby().child(pathTopPlayer).addValueEventListener(vlForOpponentAwaiting)
@@ -145,8 +180,10 @@ class OnlinePlayRepository @Inject constructor(
         opponentFound.postValue(false)
     }
 
-    fun removeAllValueEventListeners() {
-        thisLobby().child(path).removeEventListener(vlForInput)
-        thisLobby().child(pathTopPlayer).removeEventListener(vlForOpponentAwaiting)
-    }
+    fun removeAllValueEventListeners() =
+        thisLobby().apply {
+            child(pathPeriod).removeEventListener(vlForInput)
+            child(pathTopPlayer).removeEventListener(vlForOpponentAwaiting)
+            child(pathCardDeck).removeEventListener(vlForOnlineCardDeck)
+        }
 }

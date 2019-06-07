@@ -53,12 +53,20 @@ class GameViewModel : ViewModel() {
     // Online
     val onlineOpponentInputNotifier = MutableLiveData<Int>()
     val onlineOpponentFoundNotifier = MutableLiveData<Boolean>()
+    private val periodObserver = Observer<Int> { newPeriod ->
+        newPeriod?.let { if (newPeriod != period) triggerHalfTime() }
+    }
     private val opponentFoundObserver = Observer<Boolean> { found ->
         isOpponentFound = found
         if (found) onlineOpponentFoundNotifier.value = found
     }
     private val inputObserver = Observer<Int> { input ->
         onlineOpponentInputNotifier.value = input.takeIf { it in 0..5 }
+    }
+    private val onlineCardDeckObserver = Observer<List<Card>> { newCardDeck ->
+        cardDeck = newCardDeck.toMutableList()
+        firstCardInDeck = cardDeck.first()
+        // FIXME We can use if (cardDeck.isEmpty()) abortGame here
     }
 
     init {
@@ -87,8 +95,10 @@ class GameViewModel : ViewModel() {
     override fun onCleared() {
         super.onCleared()
 
+        onlineRepo.period.removeObserver(periodObserver)
         onlineRepo.opponentFound.removeObserver(opponentFoundObserver)
         onlineRepo.opponentInput.removeObserver(inputObserver)
+        onlineRepo.onlineCardDeck.removeObserver(onlineCardDeckObserver)
         onlineRepo.removeLobbyFromDatabase()
         onlineRepo.resetValues()
     }
@@ -100,16 +110,15 @@ class GameViewModel : ViewModel() {
     private fun setupOnlineGame() {
         onlineRepo.searchForLobbyOrCreateOne(cardDeck = cardDeck) {
             if (!onlineRepo.isMyTeamBottom()) {
-                onlineRepo.retrieveCardDeckFromLobby { newCardDeck ->
-                    cardDeck = newCardDeck.toMutableList()
-                    firstCardInDeck = cardDeck.first()
-                }
+                onlineRepo.observeLobbyCardDeck()
+                onlineRepo.onlineCardDeck.observeForever(onlineCardDeckObserver)
             }
 
             // Started here since by then, lobbyId is set
             onlineRepo.observeOpponentInput()
         }
 
+        onlineRepo.period.observeForever(periodObserver)
         onlineRepo.opponentFound.observeForever(opponentFoundObserver)
         onlineRepo.opponentInput.observeForever(inputObserver)
 
@@ -230,16 +239,39 @@ class GameViewModel : ViewModel() {
         }
     }
 
-    private fun triggerHalfTime() {
+    private fun setCardDeck() {
         cardDeck = cardRepo.createCards() as MutableList<Card>
         firstCardInDeck = cardDeck.first()
+    }
+
+    private fun triggerHalfTime() {
+        if (currentGameMode != Constants.GameMode.ONLINE) {
+            setCardDeck()
+        } else {
+            if (isMyOnlineTeamBottom()) {
+                setCardDeck()
+                onlineRepo.storeCardDeckInLobby(cardDeck)
+            } else {
+                if (!onlineRepo.hasCardDeckBeenRetrievedCorrectly(cardDeck))
+                    onlineRepo.retrieveCardDeckFromLobby().let { newCardDeck ->
+                        if (!newCardDeck.isNullOrEmpty()) {
+                            cardDeck = newCardDeck.toMutableList()
+                            firstCardInDeck = cardDeck.first()
+                        }
+                    }
+            }
+        }
 
         for (index in 0..5) {
             teamBottom[index] = null
             teamTop[index] = null
         }
 
+        period += 1
         halfTimeNotifier.value = 1
+        if (currentGameMode == Constants.GameMode.ONLINE
+            // FIXME below maybe works
+            && period != onlineRepo.period.value) onlineRepo.period.value = period + 1
         if (period <= 3) notifyMessage("Not enough cards. Period $period started.", isNeutralMessage = true)
         isOngoingGame = false
         areTeamsReadyToStartPeriod = false

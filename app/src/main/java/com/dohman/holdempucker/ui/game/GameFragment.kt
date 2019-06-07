@@ -80,16 +80,30 @@ class GameFragment : Fragment(), View.OnClickListener {
                         if (isRestoringPlayers) {
                             animateAddPlayer(teamTopViews[input], teamTop, input)
                         } else {
-                            if (input == PLAYER_GOALIE) tempGoalieCard = teamBottom[PLAYER_GOALIE]
-                            prepareAttackPlayer(teamBottom, input, teamBottomViews[input])
+                            if (input == PLAYER_GOALIE) {
+                                tempGoalieCard = teamBottom[PLAYER_GOALIE]
+                                if (vm.canAttack(teamBottom, PLAYER_GOALIE, card_bm_goalie))
+                                    prepareAttackPlayer(teamBottom, input, teamBottomViews[input])
+                                else
+                                    prepareGoalieSaved(card_bm_goalie)
+                            } else {
+                                prepareAttackPlayer(teamBottom, input, teamBottomViews[input])
+                            }
                         }
                     }
                     false -> {
                         if (isRestoringPlayers) {
                             animateAddPlayer(teamBottomViews[input], teamBottom, input)
                         } else {
-                            if (input == PLAYER_GOALIE) tempGoalieCard = teamTop[PLAYER_GOALIE]
-                            prepareAttackPlayer(teamTop, input, teamTopViews[input])
+                            if (input == PLAYER_GOALIE) {
+                                tempGoalieCard = teamTop[PLAYER_GOALIE]
+                                if (vm.canAttack(teamTop, PLAYER_GOALIE, card_top_goalie))
+                                    prepareAttackPlayer(teamTop, input, teamTopViews[input])
+                                else
+                                    prepareGoalieSaved(card_top_goalie)
+                            } else {
+                                prepareAttackPlayer(teamTop, input, teamTopViews[input])
+                            }
                         }
                     }
                 }
@@ -558,7 +572,6 @@ class GameFragment : Fragment(), View.OnClickListener {
     private fun isNextPeriodReady(nextPeriod: Int): Boolean {
         removeAllOnClickListeners()
 
-        period += nextPeriod
         isRestoringPlayers = true
 
         cards_left.text = getString(R.string.full_card_deck_amount)
