@@ -93,6 +93,7 @@ class Constants {
 
             fun isBotMoving() = whoseTurn == TOP && isVsBotMode
             fun isTeamBottomTurn() = whoseTurn == BOTTOM
+            fun isTeamTopTurn() = whoseTurn == TOP
         }
     }
 

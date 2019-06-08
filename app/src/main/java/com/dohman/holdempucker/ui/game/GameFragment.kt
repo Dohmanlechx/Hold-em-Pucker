@@ -619,6 +619,7 @@ class GameFragment : Fragment(), View.OnClickListener {
 
     override fun onClick(v: View) {
         if (isBotMoving()) return
+        if (isOnlineMode && vm.isNotMyTurnInOnline()) return
 
         val spotIndex: Int
         if (isOngoingGame) {

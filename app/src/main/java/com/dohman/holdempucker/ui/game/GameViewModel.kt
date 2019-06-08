@@ -29,6 +29,7 @@ import com.dohman.holdempucker.util.Constants.Companion.teamTopScore
 import com.dohman.holdempucker.util.Constants.Companion.whoseTeamStartedLastPeriod
 import com.dohman.holdempucker.util.Constants.Companion.whoseTurn
 import com.dohman.holdempucker.util.Constants.WhoseTurn.Companion.isTeamBottomTurn
+import com.dohman.holdempucker.util.Constants.WhoseTurn.Companion.isTeamTopTurn
 import com.dohman.holdempucker.util.GameLogic
 import com.dohman.holdempucker.util.Util
 import javax.inject.Inject
@@ -134,6 +135,10 @@ class GameViewModel : ViewModel() {
     fun clearAllValueEventListeners() = onlineRepo.removeAllValueEventListeners()
 
     fun removeLobbyFromDatabase() = onlineRepo.removeLobbyFromDatabase()
+
+    fun isNotMyTurnInOnline(): Boolean {
+        return (isMyOnlineTeamBottom() && isTeamTopTurn()) || (!isMyOnlineTeamBottom() && isTeamBottomTurn())
+    }
 
     /*
     * Notify functions
