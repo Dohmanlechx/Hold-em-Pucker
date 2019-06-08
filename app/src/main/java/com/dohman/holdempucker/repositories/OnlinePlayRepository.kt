@@ -30,7 +30,7 @@ class OnlinePlayRepository @Inject constructor(
     // FIXME: Probably problem here
     private val vlForPeriod = object : ValueEventListener {
         override fun onDataChange(periodSnapshot: DataSnapshot) {
-            val newPeriod = periodSnapshot.value as? Int
+            val newPeriod = (periodSnapshot.value as? Long)?.toInt()
             period.value = newPeriod
         }
 
@@ -82,8 +82,6 @@ class OnlinePlayRepository @Inject constructor(
         myOnlineTeam = MyOnlineTeam.UNDEFINED
         period.value = 1
         opponentFound.value = false
-
-        thisLobby().child(pathPeriod).addValueEventListener(vlForPeriod)
     }
 
     fun isMyTeamBottom(): Boolean = myOnlineTeam == MyOnlineTeam.BOTTOM
@@ -91,11 +89,6 @@ class OnlinePlayRepository @Inject constructor(
     private fun thisLobby() = db.child(lobbyId)
 
     fun removeLobbyFromDatabase() = thisLobby().removeValue()
-
-    fun observeOpponentInput() {
-        pathForInput = if (isMyTeamBottom()) pathTopInput else pathBottomInput
-        thisLobby().child(pathForInput).addValueEventListener(vlForInput)
-    }
 
     fun updateInput(input: Int) {
         val ref: DatabaseReference =
@@ -163,8 +156,13 @@ class OnlinePlayRepository @Inject constructor(
         return cardDeck?.sortedBy { it.idForOnline }
     }
 
-    fun observeLobbyCardDeck() {
-        thisLobby().child(pathCardDeck).addValueEventListener(vlForOnlineCardDeck)
+    fun setListenerForPeriod() = thisLobby().child(pathPeriod).addValueEventListener(vlForPeriod)
+
+    fun setListenerForCardDeck() = thisLobby().child(pathCardDeck).addValueEventListener(vlForOnlineCardDeck)
+
+    fun setListenerForInput() {
+        pathForInput = if (isMyTeamBottom()) pathTopInput else pathBottomInput
+        thisLobby().child(pathForInput).addValueEventListener(vlForInput)
     }
 
     fun hasCardDeckBeenRetrievedCorrectly(cardDeck: List<Card>): Boolean {

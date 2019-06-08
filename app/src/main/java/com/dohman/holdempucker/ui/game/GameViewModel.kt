@@ -115,18 +115,18 @@ class GameViewModel : ViewModel() {
     private fun setupOnlineGame() {
         onlineRepo.searchForLobbyOrCreateOne(cardDeck = cardDeck) {
             if (!onlineRepo.isMyTeamBottom()) {
-                onlineRepo.observeLobbyCardDeck()
+                onlineRepo.setListenerForCardDeck()
                 onlineRepo.onlineCardDeck.observeForever(onlineCardDeckObserver)
             }
 
             // Started here since by then, lobbyId is set
-            onlineRepo.observeOpponentInput()
+            onlineRepo.setListenerForInput()
+            onlineRepo.setListenerForPeriod()
+            onlineRepo.period.observeForever(periodObserver)
         }
 
-        onlineRepo.period.observeForever(periodObserver)
         onlineRepo.opponentFound.observeForever(opponentFoundObserver)
         onlineRepo.opponentInput.observeForever(inputObserver)
-
     }
 
     fun isMyOnlineTeamBottom() = onlineRepo.isMyTeamBottom()
