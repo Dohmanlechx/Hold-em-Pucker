@@ -276,7 +276,7 @@ class GameViewModel : ViewModel() {
             teamTop[index] = null
         }
 
-        period += 1
+        period++
         halfTimeNotifier.value = 1
         if (isOnlineMode && !triggeredFromObserver) onlineRepo.updatePeriod(period)
         if (period <= 3) notifyMessage("Not enough cards. Period $period started.", isNeutralMessage = true)

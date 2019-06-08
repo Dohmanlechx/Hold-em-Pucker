@@ -435,7 +435,8 @@ class GameFragment : Fragment(), View.OnClickListener {
             // Attacking another player
             if (vm.canAttack(victimTeam, spotIndex, victimView))
                 animateAttack(victimView)
-            else Util.vibrate(requireContext(), false)
+            else
+                Util.vibrate(requireContext(), false)
         }
     }
 
@@ -652,6 +653,8 @@ class GameFragment : Fragment(), View.OnClickListener {
             val targetTeam = if (isTeamBottomTurn()) teamTop else teamBottom
 
             imageView?.let {
+                if (isOnlineMode) vm.notifyOnlineInput(spotIndex)
+
                 if (spotIndex == PLAYER_GOALIE) {
                     tempGoalieCard = targetTeam[PLAYER_GOALIE]
                     if (vm.canAttack(targetTeam, PLAYER_GOALIE, it))
@@ -687,6 +690,7 @@ class GameFragment : Fragment(), View.OnClickListener {
 
             imageView?.let {
                 if (vm.canAddPlayerView(imageView, team, spotIndex) && v.tag != null) {
+                    if (isOnlineMode) vm.notifyOnlineInput(spotIndex)
                     removeAllOnClickListeners()
                     animateAddPlayer(imageView, team, spotIndex)
                 } else {
@@ -694,7 +698,5 @@ class GameFragment : Fragment(), View.OnClickListener {
                 }
             }
         }
-
-        if (currentGameMode == Constants.GameMode.ONLINE) vm.notifyOnlineInput(spotIndex)
     }
 }
