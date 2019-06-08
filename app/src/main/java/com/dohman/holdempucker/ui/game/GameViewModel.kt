@@ -6,8 +6,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import com.dohman.holdempucker.R
-import com.dohman.holdempucker.models.Card
 import com.dohman.holdempucker.dagger.RepositoryComponent
+import com.dohman.holdempucker.models.Card
 import com.dohman.holdempucker.repositories.BotRepository
 import com.dohman.holdempucker.repositories.CardRepository
 import com.dohman.holdempucker.repositories.OnlinePlayRepository
@@ -15,15 +15,17 @@ import com.dohman.holdempucker.repositories.ResourceRepository
 import com.dohman.holdempucker.util.Constants
 import com.dohman.holdempucker.util.Constants.Companion.areTeamsReadyToStartPeriod
 import com.dohman.holdempucker.util.Constants.Companion.currentGameMode
+import com.dohman.holdempucker.util.Constants.Companion.isNotOnlineMode
 import com.dohman.holdempucker.util.Constants.Companion.isOngoingGame
-import com.dohman.holdempucker.util.Constants.Companion.period
+import com.dohman.holdempucker.util.Constants.Companion.isOnlineMode
+import com.dohman.holdempucker.util.Constants.Companion.isOpponentFound
 import com.dohman.holdempucker.util.Constants.Companion.isRestoringPlayers
+import com.dohman.holdempucker.util.Constants.Companion.isVsBotMode
+import com.dohman.holdempucker.util.Constants.Companion.period
 import com.dohman.holdempucker.util.Constants.Companion.teamBottom
 import com.dohman.holdempucker.util.Constants.Companion.teamBottomScore
 import com.dohman.holdempucker.util.Constants.Companion.teamTop
 import com.dohman.holdempucker.util.Constants.Companion.teamTopScore
-import com.dohman.holdempucker.util.Constants.Companion.isVsBotMode
-import com.dohman.holdempucker.util.Constants.Companion.isOpponentFound
 import com.dohman.holdempucker.util.Constants.Companion.whoseTeamStartedLastPeriod
 import com.dohman.holdempucker.util.Constants.Companion.whoseTurn
 import com.dohman.holdempucker.util.Constants.WhoseTurn.Companion.isTeamBottomTurn
@@ -53,8 +55,9 @@ class GameViewModel : ViewModel() {
     // Online
     val onlineOpponentInputNotifier = MutableLiveData<Int>()
     val onlineOpponentFoundNotifier = MutableLiveData<Boolean>()
+    // FIXME This doesnt get triggered when opponent starts period
     private val periodObserver = Observer<Int> { newPeriod ->
-        newPeriod?.let { if (newPeriod != period) triggerHalfTime() }
+        newPeriod?.let { if (newPeriod != period) triggerHalfTime(triggeredFromObserver = true) }
     }
     private val opponentFoundObserver = Observer<Boolean> { found ->
         isOpponentFound = found
@@ -64,9 +67,12 @@ class GameViewModel : ViewModel() {
         onlineOpponentInputNotifier.value = input.takeIf { it in 0..5 }
     }
     private val onlineCardDeckObserver = Observer<List<Card>> { newCardDeck ->
-        cardDeck = newCardDeck.toMutableList()
-        firstCardInDeck = cardDeck.first()
-        // FIXME We can use if (cardDeck.isEmpty()) abortGame here
+        if (newCardDeck.isNotEmpty()) {
+            cardDeck = newCardDeck.toMutableList()
+            firstCardInDeck = cardDeck.first()
+        } else {
+            // FIXME OPPONENT HAS DISCONNECTED!
+        }
     }
 
     init {
@@ -99,7 +105,6 @@ class GameViewModel : ViewModel() {
         onlineRepo.opponentFound.removeObserver(opponentFoundObserver)
         onlineRepo.opponentInput.removeObserver(inputObserver)
         onlineRepo.onlineCardDeck.removeObserver(onlineCardDeckObserver)
-        onlineRepo.removeLobbyFromDatabase()
         onlineRepo.resetValues()
     }
 
@@ -127,6 +132,8 @@ class GameViewModel : ViewModel() {
     fun isMyOnlineTeamBottom() = onlineRepo.isMyTeamBottom()
 
     fun clearAllValueEventListeners() = onlineRepo.removeAllValueEventListeners()
+
+    fun removeLobbyFromDatabase() = onlineRepo.removeLobbyFromDatabase()
 
     /*
     * Notify functions
@@ -239,17 +246,19 @@ class GameViewModel : ViewModel() {
         }
     }
 
-    private fun setCardDeck() {
+    private fun dealNewCardDeck() {
         cardDeck = cardRepo.createCards() as MutableList<Card>
         firstCardInDeck = cardDeck.first()
     }
 
-    private fun triggerHalfTime() {
-        if (currentGameMode != Constants.GameMode.ONLINE) {
-            setCardDeck()
+    private fun triggerHalfTime(triggeredFromObserver: Boolean = false) {
+        if (triggeredFromObserver && (period == onlineRepo.period.value)) return
+
+        if (isNotOnlineMode) {
+            dealNewCardDeck()
         } else {
             if (isMyOnlineTeamBottom()) {
-                setCardDeck()
+                dealNewCardDeck()
                 onlineRepo.storeCardDeckInLobby(cardDeck)
             } else {
                 if (!onlineRepo.hasCardDeckBeenRetrievedCorrectly(cardDeck))
@@ -269,9 +278,7 @@ class GameViewModel : ViewModel() {
 
         period += 1
         halfTimeNotifier.value = 1
-        if (currentGameMode == Constants.GameMode.ONLINE
-            // FIXME below maybe works
-            && period != onlineRepo.period.value) onlineRepo.period.value = period + 1
+        if (isOnlineMode && !triggeredFromObserver) onlineRepo.updatePeriod(period)
         if (period <= 3) notifyMessage("Not enough cards. Period $period started.", isNeutralMessage = true)
         isOngoingGame = false
         areTeamsReadyToStartPeriod = false

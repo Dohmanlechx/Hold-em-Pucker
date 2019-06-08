@@ -15,7 +15,6 @@ class OnlinePlayRepository @Inject constructor(
     }
 
     var myOnlineTeam: Enum<MyOnlineTeam>
-    fun isMyTeamBottom(): Boolean = myOnlineTeam == MyOnlineTeam.BOTTOM
 
     // All paths in a lobby reference
     private val pathPeriod = "period"
@@ -26,12 +25,13 @@ class OnlinePlayRepository @Inject constructor(
     private val pathTopInput = "topInput"
     private val pathTopPlayer = "topPlayer"
 
-    private var path: String = ""
+    private var pathForInput: String = ""
 
     // FIXME: Probably problem here
     private val vlForPeriod = object : ValueEventListener {
-        override fun onDataChange(newPeriod: DataSnapshot) {
-            period.value = newPeriod.value as? Int
+        override fun onDataChange(periodSnapshot: DataSnapshot) {
+            val newPeriod = periodSnapshot.value as? Int
+            period.value = newPeriod
         }
 
         override fun onCancelled(p0: DatabaseError) {}
@@ -86,13 +86,15 @@ class OnlinePlayRepository @Inject constructor(
         thisLobby().child(pathPeriod).addValueEventListener(vlForPeriod)
     }
 
+    fun isMyTeamBottom(): Boolean = myOnlineTeam == MyOnlineTeam.BOTTOM
+
     private fun thisLobby() = db.child(lobbyId)
 
     fun removeLobbyFromDatabase() = thisLobby().removeValue()
 
     fun observeOpponentInput() {
-        path = if (isMyTeamBottom()) pathTopInput else pathBottomInput
-        thisLobby().child(path).addValueEventListener(vlForInput)
+        pathForInput = if (isMyTeamBottom()) pathTopInput else pathBottomInput
+        thisLobby().child(pathForInput).addValueEventListener(vlForInput)
     }
 
     fun updateInput(input: Int) {
@@ -105,6 +107,8 @@ class OnlinePlayRepository @Inject constructor(
             setValue(input)
         }
     }
+
+    fun updatePeriod(period: Int) = thisLobby().child(pathPeriod).setValue(period)
 
     fun searchForLobbyOrCreateOne(cardDeck: List<Card>, fFirebaseTaskDone: () -> Unit) {
         var foundLobby = false
@@ -182,7 +186,8 @@ class OnlinePlayRepository @Inject constructor(
 
     fun removeAllValueEventListeners() =
         thisLobby().apply {
-            child(pathPeriod).removeEventListener(vlForInput)
+            child(pathPeriod).removeEventListener(vlForPeriod)
+            child(pathForInput).removeEventListener(vlForInput)
             child(pathTopPlayer).removeEventListener(vlForOpponentAwaiting)
             child(pathCardDeck).removeEventListener(vlForOnlineCardDeck)
         }

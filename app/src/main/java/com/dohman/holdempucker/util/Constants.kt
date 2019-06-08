@@ -17,6 +17,8 @@ class Constants {
         var lobbyId = ""
         var isOpponentFound = false
         var isGameLive = currentGameMode == GameMode.ONLINE && isOpponentFound
+        var isOnlineMode = currentGameMode != GameMode.ONLINE
+        var isNotOnlineMode = currentGameMode == GameMode.ONLINE
 
         // Booleans
         var isVsBotMode = false

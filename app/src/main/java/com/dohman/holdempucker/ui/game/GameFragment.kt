@@ -26,6 +26,7 @@ import com.dohman.holdempucker.util.Constants.Companion.teamTopScore
 import com.dohman.holdempucker.util.Constants.Companion.PLAYER_GOALIE
 import com.dohman.holdempucker.util.Constants.Companion.currentGameMode
 import com.dohman.holdempucker.util.Constants.Companion.isGameLive
+import com.dohman.holdempucker.util.Constants.Companion.isOnlineMode
 import com.dohman.holdempucker.util.Constants.Companion.lobbyId
 import com.dohman.holdempucker.util.Constants.WhoseTurn.Companion.isBotMoving
 import com.dohman.holdempucker.util.Constants.WhoseTurn.Companion.isTeamBottomTurn
@@ -172,6 +173,7 @@ class GameFragment : Fragment(), View.OnClickListener {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        if (isOnlineMode) vm.removeLobbyFromDatabase()
         vm.clearAllValueEventListeners()
         Animations.stopAllAnimations()
         Animations.stopAllPulsingCards()

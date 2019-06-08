@@ -21,7 +21,6 @@ class HowToPlayDialogFragment : DialogFragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        isHowToPlayDialogShown = true
         return inflater.inflate(R.layout.dialog_htp, container, false)
     }
 

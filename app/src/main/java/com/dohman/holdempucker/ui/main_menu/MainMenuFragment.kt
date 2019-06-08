@@ -42,6 +42,7 @@ class MainMenuFragment : Fragment() {
 
         btn_how_to_play.setOnClickListener {
             if (!isHowToPlayDialogShown) showHowToPlayDialog(it)
+            isHowToPlayDialogShown = true
         }
 
         btn_easy_mode.setOnClickListener {

@@ -15,14 +15,12 @@ class CardRepository @Inject constructor(
     private fun initializeCards(): MutableList<Card> {
         val cardDeck = mutableListOf<Card>()
         enumValues<Suits>().forEach { suit ->
-            suit.let {
-                for (i in 2..14) {
-                    val card = Card()
-                    card.suit = it
-                    card.rank = i
-                    card.src = getImageStr(it, i)
-                    cardDeck.add(card)
-                }
+            for (rank in 2..6) {
+                val card = Card()
+                card.suit = suit
+                card.rank = rank
+                card.src = getImageStr(suit, rank)
+                cardDeck.add(card)
             }
         }
 
