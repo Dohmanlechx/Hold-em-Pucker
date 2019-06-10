@@ -3,6 +3,7 @@ package com.dohman.holdempucker.repositories
 import androidx.lifecycle.MutableLiveData
 import com.dohman.holdempucker.models.Card
 import com.dohman.holdempucker.models.OnlineLobby
+import com.dohman.holdempucker.util.Constants.Companion.isMyOnlineTeamBottom
 import com.dohman.holdempucker.util.Constants.Companion.lobbyId
 import com.google.firebase.database.*
 import javax.inject.Inject
@@ -67,7 +68,6 @@ class OnlinePlayRepository @Inject constructor(
             arrayListOfCards.forEach { cardList.add(it) }
 
             onlineCardDeck.value = cardList.sortedBy { it.idForOnline }
-            //fReturnedCardDeck.invoke(cardList.sortedBy { it.idForOnline })
         }
 
         override fun onCancelled(p0: DatabaseError) {}
@@ -114,6 +114,7 @@ class OnlinePlayRepository @Inject constructor(
                         lobbyId = lobby.child(pathId).value as String
                         foundLobby = true
                         myOnlineTeam = MyOnlineTeam.TOP
+                        isMyOnlineTeamBottom = false
                         joinThisLobby()
                         break
                     }
@@ -121,6 +122,7 @@ class OnlinePlayRepository @Inject constructor(
 
                 if (!foundLobby) {
                     myOnlineTeam = MyOnlineTeam.BOTTOM
+                    isMyOnlineTeamBottom = true
                     createLobby(cardDeck)
                     waitForOpponent()
                 }

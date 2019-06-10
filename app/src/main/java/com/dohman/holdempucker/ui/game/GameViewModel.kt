@@ -56,7 +56,7 @@ class GameViewModel : ViewModel() {
     // Online
     val onlineOpponentInputNotifier = MutableLiveData<Int>()
     val onlineOpponentFoundNotifier = MutableLiveData<Boolean>()
-    // FIXME This doesnt get triggered when opponent starts period
+
     private val periodObserver = Observer<Int> { newPeriod ->
         newPeriod?.let { if (newPeriod != period) triggerHalfTime(triggeredFromObserver = true) }
     }
@@ -135,10 +135,6 @@ class GameViewModel : ViewModel() {
     fun clearAllValueEventListeners() = onlineRepo.removeAllValueEventListeners()
 
     fun removeLobbyFromDatabase() = onlineRepo.removeLobbyFromDatabase()
-
-    fun isNotMyTurnInOnline(): Boolean {
-        return (isMyOnlineTeamBottom() && isTeamTopTurn()) || (!isMyOnlineTeamBottom() && isTeamBottomTurn())
-    }
 
     /*
     * Notify functions
@@ -259,7 +255,7 @@ class GameViewModel : ViewModel() {
     private fun triggerHalfTime(triggeredFromObserver: Boolean = false) {
         if (triggeredFromObserver && (period == onlineRepo.period.value)) return
 
-        if (isNotOnlineMode) {
+        if (isNotOnlineMode()) {
             dealNewCardDeck()
         } else {
             if (isMyOnlineTeamBottom()) {
@@ -283,7 +279,7 @@ class GameViewModel : ViewModel() {
 
         period++
         halfTimeNotifier.value = 1
-        if (isOnlineMode && !triggeredFromObserver) onlineRepo.updatePeriod(period)
+        if (isOnlineMode() && !triggeredFromObserver) onlineRepo.updatePeriod(period)
         if (period <= 3) notifyMessage("Not enough cards. Period $period started.", isNeutralMessage = true)
         isOngoingGame = false
         areTeamsReadyToStartPeriod = false

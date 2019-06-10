@@ -8,6 +8,7 @@ import com.dohman.holdempucker.R
 import com.dohman.holdempucker.util.Animations
 import com.dohman.holdempucker.util.Constants.Companion.isShootingAtGoalie
 import com.dohman.holdempucker.util.Constants.WhoseTurn.Companion.isBotMoving
+import com.dohman.holdempucker.util.Constants.WhoseTurn.Companion.isOpponentMoving
 import com.dohman.holdempucker.util.Constants.WhoseTurn.Companion.isTeamBottomTurn
 import com.mikepenz.fastadapter.items.AbstractItem
 import kotlinx.android.synthetic.main.message_box_item.view.*
@@ -24,14 +25,12 @@ class MessageTextItem(
     override fun bindView(holder: ViewHolder, payloads: MutableList<Any>) {
         super.bindView(holder, payloads)
 
-        val isTeamBottom = isTeamBottomTurn()
-
         holder.itemView.txt_message.setTextColor(
             ContextCompat.getColor(
                 holder.context,
                 when {
                     isNeutralMessage -> R.color.white
-                    isTeamBottom -> R.color.text_background_btm
+                    isTeamBottomTurn() -> R.color.text_background_btm
                     else -> R.color.text_background_top
                 }
             )
@@ -39,6 +38,8 @@ class MessageTextItem(
 
         if (isBotMoving() && !isNeutralMessage && !isShootingAtGoalie) {
             holder.itemView.txt_message.text = holder.context.getString(R.string.bot_inputting)
+        } else if (isOpponentMoving() && !isNeutralMessage) {
+            holder.itemView.txt_message.text = holder.context.getString(R.string.opponent_inputting)
         } else {
             holder.itemView.txt_message.apply {
                 text = message

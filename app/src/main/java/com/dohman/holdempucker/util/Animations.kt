@@ -9,6 +9,7 @@ import com.dohman.holdempucker.models.Card
 import com.dohman.holdempucker.util.Constants.Companion.possibleMovesIndexes
 import com.dohman.holdempucker.util.Constants.Companion.whoseTurn
 import com.dohman.holdempucker.util.Constants.WhoseTurn.Companion.isBotMoving
+import com.dohman.holdempucker.util.Constants.WhoseTurn.Companion.isOpponentMoving
 import com.github.florent37.viewanimator.ViewAnimator
 import com.wajahatkarim3.easyflipview.EasyFlipView
 
@@ -134,7 +135,7 @@ object Animations {
         cardsLeftText: View,
         doNotShowMessage: Boolean = false,
         fOnFlipPlayingCardEnd: () -> Unit,
-        fNotifyMessage: (message: String) -> Unit,
+        fNotifyMessage: () -> Unit,
         fHideTheCardBackground: () -> Unit
     ) {
         cardsLeftText.apply {
@@ -153,7 +154,7 @@ object Animations {
                     if (Constants.isRestoringPlayers
                         && !doNotShowMessage
                         && !Constants.isShootingAtGoalie
-                    ) fNotifyMessage.invoke("Please choose a position.")
+                    ) fNotifyMessage.invoke()
                 }
                 .onStop { fOnFlipPlayingCardEnd.invoke() }
             .thenAnimate(cardsLeftText)
@@ -185,7 +186,7 @@ object Animations {
     fun animatePulsingCards(viewsToPulse: List<View>, fNotifyMessage: (message: String) -> Unit) {
         fNotifyMessage.invoke(Util.pulseCardsText(possibleMovesIndexes.size))
 
-        if (isBotMoving()) return
+        if (isBotMoving() || isOpponentMoving()) return
 
         viewsToPulse.forEach {
             listOfPulseAnimations.add(

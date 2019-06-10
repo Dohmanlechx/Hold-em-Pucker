@@ -1,6 +1,7 @@
 package com.dohman.holdempucker.ui.game
 
 import android.os.Bundle
+import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -24,11 +25,11 @@ import com.dohman.holdempucker.util.Constants.Companion.teamBottomScore
 import com.dohman.holdempucker.util.Constants.Companion.teamTop
 import com.dohman.holdempucker.util.Constants.Companion.teamTopScore
 import com.dohman.holdempucker.util.Constants.Companion.PLAYER_GOALIE
-import com.dohman.holdempucker.util.Constants.Companion.currentGameMode
-import com.dohman.holdempucker.util.Constants.Companion.isGameLive
 import com.dohman.holdempucker.util.Constants.Companion.isOnlineMode
 import com.dohman.holdempucker.util.Constants.Companion.lobbyId
+import com.dohman.holdempucker.util.Constants.Companion.whoseTurn
 import com.dohman.holdempucker.util.Constants.WhoseTurn.Companion.isBotMoving
+import com.dohman.holdempucker.util.Constants.WhoseTurn.Companion.isOpponentMoving
 import com.dohman.holdempucker.util.Constants.WhoseTurn.Companion.isTeamBottomTurn
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
@@ -114,6 +115,12 @@ class GameFragment : Fragment(), View.OnClickListener {
             viewLifecycleOwner,
             Observer { found ->
                 if (found) {
+                    val message =
+                        if (vm.isMyOnlineTeamBottom()) "Opponent joined, game is started! Period: $period"
+                        else "You joined, game is started! Period: $period"
+
+                    updateMessageBox(message, isNeutralMessage = true)
+
                     v_progressbar.visibility = View.GONE
                     initGame()
 
@@ -154,8 +161,10 @@ class GameFragment : Fragment(), View.OnClickListener {
 
         setupMessageRecycler()
 
-        if (currentGameMode == Constants.GameMode.ONLINE) {
-
+        if (isOnlineMode()) {
+            whoseTurn = Constants.WhoseTurn.BOTTOM
+            v_progressbar.visibility = View.VISIBLE
+            updateMessageBox("Waiting for opponent...", isNeutralMessage = true)
         } else {
             updateMessageBox("Press anywhere to start the game! Period: $period", isNeutralMessage = true)
             whole_view.setOnClickListener { initGame() }
@@ -167,13 +176,11 @@ class GameFragment : Fragment(), View.OnClickListener {
         vm.setGameMode()
         storeAllViews()
         setOnClickListeners()
-
-        if (!isGameLive) v_progressbar.visibility = View.VISIBLE
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
-        if (isOnlineMode) vm.removeLobbyFromDatabase()
+        if (isOnlineMode()) vm.removeLobbyFromDatabase()
         vm.clearAllValueEventListeners()
         Animations.stopAllAnimations()
         Animations.stopAllPulsingCards()
@@ -291,7 +298,7 @@ class GameFragment : Fragment(), View.OnClickListener {
             cards_left,
             vm.cardDeck.size > 50,
             { onFlipPlayingCardEnd(isBadCard) },
-            { message -> vm.notifyMessage(message) },
+            { vm.notifyMessage("Please choose a position.") },
             { if (vm.cardDeck.size <= 1) card_background.visibility = View.GONE }
         )
     }
@@ -608,6 +615,16 @@ class GameFragment : Fragment(), View.OnClickListener {
     * */
 
     private fun setOnClickListeners() {
+        if (isOnlineMode()) {
+            Handler().postDelayed({
+                loopAllViewsAndSetOnClickListeners()
+            }, 1000)
+        } else {
+            loopAllViewsAndSetOnClickListeners()
+        }
+    }
+
+    private fun loopAllViewsAndSetOnClickListeners() {
         teamBottomViews.forEach { it.setOnClickListener(this) }
         teamTopViews.forEach { it.setOnClickListener(this) }
     }
@@ -618,8 +635,7 @@ class GameFragment : Fragment(), View.OnClickListener {
     }
 
     override fun onClick(v: View) {
-        if (isBotMoving()) return
-        if (isOnlineMode && vm.isNotMyTurnInOnline()) return
+        if (isBotMoving() || isOpponentMoving()) return
 
         val spotIndex: Int
         if (isOngoingGame) {
@@ -654,7 +670,7 @@ class GameFragment : Fragment(), View.OnClickListener {
             val targetTeam = if (isTeamBottomTurn()) teamTop else teamBottom
 
             imageView?.let {
-                if (isOnlineMode) vm.notifyOnlineInput(spotIndex)
+                if (isOnlineMode()) vm.notifyOnlineInput(spotIndex)
 
                 if (spotIndex == PLAYER_GOALIE) {
                     tempGoalieCard = targetTeam[PLAYER_GOALIE]
@@ -691,7 +707,7 @@ class GameFragment : Fragment(), View.OnClickListener {
 
             imageView?.let {
                 if (vm.canAddPlayerView(imageView, team, spotIndex) && v.tag != null) {
-                    if (isOnlineMode) vm.notifyOnlineInput(spotIndex)
+                    if (isOnlineMode()) vm.notifyOnlineInput(spotIndex)
                     removeAllOnClickListeners()
                     animateAddPlayer(imageView, team, spotIndex)
                 } else {

@@ -16,9 +16,9 @@ class Constants {
         // Online
         var lobbyId = ""
         var isOpponentFound = false
-        val isGameLive = currentGameMode == GameMode.ONLINE && isOpponentFound
-        val isOnlineMode = currentGameMode != GameMode.ONLINE
-        val isNotOnlineMode = currentGameMode == GameMode.ONLINE
+        var isMyOnlineTeamBottom = false
+        fun isOnlineMode() = currentGameMode == GameMode.ONLINE
+        fun isNotOnlineMode() = currentGameMode != GameMode.ONLINE
 
         // Booleans
         var isVsBotMode = false
@@ -91,7 +91,8 @@ class Constants {
                 whoseTurn = if (whoseTurn == BOTTOM) TOP else BOTTOM
             }
 
-            fun isBotMoving() = whoseTurn == TOP && isVsBotMode
+            fun isBotMoving() = isTeamTopTurn() && isVsBotMode
+            fun isOpponentMoving() = (isTeamTopTurn() && isMyOnlineTeamBottom) || (isTeamBottomTurn() && !isMyOnlineTeamBottom)
             fun isTeamBottomTurn() = whoseTurn == BOTTOM
             fun isTeamTopTurn() = whoseTurn == TOP
         }
