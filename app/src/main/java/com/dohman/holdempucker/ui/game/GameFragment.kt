@@ -531,7 +531,14 @@ class GameFragment : Fragment(), View.OnClickListener {
             }
         } else {
             if (!isBadCard) {
-                setOnClickListeners()
+                val teamViews = if (isTeamBottomTurn()) teamBottomViews else teamTopViews
+                val team = if (isTeamBottomTurn()) teamBottom else teamTop
+                val onlyOneEmptySpotOrNull = vm.getEmptySpots(teamViews).takeIf { it.size == 1 }
+
+                if (isRestoringPlayers && onlyOneEmptySpotOrNull != null)
+                    animateAddPlayer(teamViews[onlyOneEmptySpotOrNull.first()], team, onlyOneEmptySpotOrNull.first())
+                else
+                    setOnClickListeners()
             } else {
                 // If it is bad card, this runs
                 Animations.animateBadCard(
@@ -618,7 +625,7 @@ class GameFragment : Fragment(), View.OnClickListener {
         if (isOnlineMode()) {
             Handler().postDelayed({
                 loopAllViewsAndSetOnClickListeners()
-            }, 1000)
+            }, 500)
         } else {
             loopAllViewsAndSetOnClickListeners()
         }

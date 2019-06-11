@@ -92,7 +92,7 @@ class Constants {
             }
 
             fun isBotMoving() = isTeamTopTurn() && isVsBotMode
-            fun isOpponentMoving() = (isTeamTopTurn() && isMyOnlineTeamBottom) || (isTeamBottomTurn() && !isMyOnlineTeamBottom)
+            fun isOpponentMoving() = (isOnlineMode() && isTeamTopTurn() && isMyOnlineTeamBottom) || (isOnlineMode() && isTeamBottomTurn() && !isMyOnlineTeamBottom)
             fun isTeamBottomTurn() = whoseTurn == BOTTOM
             fun isTeamTopTurn() = whoseTurn == TOP
         }
