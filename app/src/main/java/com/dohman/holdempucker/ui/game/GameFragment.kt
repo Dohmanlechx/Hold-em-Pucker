@@ -31,6 +31,7 @@ import com.dohman.holdempucker.util.Constants.Companion.whoseTurn
 import com.dohman.holdempucker.util.Constants.WhoseTurn.Companion.isBotMoving
 import com.dohman.holdempucker.util.Constants.WhoseTurn.Companion.isOpponentMoving
 import com.dohman.holdempucker.util.Constants.WhoseTurn.Companion.isTeamBottomTurn
+import com.dohman.holdempucker.util.Constants.WhoseTurn.Companion.isTeamTopTurn
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.items.AbstractItem
@@ -62,6 +63,7 @@ class GameFragment : Fragment(), View.OnClickListener {
         // Observables
         vm.messageNotifier.observe(viewLifecycleOwner, Observer { updateMessageBox(it.first, it.second) })
         vm.halfTimeNotifier.observe(viewLifecycleOwner, Observer {
+            removeAllOnClickListeners()
             if (isNextPeriodReady(it)) addGoalieView(true, withStartDelay = true)
         })
         vm.whoseTurnNotifier.observe(viewLifecycleOwner, Observer { Animations.animatePuck(puck, it) })
@@ -531,14 +533,20 @@ class GameFragment : Fragment(), View.OnClickListener {
             }
         } else {
             if (!isBadCard) {
+                if ((isOnlineMode() && vm.isMyOnlineTeamBottom() && isTeamTopTurn())
+                    || (isOnlineMode() && !vm.isMyOnlineTeamBottom() && isTeamBottomTurn())
+                ) return
+
                 val teamViews = if (isTeamBottomTurn()) teamBottomViews else teamTopViews
                 val team = if (isTeamBottomTurn()) teamBottom else teamTop
                 val onlyOneEmptySpotOrNull = vm.getEmptySpots(teamViews).takeIf { it.size == 1 }
 
-                if (isRestoringPlayers && onlyOneEmptySpotOrNull != null)
+                if (isRestoringPlayers && onlyOneEmptySpotOrNull != null) {
+                    if (isOnlineMode()) vm.notifyOnlineInput(onlyOneEmptySpotOrNull.first())
                     animateAddPlayer(teamViews[onlyOneEmptySpotOrNull.first()], team, onlyOneEmptySpotOrNull.first())
-                else
+                } else {
                     setOnClickListeners()
+                }
             } else {
                 // If it is bad card, this runs
                 Animations.animateBadCard(
@@ -622,16 +630,6 @@ class GameFragment : Fragment(), View.OnClickListener {
     * */
 
     private fun setOnClickListeners() {
-        if (isOnlineMode()) {
-            Handler().postDelayed({
-                loopAllViewsAndSetOnClickListeners()
-            }, 500)
-        } else {
-            loopAllViewsAndSetOnClickListeners()
-        }
-    }
-
-    private fun loopAllViewsAndSetOnClickListeners() {
         teamBottomViews.forEach { it.setOnClickListener(this) }
         teamTopViews.forEach { it.setOnClickListener(this) }
     }

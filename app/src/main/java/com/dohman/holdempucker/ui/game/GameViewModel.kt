@@ -400,7 +400,7 @@ class GameViewModel : ViewModel() {
     fun onAttackedAnimationEnd(view: AppCompatImageView, fPrepareViewsToPulse: () -> Unit) {
         view.setImageResource(android.R.color.transparent)
         view.tag = Integer.valueOf(android.R.color.transparent)
-        removeCardFromDeck()
-        checkGameSituation(true, fPrepareViewsToPulse)
+        if (removeCardFromDeck())
+            checkGameSituation(true, fPrepareViewsToPulse)
     }
 }
