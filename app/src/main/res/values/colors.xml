@@ -21,6 +21,7 @@
     <color name="darker_white">#DCDCDC</color>
     <color name="red">#FF0000</color>
     <color name="darker_red">#d02000</color>
+    <color name="darkest_red">#8B1700</color>
     <color name="lighter_red">#FF7878</color>
     <color name="ice_white">#EBE4E4</color>
     <color name="ice_red">#66FF0000</color>
