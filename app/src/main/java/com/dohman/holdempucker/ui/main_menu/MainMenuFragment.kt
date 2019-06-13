@@ -58,8 +58,7 @@ class MainMenuFragment : Fragment() {
         btn_multiplayer.setOnClickListener {
             //currentGameMode = Constants.GameMode.FRIEND
             lobbyId = ""
-            currentGameMode = Constants.GameMode.ONLINE
-            navigateToGameFragment(it)
+            navigateToLobbiesFragment(it)
         }
     }
 
@@ -98,6 +97,19 @@ class MainMenuFragment : Fragment() {
         Animations.animateButton(button) {
             view?.findNavController()?.navigate(R.id.action_mainMenuFragment_to_gameFragment)
         }
+    }
+
+    private fun navigateToLobbiesFragment(button: View) {
+        removeAllOnClickListeners()
+
+        clearTeams()
+        period = 1
+
+        Util.vibrate(requireContext(), true)
+        Animations.animateButton(button) {
+            view?.findNavController()?.navigate(R.id.action_mainMenuFragment_to_lobbiesFragment)
+        }
+
     }
 
     private fun removeAllOnClickListeners() {

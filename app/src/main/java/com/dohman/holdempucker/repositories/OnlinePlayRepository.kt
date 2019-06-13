@@ -28,7 +28,6 @@ class OnlinePlayRepository @Inject constructor(
 
     private var pathForInput: String = ""
 
-    // FIXME: Probably problem here
     private val vlForPeriod = object : ValueEventListener {
         override fun onDataChange(periodSnapshot: DataSnapshot) {
             val newPeriod = (periodSnapshot.value as? Long)?.toInt()
