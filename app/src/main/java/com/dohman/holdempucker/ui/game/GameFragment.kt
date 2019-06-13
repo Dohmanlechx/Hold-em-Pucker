@@ -1,7 +1,6 @@
 package com.dohman.holdempucker.ui.game
 
 import android.os.Bundle
-import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -176,14 +175,15 @@ class GameFragment : Fragment(), View.OnClickListener {
     override fun onResume() {
         super.onResume()
         period = 1
-        vm.setGameMode()
         storeAllViews()
         setOnClickListeners()
+        vm.setGameMode(GameFragmentArgs.fromBundle(arguments!!).argsLobbyId)
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         if (isOnlineMode()) vm.removeLobbyFromDatabase()
+        lobbyId = ""
         vm.clearAllValueEventListeners()
         Animations.stopAllAnimations()
         Animations.stopAllPulsingCards()

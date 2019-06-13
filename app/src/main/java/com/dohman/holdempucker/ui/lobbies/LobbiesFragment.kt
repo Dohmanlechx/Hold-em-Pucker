@@ -16,7 +16,6 @@ import com.dohman.holdempucker.ui.items.LobbyItem
 import com.dohman.holdempucker.util.Constants
 import com.dohman.holdempucker.util.Constants.Companion.currentGameMode
 import com.dohman.holdempucker.util.Constants.Companion.lobbyId
-import com.dohman.holdempucker.util.Constants.Companion.period
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.items.AbstractItem
@@ -48,7 +47,6 @@ class LobbiesFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         setupOnClickListeners()
-        lobbyId = ""
     }
 
     private fun clearTeams() {
@@ -75,10 +73,15 @@ class LobbiesFragment : Fragment() {
         v_fab_play_offline_multiplayer.setOnClickListener(null)
     }
 
-    private fun navigateToGameFragment() {
+    private fun navigateToGameFragment(lobbyId: String? = null) {
         removeAllOnClickListeners()
         clearTeams()
-        view?.findNavController()?.navigate(R.id.action_lobbiesFragment_to_gameFragment)
+        if (lobbyId != null) {
+            val action = LobbiesFragmentDirections.actionLobbiesFragmentToGameFragment(lobbyId)
+            view?.findNavController()?.navigate(action)
+        } else {
+            view?.findNavController()?.navigate(R.id.action_lobbiesFragment_to_gameFragment)
+        }
     }
 
     private fun setupLobbiesRecycler() = v_lobbies_recycler.apply {
@@ -90,8 +93,12 @@ class LobbiesFragment : Fragment() {
     private fun updateLobbyRecycler(lobbies: List<OnlineLobby>) {
         itemAdapter.clear()
         lobbies.forEach { lobby ->
-            vm.getAmountPlayersOfLobby(lobby.id!!) { amountPlayers ->
-                itemAdapter.add(LobbyItem(lobby.id, amountPlayers))
+            vm.getAmountPlayersOfLobby(lobby.id) { amountPlayers ->
+                itemAdapter.add(LobbyItem(lobby.id, lobby.name, amountPlayers) { lobbyId ->
+                    // OnClick
+                    currentGameMode = Constants.GameMode.ONLINE
+                    navigateToGameFragment(lobbyId)
+                })
             }
         }
     }

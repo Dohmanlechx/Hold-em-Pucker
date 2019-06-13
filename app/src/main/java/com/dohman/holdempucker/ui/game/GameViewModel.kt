@@ -21,6 +21,7 @@ import com.dohman.holdempucker.util.Constants.Companion.isOnlineMode
 import com.dohman.holdempucker.util.Constants.Companion.isOpponentFound
 import com.dohman.holdempucker.util.Constants.Companion.isRestoringPlayers
 import com.dohman.holdempucker.util.Constants.Companion.isVsBotMode
+import com.dohman.holdempucker.util.Constants.Companion.lobbyId
 import com.dohman.holdempucker.util.Constants.Companion.period
 import com.dohman.holdempucker.util.Constants.Companion.teamBottom
 import com.dohman.holdempucker.util.Constants.Companion.teamBottomScore
@@ -29,7 +30,6 @@ import com.dohman.holdempucker.util.Constants.Companion.teamTopScore
 import com.dohman.holdempucker.util.Constants.Companion.whoseTeamStartedLastPeriod
 import com.dohman.holdempucker.util.Constants.Companion.whoseTurn
 import com.dohman.holdempucker.util.Constants.WhoseTurn.Companion.isTeamBottomTurn
-import com.dohman.holdempucker.util.Constants.WhoseTurn.Companion.isTeamTopTurn
 import com.dohman.holdempucker.util.GameLogic
 import com.dohman.holdempucker.util.Util
 import javax.inject.Inject
@@ -89,14 +89,14 @@ class GameViewModel : ViewModel() {
 
     fun getScreenWidth() = appRepo.getScreenWidth()
 
-    fun setGameMode() {
+    fun setGameMode(argsLobbyId: String?) {
         isVsBotMode = when (currentGameMode) {
             Constants.GameMode.RANDOM -> true
             Constants.GameMode.DEVELOPER -> true
             else -> false
         }
 
-        if (currentGameMode == Constants.GameMode.ONLINE) setupOnlineGame()
+        if (currentGameMode == Constants.GameMode.ONLINE) setupOnlineGame(argsLobbyId)
     }
 
     override fun onCleared() {
@@ -113,19 +113,33 @@ class GameViewModel : ViewModel() {
     * Online functions
     * */
 
-    private fun setupOnlineGame() {
-        onlineRepo.searchForLobbyOrCreateOne(cardDeck = cardDeck) {
-            if (!onlineRepo.isMyTeamBottom()) {
-                onlineRepo.setListenerForCardDeck()
-                onlineRepo.onlineCardDeck.observeForever(onlineCardDeckObserver)
-            }
+    private fun setupOnlineGame(argsLobbyId: String?) {
+//        onlineRepo.createLobby(cardDeck = cardDeck) {
+//            if (!onlineRepo.isMyTeamBottom()) {
+//                onlineRepo.setListenerForCardDeck()
+//                onlineRepo.onlineCardDeck.observeForever(onlineCardDeckObserver)
+//            }
+//
+//            // Started here since by then, lobbyId is set
+//            onlineRepo.setListenerForInput()
+//            onlineRepo.setListenerForPeriod()
+//            onlineRepo.period.observeForever(periodObserver)
+//        }
 
-            // Started here since by then, lobbyId is set
-            onlineRepo.setListenerForInput()
-            onlineRepo.setListenerForPeriod()
-            onlineRepo.period.observeForever(periodObserver)
+        if (argsLobbyId != null)
+            onlineRepo.joinThisLobby(argsLobbyId)
+        else
+            onlineRepo.createLobby(cardDeck = cardDeck)
+
+        // Lobby is created
+        if (!onlineRepo.isMyTeamBottom()) {
+            onlineRepo.setListenerForCardDeck()
+            onlineRepo.onlineCardDeck.observeForever(onlineCardDeckObserver)
         }
 
+        onlineRepo.setListenerForInput()
+        onlineRepo.setListenerForPeriod()
+        onlineRepo.period.observeForever(periodObserver)
         onlineRepo.opponentFound.observeForever(opponentFoundObserver)
         onlineRepo.opponentInput.observeForever(inputObserver)
     }

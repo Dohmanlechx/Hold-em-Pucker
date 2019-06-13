@@ -49,19 +49,21 @@ class LobbyRepository @Inject constructor(
         db.addValueEventListener(vlForLobbies)
     }
 
-    fun getAmountPlayersOfLobby(lobbyId: String, fReturnedValue: (Int) -> Unit) {
+    fun getAmountPlayersOfLobby(lobbyId: String?, fReturnedValue: (Int) -> Unit) {
         var result = 1
 
-        db.child(lobbyId).addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(lobby: DataSnapshot) {
-                if (lobby.child(pathTopPlayer).value == "taken")
-                    result = 2
+        lobbyId?.let {
+            db.child(lobbyId).addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(lobby: DataSnapshot) {
+                    if (lobby.child(pathTopPlayer).value == "taken")
+                        result = 2
 
-                fReturnedValue.invoke(result)
-            }
+                    fReturnedValue.invoke(result)
+                }
 
-            override fun onCancelled(p0: DatabaseError) {}
-        })
+                override fun onCancelled(p0: DatabaseError) {}
+            })
+        }
     }
 
 

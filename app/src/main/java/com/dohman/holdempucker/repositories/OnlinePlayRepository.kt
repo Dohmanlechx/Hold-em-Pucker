@@ -102,49 +102,57 @@ class OnlinePlayRepository @Inject constructor(
 
     fun updatePeriod(period: Int) = thisLobby().child(pathPeriod).setValue(period)
 
-    fun searchForLobbyOrCreateOne(cardDeck: List<Card>, fFirebaseTaskDone: () -> Unit) {
-        var foundLobby = false
+//    fun createLobby(cardDeck: List<Card>, fFirebaseTaskDone: () -> Unit) {
+//        var foundLobby = false
+//
+//        db.addListenerForSingleValueEvent(object : ValueEventListener {
+//            override fun onDataChange(dataSnapshot: DataSnapshot) {
+//                for (lobby in dataSnapshot.children) {
+//                    if (lobby.child(pathTopPlayer).value == "") {
+//                        // There is bottom player in lobby waiting, go ahead and join
+//                        lobbyId = lobby.child(pathId).value as String
+//                        foundLobby = true
+//                        myOnlineTeam = MyOnlineTeam.TOP
+//                        isMyOnlineTeamBottom = false
+//                        joinThisLobby()
+//                        break
+//                    }
+//                }
+//
+//                if (!foundLobby) {
+//                    myOnlineTeam = MyOnlineTeam.BOTTOM
+//                    isMyOnlineTeamBottom = true
+//                    createLobby(cardDeck)
+//                    waitForOpponent()
+//                }
+//
+//                fFirebaseTaskDone.invoke()
+//            }
+//
+//            override fun onCancelled(error: DatabaseError) {}
+//        })
+//    }
 
-        db.addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                for (lobby in dataSnapshot.children) {
-                    if (lobby.child(pathTopPlayer).value == "") {
-                        // There is bottom player in lobby waiting, go ahead and join
-                        lobbyId = lobby.child(pathId).value as String
-                        foundLobby = true
-                        myOnlineTeam = MyOnlineTeam.TOP
-                        isMyOnlineTeamBottom = false
-                        joinThisLobby()
-                        break
-                    }
-                }
-
-                if (!foundLobby) {
-                    myOnlineTeam = MyOnlineTeam.BOTTOM
-                    isMyOnlineTeamBottom = true
-                    createLobby(cardDeck)
-                    waitForOpponent()
-                }
-
-                fFirebaseTaskDone.invoke()
-            }
-
-            override fun onCancelled(error: DatabaseError) {}
-        })
-    }
-
-    private fun joinThisLobby() {
+    fun joinThisLobby(thisLobbyId: String) {
+        lobbyId = thisLobbyId
+        myOnlineTeam = MyOnlineTeam.TOP
+        isMyOnlineTeamBottom = false
         opponentFound.value = true
-        thisLobby().child(pathTopPlayer).setValue("taken")
+        db.child(thisLobbyId).child(pathTopPlayer).setValue("taken")
     }
 
-    private fun createLobby(cardDeck: List<Card>?) {
+    fun createLobby(cardDeck: List<Card>?) {
+        myOnlineTeam = MyOnlineTeam.BOTTOM
+        isMyOnlineTeamBottom = true
+
         lobbyId = db.push().key!! // Can't be null, since db is working here
 
         val sortedCardDeck = getSortedCardDeck(cardDeck)
 
-        val lobby = OnlineLobby(lobbyId, 1, "", "taken", -1, -1, sortedCardDeck)
+        val lobby = OnlineLobby(lobbyId, "tjaba", 1, "", "taken", -1, -1, sortedCardDeck)
         thisLobby().setValue(lobby)
+
+        waitForOpponent()
     }
 
     fun storeCardDeckInLobby(cardDeck: List<Card>?) {

@@ -6,11 +6,14 @@ import androidx.lifecycle.ViewModel;
 import com.dohman.holdempucker.dagger.RepositoryComponent
 import com.dohman.holdempucker.models.OnlineLobby
 import com.dohman.holdempucker.repositories.LobbyRepository
+import com.dohman.holdempucker.repositories.OnlinePlayRepository
 import javax.inject.Inject
 
 class LobbiesViewModel : ViewModel() {
     @Inject
     lateinit var lobbyRepo: LobbyRepository
+    @Inject
+    lateinit var onlineRepo: OnlinePlayRepository
 
     val lobbyNotifier = MutableLiveData<List<OnlineLobby>>()
 
@@ -21,7 +24,7 @@ class LobbiesViewModel : ViewModel() {
         lobbyRepo.lobbies.observeForever(lobbyObserver)
     }
 
-    fun getAmountPlayersOfLobby(lobbyId: String, fReturnedValue: (Int) -> Unit) = lobbyRepo.getAmountPlayersOfLobby(lobbyId) {
+    fun getAmountPlayersOfLobby(lobbyId: String?, fReturnedValue: (Int) -> Unit) = lobbyRepo.getAmountPlayersOfLobby(lobbyId) {
         fReturnedValue.invoke(it)
     }
 
