@@ -19,7 +19,6 @@ class MessageTextItem(
 ) : AbstractItem<MessageTextItem, MessageTextItem.ViewHolder>() {
     override fun getType(): Int = R.id.fastadapter_item
     override fun getViewHolder(v: View): ViewHolder = ViewHolder(v)
-
     override fun getLayoutRes(): Int = R.layout.message_box_item
 
     override fun bindView(holder: ViewHolder, payloads: MutableList<Any>) {
