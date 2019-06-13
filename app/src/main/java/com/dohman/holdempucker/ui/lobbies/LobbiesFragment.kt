@@ -7,11 +7,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.dohman.holdempucker.R
 import com.dohman.holdempucker.models.OnlineLobby
 import com.dohman.holdempucker.ui.items.LobbyItem
+import com.dohman.holdempucker.util.Constants
+import com.dohman.holdempucker.util.Constants.Companion.currentGameMode
+import com.dohman.holdempucker.util.Constants.Companion.lobbyId
+import com.dohman.holdempucker.util.Constants.Companion.period
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.items.AbstractItem
@@ -38,6 +43,42 @@ class LobbiesFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         setupLobbiesRecycler()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        setupOnClickListeners()
+        lobbyId = ""
+    }
+
+    private fun clearTeams() {
+        for (index in 0..5) {
+            Constants.teamTop[index] = null
+            Constants.teamBottom[index] = null
+        }
+    }
+
+    private fun setupOnClickListeners() {
+        v_fab_create_server.setOnClickListener {
+            currentGameMode = Constants.GameMode.ONLINE
+            navigateToGameFragment()
+        }
+
+        v_fab_play_offline_multiplayer.setOnClickListener {
+            currentGameMode = Constants.GameMode.FRIEND
+            navigateToGameFragment()
+        }
+    }
+
+    private fun removeAllOnClickListeners() {
+        v_fab_create_server.setOnClickListener(null)
+        v_fab_play_offline_multiplayer.setOnClickListener(null)
+    }
+
+    private fun navigateToGameFragment() {
+        removeAllOnClickListeners()
+        clearTeams()
+        view?.findNavController()?.navigate(R.id.action_lobbiesFragment_to_gameFragment)
     }
 
     private fun setupLobbiesRecycler() = v_lobbies_recycler.apply {

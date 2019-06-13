@@ -175,6 +175,7 @@ class GameFragment : Fragment(), View.OnClickListener {
 
     override fun onResume() {
         super.onResume()
+        period = 1
         vm.setGameMode()
         storeAllViews()
         setOnClickListeners()

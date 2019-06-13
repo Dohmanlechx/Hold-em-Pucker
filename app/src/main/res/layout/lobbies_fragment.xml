@@ -35,13 +35,17 @@
 			android:id="@+id/v_fab_create_server"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
+			app:fabSize="mini"
+			app:fab_colorNormal="@color/black"
 			app:fab_label="Create a Lobby" />
 
 		<com.github.clans.fab.FloatingActionButton
 			android:id="@+id/v_fab_play_offline_multiplayer"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			app:fab_label="Offline Multiplayer"/>
+			app:fabSize="mini"
+			app:fab_colorNormal="@color/black"
+			app:fab_label="Offline Multiplayer" />
 
 	</com.github.clans.fab.FloatingActionMenu>
 

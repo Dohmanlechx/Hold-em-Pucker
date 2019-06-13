@@ -56,8 +56,6 @@ class MainMenuFragment : Fragment() {
         }
 
         btn_multiplayer.setOnClickListener {
-            //currentGameMode = Constants.GameMode.FRIEND
-            lobbyId = ""
             navigateToLobbiesFragment(it)
         }
     }
@@ -91,7 +89,6 @@ class MainMenuFragment : Fragment() {
         removeAllOnClickListeners()
 
         clearTeams()
-        period = 1
 
         Util.vibrate(requireContext(), true)
         Animations.animateButton(button) {
@@ -103,7 +100,6 @@ class MainMenuFragment : Fragment() {
         removeAllOnClickListeners()
 
         clearTeams()
-        period = 1
 
         Util.vibrate(requireContext(), true)
         Animations.animateButton(button) {
