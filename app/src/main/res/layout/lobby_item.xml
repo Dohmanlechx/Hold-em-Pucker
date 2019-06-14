@@ -33,6 +33,7 @@
 				card_view:layout_constraintGuide_percent="0.3" />
 
 			<androidx.appcompat.widget.AppCompatImageView
+				android:id="@+id/card_view_background"
 				android:layout_width="match_parent"
 				android:layout_height="match_parent"
 				android:src="@drawable/background_card_view" />
@@ -40,7 +41,7 @@
 			<androidx.appcompat.widget.AppCompatImageView
 				android:layout_width="0dp"
 				android:layout_height="wrap_content"
-				android:layout_marginStart="10dp"
+				android:layout_marginStart="15dp"
 				android:src="@drawable/app_icon"
 				card_view:layout_constraintBottom_toBottomOf="parent"
 				card_view:layout_constraintEnd_toStartOf="@id/gl_ver_30"
@@ -52,28 +53,27 @@
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_marginEnd="10dp"
-				android:fontFamily="@font/days_one"
+				android:fontFamily="@font/lilita_one"
 				android:maxEms="8"
 				android:textAlignment="center"
 				android:textColor="@color/white"
-				android:textSize="20sp"
+				android:textSize="24sp"
 				card_view:layout_constraintBottom_toTopOf="@id/gl_hor_50"
 				card_view:layout_constraintEnd_toEndOf="parent"
 				card_view:layout_constraintStart_toEndOf="@id/gl_ver_30"
 				card_view:layout_constraintTop_toTopOf="parent"
-				card_view:layout_constraintVertical_bias="1.0"
+				card_view:layout_constraintVertical_bias="0.95"
+				card_view:layout_constraintHorizontal_bias="0.4"
 				tools:text="Dohmans lobby!" />
 
 			<androidx.appcompat.widget.AppCompatTextView
 				android:id="@+id/txt_amount_players"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:layout_marginEnd="10dp"
-				android:fontFamily="@font/days_one"
+				android:fontFamily="@font/lilita_one"
 				android:textColor="@color/white"
-				android:textSize="24sp"
-				card_view:layout_constraintEnd_toEndOf="parent"
-				card_view:layout_constraintStart_toStartOf="@id/gl_ver_30"
+				android:textSize="20sp"
+				card_view:layout_constraintEnd_toEndOf="@id/txt_lobby_name"
 				card_view:layout_constraintTop_toBottomOf="@id/gl_hor_50"
 				tools:text="1/2" />
 

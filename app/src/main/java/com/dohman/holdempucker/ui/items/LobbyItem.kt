@@ -2,6 +2,7 @@ package com.dohman.holdempucker.ui.items
 
 import android.content.Context
 import android.view.View
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.dohman.holdempucker.R
 import com.mikepenz.fastadapter.items.AbstractItem
@@ -21,7 +22,8 @@ class LobbyItem(
         super.bindView(holder, payloads)
 
         if (amountPlayers >= 2)
-            holder.itemView.lobby_item_layout.alpha = 0.5f
+            holder.itemView.card_view_background.setImageDrawable(
+                ContextCompat.getDrawable(holder.context, R.drawable.background_card_view_busy))
 
         holder.itemView.apply {
             txt_lobby_name.text = lobbyName

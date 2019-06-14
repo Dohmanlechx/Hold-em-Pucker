@@ -154,6 +154,8 @@ class GameFragment : Fragment(), View.OnClickListener {
             ViewUtil.setScaleOnRotatedView(flip_view, card_top_goalie)
             ViewUtil.setScaleOnRotatedView(flip_view, background_top_goalie)
             ViewUtil.setScaleOnRotatedView(flip_view, flip_top_goalie)
+
+            vm.setGameMode(GameFragmentArgs.fromBundle(arguments!!).argsLobbyId, GameFragmentArgs.fromBundle(arguments!!).argsLobbyName)
         }
 
         computer_lamp.post {
@@ -177,7 +179,6 @@ class GameFragment : Fragment(), View.OnClickListener {
         period = 1
         storeAllViews()
         setOnClickListeners()
-        vm.setGameMode(GameFragmentArgs.fromBundle(arguments!!).argsLobbyId)
     }
 
     override fun onDestroyView() {

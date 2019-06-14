@@ -102,37 +102,6 @@ class OnlinePlayRepository @Inject constructor(
 
     fun updatePeriod(period: Int) = thisLobby().child(pathPeriod).setValue(period)
 
-//    fun createLobby(cardDeck: List<Card>, fFirebaseTaskDone: () -> Unit) {
-//        var foundLobby = false
-//
-//        db.addListenerForSingleValueEvent(object : ValueEventListener {
-//            override fun onDataChange(dataSnapshot: DataSnapshot) {
-//                for (lobby in dataSnapshot.children) {
-//                    if (lobby.child(pathTopPlayer).value == "") {
-//                        // There is bottom player in lobby waiting, go ahead and join
-//                        lobbyId = lobby.child(pathId).value as String
-//                        foundLobby = true
-//                        myOnlineTeam = MyOnlineTeam.TOP
-//                        isMyOnlineTeamBottom = false
-//                        joinThisLobby()
-//                        break
-//                    }
-//                }
-//
-//                if (!foundLobby) {
-//                    myOnlineTeam = MyOnlineTeam.BOTTOM
-//                    isMyOnlineTeamBottom = true
-//                    createLobby(cardDeck)
-//                    waitForOpponent()
-//                }
-//
-//                fFirebaseTaskDone.invoke()
-//            }
-//
-//            override fun onCancelled(error: DatabaseError) {}
-//        })
-//    }
-
     fun joinThisLobby(thisLobbyId: String) {
         lobbyId = thisLobbyId
         myOnlineTeam = MyOnlineTeam.TOP
@@ -141,7 +110,7 @@ class OnlinePlayRepository @Inject constructor(
         db.child(thisLobbyId).child(pathTopPlayer).setValue("taken")
     }
 
-    fun createLobby(cardDeck: List<Card>?) {
+    fun createLobby(cardDeck: List<Card>?, lobbyName: String?) {
         myOnlineTeam = MyOnlineTeam.BOTTOM
         isMyOnlineTeamBottom = true
 
@@ -149,7 +118,7 @@ class OnlinePlayRepository @Inject constructor(
 
         val sortedCardDeck = getSortedCardDeck(cardDeck)
 
-        val lobby = OnlineLobby(lobbyId, "tjaba", 1, "", "taken", -1, -1, sortedCardDeck)
+        val lobby = OnlineLobby(lobbyId, lobbyName, 1, "", "taken", -1, -1, sortedCardDeck)
         thisLobby().setValue(lobby)
 
         waitForOpponent()

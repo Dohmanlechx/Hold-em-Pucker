@@ -89,14 +89,14 @@ class GameViewModel : ViewModel() {
 
     fun getScreenWidth() = appRepo.getScreenWidth()
 
-    fun setGameMode(argsLobbyId: String?) {
+    fun setGameMode(argsLobbyId: String? = null, lobbyName: String? = null) {
         isVsBotMode = when (currentGameMode) {
             Constants.GameMode.RANDOM -> true
             Constants.GameMode.DEVELOPER -> true
             else -> false
         }
 
-        if (currentGameMode == Constants.GameMode.ONLINE) setupOnlineGame(argsLobbyId)
+        if (currentGameMode == Constants.GameMode.ONLINE) setupOnlineGame(argsLobbyId, lobbyName)
     }
 
     override fun onCleared() {
@@ -113,23 +113,11 @@ class GameViewModel : ViewModel() {
     * Online functions
     * */
 
-    private fun setupOnlineGame(argsLobbyId: String?) {
-//        onlineRepo.createLobby(cardDeck = cardDeck) {
-//            if (!onlineRepo.isMyTeamBottom()) {
-//                onlineRepo.setListenerForCardDeck()
-//                onlineRepo.onlineCardDeck.observeForever(onlineCardDeckObserver)
-//            }
-//
-//            // Started here since by then, lobbyId is set
-//            onlineRepo.setListenerForInput()
-//            onlineRepo.setListenerForPeriod()
-//            onlineRepo.period.observeForever(periodObserver)
-//        }
-
+    private fun setupOnlineGame(argsLobbyId: String? = null, lobbyName: String? = null) {
         if (argsLobbyId != null)
             onlineRepo.joinThisLobby(argsLobbyId)
-        else
-            onlineRepo.createLobby(cardDeck = cardDeck)
+        else if (lobbyName != null)
+            onlineRepo.createLobby(cardDeck, lobbyName)
 
         // Lobby is created
         if (!onlineRepo.isMyTeamBottom()) {

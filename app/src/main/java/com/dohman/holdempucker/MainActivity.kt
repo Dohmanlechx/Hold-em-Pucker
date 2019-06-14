@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.WindowManager
 import androidx.appcompat.app.AlertDialog
 import androidx.navigation.findNavController
-import com.dohman.holdempucker.util.Constants.Companion.lobbyId
 
 class MainActivity : AppCompatActivity() {
 

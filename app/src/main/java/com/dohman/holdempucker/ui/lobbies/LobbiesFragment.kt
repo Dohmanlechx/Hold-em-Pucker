@@ -16,6 +16,7 @@ import com.dohman.holdempucker.ui.items.LobbyItem
 import com.dohman.holdempucker.util.Constants
 import com.dohman.holdempucker.util.Constants.Companion.currentGameMode
 import com.dohman.holdempucker.util.Constants.Companion.lobbyId
+import com.dohman.holdempucker.util.ViewUtil
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.items.AbstractItem
@@ -58,8 +59,10 @@ class LobbiesFragment : Fragment() {
 
     private fun setupOnClickListeners() {
         v_fab_create_server.setOnClickListener {
-            currentGameMode = Constants.GameMode.ONLINE
-            navigateToGameFragment()
+            ViewUtil.buildLobbyNameDialog(requireContext()) { lobbyName ->
+                currentGameMode = Constants.GameMode.ONLINE
+                navigateToGameFragment(null, lobbyName)
+            }
         }
 
         v_fab_play_offline_multiplayer.setOnClickListener {
@@ -73,14 +76,15 @@ class LobbiesFragment : Fragment() {
         v_fab_play_offline_multiplayer.setOnClickListener(null)
     }
 
-    private fun navigateToGameFragment(lobbyId: String? = null) {
+    private fun navigateToGameFragment(lobbyId: String? = null, lobbyName: String? = null) {
         removeAllOnClickListeners()
         clearTeams()
         if (lobbyId != null) {
-            val action = LobbiesFragmentDirections.actionLobbiesFragmentToGameFragment(lobbyId)
+            val action = LobbiesFragmentDirections.actionLobbiesFragmentToGameFragment(lobbyId, null)
             view?.findNavController()?.navigate(action)
-        } else {
-            view?.findNavController()?.navigate(R.id.action_lobbiesFragment_to_gameFragment)
+        } else if (lobbyName != null) {
+            val action = LobbiesFragmentDirections.actionLobbiesFragmentToGameFragment(null, lobbyName)
+            view?.findNavController()?.navigate(action)
         }
     }
 
