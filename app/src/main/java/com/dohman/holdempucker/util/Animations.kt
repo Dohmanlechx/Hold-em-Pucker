@@ -86,7 +86,7 @@ object Animations {
     }
 
     fun animatePuck(puck: View, team: String) {
-        val vector = if (team.toLowerCase() == "bottom") 100f else -100f
+        val vector = if (team.toLowerCase() == "green") 100f else -100f
 
         listOfAllAnimations.add(
         ViewAnimator
@@ -272,7 +272,7 @@ object Animations {
         goalie.bringToFront()
 
         val vector = when (whoseTurn) {
-            Constants.WhoseTurn.BOTTOM -> goalie.bottomYWithOffset() - attacker.y
+            Constants.WhoseTurn.GREEN -> goalie.bottomYWithOffset() - attacker.y
             else -> goalie.y - attacker.bottomYWithOffset()
         }
 
@@ -325,7 +325,7 @@ object Animations {
         goalie.bringToFront()
 
         val vector = when (whoseTurn) {
-            Constants.WhoseTurn.BOTTOM -> goalie.bottomYWithOffset() - attacker.y
+            Constants.WhoseTurn.GREEN -> goalie.bottomYWithOffset() - attacker.y
             else -> goalie.y - attacker.bottomYWithOffset()
         }
 

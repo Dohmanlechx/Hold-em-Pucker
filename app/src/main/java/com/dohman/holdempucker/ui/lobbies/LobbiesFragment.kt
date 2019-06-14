@@ -15,7 +15,6 @@ import com.dohman.holdempucker.models.OnlineLobby
 import com.dohman.holdempucker.ui.items.LobbyItem
 import com.dohman.holdempucker.util.Constants
 import com.dohman.holdempucker.util.Constants.Companion.currentGameMode
-import com.dohman.holdempucker.util.Constants.Companion.lobbyId
 import com.dohman.holdempucker.util.ViewUtil
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
@@ -52,8 +51,8 @@ class LobbiesFragment : Fragment() {
 
     private fun clearTeams() {
         for (index in 0..5) {
-            Constants.teamTop[index] = null
-            Constants.teamBottom[index] = null
+            Constants.teamPurple[index] = null
+            Constants.teamGreen[index] = null
         }
     }
 

@@ -16,7 +16,7 @@ class Constants {
         // Online
         var lobbyId = ""
         var isOpponentFound = false
-        var isMyOnlineTeamBottom = false
+        var isMyOnlineTeamGreen = false
         fun isOnlineMode() = currentGameMode == GameMode.ONLINE
         fun isNotOnlineMode() = currentGameMode != GameMode.ONLINE
 
@@ -28,8 +28,8 @@ class Constants {
         var areTeamsReadyToStartPeriod = false // Set to true as soon as both teams are full in the very beginning
 
         // Objects
-        val teamTop = arrayOfNulls<Card>(6)
-        val teamBottom = arrayOfNulls<Card>(6)
+        val teamPurple = arrayOfNulls<Card>(6)
+        val teamGreen = arrayOfNulls<Card>(6)
 
         /*  Index 0 = Left forward | 1 = Center | 2 = Right forward
                         3 = Left defender | 4 = Right defender
@@ -52,7 +52,7 @@ class Constants {
         var possibleMovesIndexes = mutableListOf<Int>() // For the pulse animations and AI moves
 
         // Whose turn
-        var whoseTurn = WhoseTurn.BOTTOM
+        var whoseTurn = WhoseTurn.GREEN
         var whoseTeamStartedLastPeriod = whoseTurn
 
         // Cases
@@ -84,17 +84,17 @@ class Constants {
 
     // Enums
     enum class WhoseTurn {
-        BOTTOM, TOP;
+        GREEN, PURPLE;
 
         companion object {
             fun toggleTurn() {
-                whoseTurn = if (whoseTurn == BOTTOM) TOP else BOTTOM
+                whoseTurn = if (whoseTurn == GREEN) PURPLE else GREEN
             }
 
-            fun isBotMoving() = isTeamTopTurn() && isVsBotMode
-            fun isOpponentMoving() = (isOnlineMode() && isTeamTopTurn() && isMyOnlineTeamBottom) || (isOnlineMode() && isTeamBottomTurn() && !isMyOnlineTeamBottom)
-            fun isTeamBottomTurn() = whoseTurn == BOTTOM
-            fun isTeamTopTurn() = whoseTurn == TOP
+            fun isBotMoving() = isTeamPurpleTurn() && isVsBotMode
+            fun isOpponentMoving() = (isOnlineMode() && isTeamPurpleTurn() && isMyOnlineTeamGreen) || (isOnlineMode() && isTeamGreenTurn() && !isMyOnlineTeamGreen)
+            fun isTeamGreenTurn() = whoseTurn == GREEN
+            fun isTeamPurpleTurn() = whoseTurn == PURPLE
         }
     }
 

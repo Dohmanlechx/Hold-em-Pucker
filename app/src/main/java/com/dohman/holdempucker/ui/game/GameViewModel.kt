@@ -13,6 +13,11 @@ import com.dohman.holdempucker.repositories.CardRepository
 import com.dohman.holdempucker.repositories.OnlinePlayRepository
 import com.dohman.holdempucker.repositories.ResourceRepository
 import com.dohman.holdempucker.util.Constants
+import com.dohman.holdempucker.util.Constants.Companion.PLAYER_CENTER
+import com.dohman.holdempucker.util.Constants.Companion.PLAYER_DEFENDER_LEFT
+import com.dohman.holdempucker.util.Constants.Companion.PLAYER_DEFENDER_RIGHT
+import com.dohman.holdempucker.util.Constants.Companion.PLAYER_FORWARD_LEFT
+import com.dohman.holdempucker.util.Constants.Companion.PLAYER_FORWARD_RIGHT
 import com.dohman.holdempucker.util.Constants.Companion.areTeamsReadyToStartPeriod
 import com.dohman.holdempucker.util.Constants.Companion.currentGameMode
 import com.dohman.holdempucker.util.Constants.Companion.isNotOnlineMode
@@ -21,15 +26,14 @@ import com.dohman.holdempucker.util.Constants.Companion.isOnlineMode
 import com.dohman.holdempucker.util.Constants.Companion.isOpponentFound
 import com.dohman.holdempucker.util.Constants.Companion.isRestoringPlayers
 import com.dohman.holdempucker.util.Constants.Companion.isVsBotMode
-import com.dohman.holdempucker.util.Constants.Companion.lobbyId
 import com.dohman.holdempucker.util.Constants.Companion.period
-import com.dohman.holdempucker.util.Constants.Companion.teamBottom
+import com.dohman.holdempucker.util.Constants.Companion.teamGreen
 import com.dohman.holdempucker.util.Constants.Companion.teamBottomScore
-import com.dohman.holdempucker.util.Constants.Companion.teamTop
+import com.dohman.holdempucker.util.Constants.Companion.teamPurple
 import com.dohman.holdempucker.util.Constants.Companion.teamTopScore
 import com.dohman.holdempucker.util.Constants.Companion.whoseTeamStartedLastPeriod
 import com.dohman.holdempucker.util.Constants.Companion.whoseTurn
-import com.dohman.holdempucker.util.Constants.WhoseTurn.Companion.isTeamBottomTurn
+import com.dohman.holdempucker.util.Constants.WhoseTurn.Companion.isTeamGreenTurn
 import com.dohman.holdempucker.util.GameLogic
 import com.dohman.holdempucker.util.Util
 import javax.inject.Inject
@@ -185,6 +189,21 @@ class GameViewModel : ViewModel() {
         return true
     }
 
+    private fun areThereEnoughCardsToScore(opponentTeam: Array<Card?>): Boolean {
+        var amountOfCardsToAttack = 0
+
+        if (opponentTeam[PLAYER_DEFENDER_LEFT] != null || opponentTeam[PLAYER_DEFENDER_RIGHT] != null) amountOfCardsToAttack++
+        if (opponentTeam[PLAYER_CENTER] != null) amountOfCardsToAttack++
+        if (opponentTeam[PLAYER_FORWARD_LEFT] != null || opponentTeam[PLAYER_FORWARD_RIGHT] != null) amountOfCardsToAttack++
+
+        if (cardDeck.size < amountOfCardsToAttack) {
+            triggerHalfTime()
+            return false
+        }
+
+        return true
+    }
+
     /*
     * Image/view functions
     * */
@@ -241,7 +260,7 @@ class GameViewModel : ViewModel() {
             )
 
             whoseTurn =
-                if (whoseTeamStartedLastPeriod == Constants.WhoseTurn.BOTTOM) Constants.WhoseTurn.TOP else Constants.WhoseTurn.BOTTOM
+                if (whoseTeamStartedLastPeriod == Constants.WhoseTurn.GREEN) Constants.WhoseTurn.PURPLE else Constants.WhoseTurn.GREEN
 
             whoseTeamStartedLastPeriod = whoseTurn
 
@@ -275,8 +294,8 @@ class GameViewModel : ViewModel() {
         }
 
         for (index in 0..5) {
-            teamBottom[index] = null
-            teamTop[index] = null
+            teamGreen[index] = null
+            teamPurple[index] = null
         }
 
         period++
@@ -292,7 +311,7 @@ class GameViewModel : ViewModel() {
     }
 
     fun addGoalToScore() {
-        if (isTeamBottomTurn()) teamBottomScore++ else teamTopScore++
+        if (isTeamGreenTurn()) teamBottomScore++ else teamTopScore++
     }
 
     /*
@@ -310,8 +329,8 @@ class GameViewModel : ViewModel() {
     }
 
     private fun areTeamsReady(): Boolean {
-        teamBottom.forEach { if (it == null) return false }
-        teamTop.forEach { if (it == null) return false }
+        teamGreen.forEach { if (it == null) return false }
+        teamPurple.forEach { if (it == null) return false }
 
         isOngoingGame = true
         areTeamsReadyToStartPeriod = true
@@ -321,7 +340,7 @@ class GameViewModel : ViewModel() {
 
     fun isThisTeamReady(): Boolean {
         val teamToCheck =
-            if (isTeamBottomTurn()) teamBottom else teamTop
+            if (isTeamGreenTurn()) teamGreen else teamPurple
 
         teamToCheck.forEach { if (it == null) return false }
 
@@ -362,6 +381,7 @@ class GameViewModel : ViewModel() {
         spotIndex: Int,
         victimView: AppCompatImageView
     ): Boolean {
+        if (cardDeck.size <= 3 && !areThereEnoughCardsToScore(if (isTeamGreenTurn()) teamPurple else teamGreen)) return false
         if (victimView.tag == Integer.valueOf(android.R.color.transparent)) return false
         if (GameLogic.isAttacked(firstCardInDeck, victimTeam, spotIndex)) return true
 

@@ -3,7 +3,7 @@ package com.dohman.holdempucker.repositories
 import androidx.lifecycle.MutableLiveData
 import com.dohman.holdempucker.models.Card
 import com.dohman.holdempucker.models.OnlineLobby
-import com.dohman.holdempucker.util.Constants.Companion.isMyOnlineTeamBottom
+import com.dohman.holdempucker.util.Constants.Companion.isMyOnlineTeamGreen
 import com.dohman.holdempucker.util.Constants.Companion.lobbyId
 import com.google.firebase.database.*
 import javax.inject.Inject
@@ -105,14 +105,14 @@ class OnlinePlayRepository @Inject constructor(
     fun joinThisLobby(thisLobbyId: String) {
         lobbyId = thisLobbyId
         myOnlineTeam = MyOnlineTeam.TOP
-        isMyOnlineTeamBottom = false
+        isMyOnlineTeamGreen = false
         opponentFound.value = true
         db.child(thisLobbyId).child(pathTopPlayer).setValue("taken")
     }
 
     fun createLobby(cardDeck: List<Card>?, lobbyName: String?) {
         myOnlineTeam = MyOnlineTeam.BOTTOM
-        isMyOnlineTeamBottom = true
+        isMyOnlineTeamGreen = true
 
         lobbyId = db.push().key!! // Can't be null, since db is working here
 

@@ -9,7 +9,7 @@ import com.dohman.holdempucker.util.Animations
 import com.dohman.holdempucker.util.Constants.Companion.isShootingAtGoalie
 import com.dohman.holdempucker.util.Constants.WhoseTurn.Companion.isBotMoving
 import com.dohman.holdempucker.util.Constants.WhoseTurn.Companion.isOpponentMoving
-import com.dohman.holdempucker.util.Constants.WhoseTurn.Companion.isTeamBottomTurn
+import com.dohman.holdempucker.util.Constants.WhoseTurn.Companion.isTeamGreenTurn
 import com.mikepenz.fastadapter.items.AbstractItem
 import kotlinx.android.synthetic.main.message_box_item.view.*
 
@@ -29,7 +29,7 @@ class MessageTextItem(
                 holder.context,
                 when {
                     isNeutralMessage -> R.color.white
-                    isTeamBottomTurn() -> R.color.text_background_btm
+                    isTeamGreenTurn() -> R.color.text_background_btm
                     else -> R.color.text_background_top
                 }
             )
@@ -37,7 +37,7 @@ class MessageTextItem(
 
         if (isBotMoving() && !isNeutralMessage && !isShootingAtGoalie) {
             holder.itemView.txt_message.text = holder.context.getString(R.string.bot_inputting)
-        } else if (isOpponentMoving() && !isNeutralMessage) {
+        } else if (isOpponentMoving() && !isNeutralMessage && !isShootingAtGoalie) {
             holder.itemView.txt_message.text = holder.context.getString(R.string.opponent_inputting)
         } else {
             holder.itemView.txt_message.apply {

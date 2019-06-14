@@ -19,9 +19,9 @@ import com.dohman.holdempucker.util.Constants.Companion.isShootingAtGoalie
 import com.dohman.holdempucker.util.Constants.Companion.period
 import com.dohman.holdempucker.util.Constants.Companion.possibleMovesIndexes
 import com.dohman.holdempucker.util.Constants.Companion.isRestoringPlayers
-import com.dohman.holdempucker.util.Constants.Companion.teamBottom
+import com.dohman.holdempucker.util.Constants.Companion.teamGreen
 import com.dohman.holdempucker.util.Constants.Companion.teamBottomScore
-import com.dohman.holdempucker.util.Constants.Companion.teamTop
+import com.dohman.holdempucker.util.Constants.Companion.teamPurple
 import com.dohman.holdempucker.util.Constants.Companion.teamTopScore
 import com.dohman.holdempucker.util.Constants.Companion.PLAYER_GOALIE
 import com.dohman.holdempucker.util.Constants.Companion.isOnlineMode
@@ -29,8 +29,8 @@ import com.dohman.holdempucker.util.Constants.Companion.lobbyId
 import com.dohman.holdempucker.util.Constants.Companion.whoseTurn
 import com.dohman.holdempucker.util.Constants.WhoseTurn.Companion.isBotMoving
 import com.dohman.holdempucker.util.Constants.WhoseTurn.Companion.isOpponentMoving
-import com.dohman.holdempucker.util.Constants.WhoseTurn.Companion.isTeamBottomTurn
-import com.dohman.holdempucker.util.Constants.WhoseTurn.Companion.isTeamTopTurn
+import com.dohman.holdempucker.util.Constants.WhoseTurn.Companion.isTeamGreenTurn
+import com.dohman.holdempucker.util.Constants.WhoseTurn.Companion.isTeamPurpleTurn
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.items.AbstractItem
@@ -81,31 +81,31 @@ class GameFragment : Fragment(), View.OnClickListener {
                 when (vm.isMyOnlineTeamBottom()) {
                     true -> {
                         if (isRestoringPlayers) {
-                            animateAddPlayer(teamTopViews[input], teamTop, input)
+                            animateAddPlayer(teamTopViews[input], teamPurple, input)
                         } else {
                             if (input == PLAYER_GOALIE) {
-                                tempGoalieCard = teamBottom[PLAYER_GOALIE]
-                                if (vm.canAttack(teamBottom, PLAYER_GOALIE, card_bm_goalie))
-                                    prepareAttackPlayer(teamBottom, input, teamBottomViews[input])
+                                tempGoalieCard = teamGreen[PLAYER_GOALIE]
+                                if (vm.canAttack(teamGreen, PLAYER_GOALIE, card_bm_goalie))
+                                    prepareAttackPlayer(teamGreen, input, teamBottomViews[input])
                                 else
                                     prepareGoalieSaved(card_bm_goalie)
                             } else {
-                                prepareAttackPlayer(teamBottom, input, teamBottomViews[input])
+                                prepareAttackPlayer(teamGreen, input, teamBottomViews[input])
                             }
                         }
                     }
                     false -> {
                         if (isRestoringPlayers) {
-                            animateAddPlayer(teamBottomViews[input], teamBottom, input)
+                            animateAddPlayer(teamBottomViews[input], teamGreen, input)
                         } else {
                             if (input == PLAYER_GOALIE) {
-                                tempGoalieCard = teamTop[PLAYER_GOALIE]
-                                if (vm.canAttack(teamTop, PLAYER_GOALIE, card_top_goalie))
-                                    prepareAttackPlayer(teamTop, input, teamTopViews[input])
+                                tempGoalieCard = teamPurple[PLAYER_GOALIE]
+                                if (vm.canAttack(teamPurple, PLAYER_GOALIE, card_top_goalie))
+                                    prepareAttackPlayer(teamPurple, input, teamTopViews[input])
                                 else
                                     prepareGoalieSaved(card_top_goalie)
                             } else {
-                                prepareAttackPlayer(teamTop, input, teamTopViews[input])
+                                prepareAttackPlayer(teamPurple, input, teamTopViews[input])
                             }
                         }
                     }
@@ -126,7 +126,7 @@ class GameFragment : Fragment(), View.OnClickListener {
                     initGame()
 
                     online_team.text =
-                        if (vm.isMyOnlineTeamBottom()) "Your team is BOTTOM/GREEN\nLobbyid: $lobbyId" else "Your team is TOP/PURPLE\n" +
+                        if (vm.isMyOnlineTeamBottom()) "Your team is GREEN/GREEN\nLobbyid: $lobbyId" else "Your team is PURPLE/PURPLE\n" +
                                 "Lobbyid: $lobbyId"
                 }
             })
@@ -165,7 +165,7 @@ class GameFragment : Fragment(), View.OnClickListener {
         setupMessageRecycler()
 
         if (isOnlineMode()) {
-            whoseTurn = Constants.WhoseTurn.BOTTOM
+            whoseTurn = Constants.WhoseTurn.GREEN
             v_progressbar.visibility = View.VISIBLE
             updateMessageBox("Waiting for opponent...", isNeutralMessage = true)
         } else {
@@ -308,7 +308,7 @@ class GameFragment : Fragment(), View.OnClickListener {
     }
 
     private fun prepareViewsToPulse() {
-        val teamToPulse = if (isTeamBottomTurn()) teamTopViews else teamBottomViews
+        val teamToPulse = if (isTeamGreenTurn()) teamTopViews else teamBottomViews
         val viewsToPulse = mutableListOf<AppCompatImageView>()
 
         possibleMovesIndexes.forEach {
@@ -402,11 +402,11 @@ class GameFragment : Fragment(), View.OnClickListener {
 
                 vm.notifyMessageAttackingGoalie()
 
-                val isTargetGoalieBottom = !isTeamBottomTurn()
+                val isTargetGoalieBottom = !isTeamGreenTurn()
                 val targetView = if (isTargetGoalieBottom) flip_btm_goalie else flip_top_goalie
                 val targetViewFront = if (isTargetGoalieBottom) flip_btm_goalie_front else flip_top_goalie_front
                 val targetViewBack = if (isTargetGoalieBottom) flip_btm_goalie_back else flip_top_goalie_back
-                val targetTeam = if (isTargetGoalieBottom) teamBottom else teamTop
+                val targetTeam = if (isTargetGoalieBottom) teamGreen else teamPurple
 
                 ViewUtil.setImagesOnFlipView(
                     targetView,
@@ -459,11 +459,11 @@ class GameFragment : Fragment(), View.OnClickListener {
 
         vm.notifyMessageAttackingGoalie()
 
-        val isTargetGoalieBottom = !isTeamBottomTurn()
+        val isTargetGoalieBottom = !isTeamGreenTurn()
         val targetView = if (isTargetGoalieBottom) flip_btm_goalie else flip_top_goalie
         val targetViewFront = if (isTargetGoalieBottom) flip_btm_goalie_front else flip_top_goalie_front
         val targetViewBack = if (isTargetGoalieBottom) flip_btm_goalie_back else flip_top_goalie_back
-        val targetTeam = if (isTargetGoalieBottom) teamBottom else teamTop
+        val targetTeam = if (isTargetGoalieBottom) teamGreen else teamPurple
 
         ViewUtil.setImagesOnFlipView(
             targetView,
@@ -514,7 +514,7 @@ class GameFragment : Fragment(), View.OnClickListener {
             if (isRestoringPlayers) {
                 vm.botChooseEmptySpot(vm.getEmptySpots(teamTopViews)) {
                     // Trigger the bot's move
-                    if (it != -1) animateAddPlayer(teamTopViews[it], teamTop, it)
+                    if (it != -1) animateAddPlayer(teamTopViews[it], teamPurple, it)
                 }
             } else {
                 // Attacking player
@@ -522,25 +522,25 @@ class GameFragment : Fragment(), View.OnClickListener {
                     -1 -> { /* Do nothing */
                     }
                     PLAYER_GOALIE -> {
-                        tempGoalieCard = teamBottom[PLAYER_GOALIE]
-                        if (vm.canAttack(teamBottom, PLAYER_GOALIE, card_bm_goalie)) prepareAttackPlayer(
-                            teamBottom,
+                        tempGoalieCard = teamGreen[PLAYER_GOALIE]
+                        if (vm.canAttack(teamGreen, PLAYER_GOALIE, card_bm_goalie)) prepareAttackPlayer(
+                            teamGreen,
                             PLAYER_GOALIE,
                             card_bm_goalie
                         )
                         else prepareGoalieSaved(card_bm_goalie)
                     }
-                    else -> prepareAttackPlayer(teamBottom, chosenIndex, teamBottomViews[chosenIndex])
+                    else -> prepareAttackPlayer(teamGreen, chosenIndex, teamBottomViews[chosenIndex])
                 }
             }
         } else {
             if (!isBadCard) {
-                if ((isOnlineMode() && vm.isMyOnlineTeamBottom() && isTeamTopTurn())
-                    || (isOnlineMode() && !vm.isMyOnlineTeamBottom() && isTeamBottomTurn())
+                if ((isOnlineMode() && vm.isMyOnlineTeamBottom() && isTeamPurpleTurn())
+                    || (isOnlineMode() && !vm.isMyOnlineTeamBottom() && isTeamGreenTurn())
                 ) return
 
-                val teamViews = if (isTeamBottomTurn()) teamBottomViews else teamTopViews
-                val team = if (isTeamBottomTurn()) teamBottom else teamTop
+                val teamViews = if (isTeamGreenTurn()) teamBottomViews else teamTopViews
+                val team = if (isTeamGreenTurn()) teamGreen else teamPurple
                 val onlyOneEmptySpotOrNull = vm.getEmptySpots(teamViews).takeIf { it.size == 1 }
 
                 if (isRestoringPlayers && onlyOneEmptySpotOrNull != null) {
@@ -614,8 +614,8 @@ class GameFragment : Fragment(), View.OnClickListener {
         } else {
             whole_view.visibility = View.VISIBLE
             txt_winner.text = when {
-                teamBottomScore > teamTopScore -> "Team Bottom\nwon with $teamBottomScore-$teamTopScore!"
-                else -> "Team Top\nwon with $teamTopScore-$teamBottomScore!"
+                teamBottomScore > teamTopScore -> "Team Green\nwon with $teamBottomScore-$teamTopScore!"
+                else -> "Team Purple\nwon with $teamTopScore-$teamBottomScore!"
             }
             Animations.animateWinner(fading_view, lottie_trophy, txt_winner)
             Util.vibrate(requireContext(), true)
@@ -647,16 +647,16 @@ class GameFragment : Fragment(), View.OnClickListener {
         val spotIndex: Int
         if (isOngoingGame) {
             if (v.tag == Integer.valueOf(android.R.color.transparent)) return
-            if (isTeamBottomTurn()) {
+            if (isTeamGreenTurn()) {
                 spotIndex = when (v.id) {
                     R.id.card_top_forward_left -> 0
                     R.id.card_top_center -> 1
                     R.id.card_top_forward_right -> 2
                     R.id.card_top_defender_left ->
-                        if (vm.areEnoughForwardsOut(teamTop, 3)) 3 else return
+                        if (vm.areEnoughForwardsOut(teamPurple, 3)) 3 else return
                     R.id.card_top_defender_right ->
-                        if (vm.areEnoughForwardsOut(teamTop, 4)) 4 else return
-                    R.id.card_top_goalie -> if (vm.isAtLeastOneDefenderOut(teamTop)) 5 else return
+                        if (vm.areEnoughForwardsOut(teamPurple, 4)) 4 else return
+                    R.id.card_top_goalie -> if (vm.isAtLeastOneDefenderOut(teamPurple)) 5 else return
                     else -> return
                 }
             } else {
@@ -665,16 +665,16 @@ class GameFragment : Fragment(), View.OnClickListener {
                     R.id.card_bm_center -> 1
                     R.id.card_bm_forward_right -> 2
                     R.id.card_bm_defender_left ->
-                        if (vm.areEnoughForwardsOut(teamBottom, 3)) 3 else return
+                        if (vm.areEnoughForwardsOut(teamGreen, 3)) 3 else return
                     R.id.card_bm_defender_right ->
-                        if (vm.areEnoughForwardsOut(teamBottom, 4)) 4 else return
-                    R.id.card_bm_goalie -> if (vm.isAtLeastOneDefenderOut(teamBottom)) 5 else return
+                        if (vm.areEnoughForwardsOut(teamGreen, 4)) 4 else return
+                    R.id.card_bm_goalie -> if (vm.isAtLeastOneDefenderOut(teamGreen)) 5 else return
                     else -> return
                 }
             }
 
             val imageView = view?.findViewById<AppCompatImageView>(v.id)
-            val targetTeam = if (isTeamBottomTurn()) teamTop else teamBottom
+            val targetTeam = if (isTeamGreenTurn()) teamPurple else teamGreen
 
             imageView?.let {
                 if (isOnlineMode()) vm.notifyOnlineInput(spotIndex)
@@ -689,7 +689,7 @@ class GameFragment : Fragment(), View.OnClickListener {
                 }
             }
         } else {
-            if (isTeamBottomTurn()) {
+            if (isTeamGreenTurn()) {
                 spotIndex = when (v.id) {
                     R.id.card_bm_forward_left -> 0
                     R.id.card_bm_center -> 1
@@ -710,7 +710,7 @@ class GameFragment : Fragment(), View.OnClickListener {
             }
 
             val imageView = view?.findViewById<AppCompatImageView>(v.id)
-            val team = if (isTeamBottomTurn()) teamBottom else teamTop
+            val team = if (isTeamGreenTurn()) teamGreen else teamPurple
 
             imageView?.let {
                 if (vm.canAddPlayerView(imageView, team, spotIndex) && v.tag != null) {
