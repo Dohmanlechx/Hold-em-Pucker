@@ -94,6 +94,14 @@ class LobbiesFragment : Fragment() {
     }
 
     private fun updateLobbyRecycler(lobbies: List<OnlineLobby>) {
+        if (lobbies.isNullOrEmpty()) {
+            v_lobbies_recycler.visibility = View.GONE
+            txt_no_lobbies.visibility = View.VISIBLE
+        } else {
+            v_lobbies_recycler.visibility = View.VISIBLE
+            txt_no_lobbies.visibility = View.GONE
+        }
+
         itemAdapter.clear()
         lobbies.forEach { lobby ->
             vm.getAmountPlayersOfLobby(lobby.id) { amountPlayers ->

@@ -7,6 +7,17 @@
 	android:background="@drawable/background_main_menu"
 	tools:context=".ui.lobbies.LobbiesFragment">
 
+	<androidx.appcompat.widget.AppCompatTextView
+		android:id="@+id/txt_no_lobbies"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:fontFamily="@font/lilita_one"
+		android:gravity="center"
+		android:text="@string/no_lobbies_available"
+		android:textColor="@color/white"
+		android:textSize="24sp"
+		android:visibility="gone" />
+
 	<androidx.recyclerview.widget.RecyclerView
 		android:id="@+id/v_lobbies_recycler"
 		android:layout_width="match_parent"
@@ -19,7 +30,8 @@
 		app:layout_constraintEnd_toEndOf="parent"
 		app:layout_constraintStart_toStartOf="parent"
 		app:layout_constraintTop_toTopOf="parent"
-		tools:listitem="@layout/lobby_item" />
+		tools:listitem="@layout/lobby_item"
+		tools:visibility="visible" />
 
 	<com.github.clans.fab.FloatingActionMenu
 		android:id="@+id/v_fab"
@@ -35,19 +47,19 @@
 			android:id="@+id/v_fab_create_server"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			app:fab_size="mini"
 			android:src="@drawable/ic_online"
 			app:fab_colorNormal="@color/gold"
-			app:fab_label="Create a Lobby" />
+			app:fab_label="Create a Lobby"
+			app:fab_size="mini" />
 
 		<com.github.clans.fab.FloatingActionButton
 			android:id="@+id/v_fab_play_offline_multiplayer"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			app:fab_size="mini"
 			android:src="@drawable/ic_vs_friend"
 			app:fab_colorNormal="@color/gold"
-			app:fab_label="Offline Multiplayer" />
+			app:fab_label="Offline Multiplayer"
+			app:fab_size="mini" />
 
 	</com.github.clans.fab.FloatingActionMenu>
 
