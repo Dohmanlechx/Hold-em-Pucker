@@ -15,7 +15,7 @@ class CardRepository @Inject constructor(
     private fun initializeCards(): MutableList<Card> {
         val cardDeck = mutableListOf<Card>()
         enumValues<Suits>().forEach { suit ->
-            for (rank in 2..7) {
+            for (rank in 2..5) {
                 val card = Card()
                 card.suit = suit
                 card.rank = rank

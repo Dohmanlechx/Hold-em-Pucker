@@ -12,6 +12,7 @@ import com.dohman.holdempucker.repositories.BotRepository
 import com.dohman.holdempucker.repositories.CardRepository
 import com.dohman.holdempucker.repositories.OnlinePlayRepository
 import com.dohman.holdempucker.repositories.ResourceRepository
+import com.dohman.holdempucker.util.Animations
 import com.dohman.holdempucker.util.Constants
 import com.dohman.holdempucker.util.Constants.Companion.PLAYER_CENTER
 import com.dohman.holdempucker.util.Constants.Companion.PLAYER_DEFENDER_LEFT
@@ -66,7 +67,7 @@ class GameViewModel : ViewModel() {
     }
     private val opponentFoundObserver = Observer<Boolean> { found ->
         isOpponentFound = found
-        if (found) onlineOpponentFoundNotifier.value = found
+        if (found && period == 1) onlineOpponentFoundNotifier.value = found
     }
     private val inputObserver = Observer<Int> { input ->
         onlineOpponentInputNotifier.value = input.takeIf { it in 0..5 }
@@ -381,7 +382,10 @@ class GameViewModel : ViewModel() {
         spotIndex: Int,
         victimView: AppCompatImageView
     ): Boolean {
-        if (cardDeck.size <= 3 && !areThereEnoughCardsToScore(if (isTeamGreenTurn()) teamPurple else teamGreen)) return false
+        if (cardDeck.size <= 3 && !areThereEnoughCardsToScore(if (isTeamGreenTurn()) teamPurple else teamGreen)) {
+            Animations.stopAllPulsingCards()
+            return false
+        }
         if (victimView.tag == Integer.valueOf(android.R.color.transparent)) return false
         if (GameLogic.isAttacked(firstCardInDeck, victimTeam, spotIndex)) return true
 

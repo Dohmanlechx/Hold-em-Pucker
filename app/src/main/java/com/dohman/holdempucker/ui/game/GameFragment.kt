@@ -1,6 +1,7 @@
 package com.dohman.holdempucker.ui.game
 
 import android.os.Bundle
+import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -117,13 +118,13 @@ class GameFragment : Fragment(), View.OnClickListener {
             Observer { found ->
                 if (found) {
                     val message =
-                        if (vm.isMyOnlineTeamBottom()) "Opponent joined, game is started! Period: $period"
-                        else "You joined, game is started! Period: $period"
+                        if (vm.isMyOnlineTeamBottom()) "Opponent joined, game is starting! Period: $period"
+                        else "You joined, game is starting! Period: $period"
 
                     updateMessageBox(message, isNeutralMessage = true)
 
                     v_progressbar.visibility = View.GONE
-                    initGame()
+                    Handler().postDelayed({ initGame() }, 1000)
 
                     online_team.text =
                         if (vm.isMyOnlineTeamBottom()) "Your team is GREEN/GREEN\nLobbyid: $lobbyId" else "Your team is PURPLE/PURPLE\n" +
@@ -154,12 +155,6 @@ class GameFragment : Fragment(), View.OnClickListener {
             ViewUtil.setScaleOnRotatedView(flip_view, card_top_goalie)
             ViewUtil.setScaleOnRotatedView(flip_view, background_top_goalie)
             ViewUtil.setScaleOnRotatedView(flip_view, flip_top_goalie)
-
-            vm.setGameMode(
-                GameFragmentArgs.fromBundle(arguments!!).argsLobbyId,
-                GameFragmentArgs.fromBundle(arguments!!).argsLobbyName,
-                GameFragmentArgs.fromBundle(arguments!!).argsLobbyPassword
-            )
         }
 
         computer_lamp.post {
@@ -176,6 +171,12 @@ class GameFragment : Fragment(), View.OnClickListener {
             updateMessageBox("Press anywhere to start the game! Period: $period", isNeutralMessage = true)
             whole_view.setOnClickListener { initGame() }
         }
+
+        vm.setGameMode(
+            GameFragmentArgs.fromBundle(arguments!!).argsLobbyId,
+            GameFragmentArgs.fromBundle(arguments!!).argsLobbyName,
+            GameFragmentArgs.fromBundle(arguments!!).argsLobbyPassword
+        )
     }
 
     override fun onResume() {
@@ -216,6 +217,8 @@ class GameFragment : Fragment(), View.OnClickListener {
     * */
 
     private fun updateScores() {
+        if (top_team_score == null || bm_team_score == null) return
+
         val scorerTextView = when {
             teamTopScore > Integer.parseInt(top_team_score.text.toString()) -> top_team_score
             teamBottomScore > Integer.parseInt(bm_team_score.text.toString()) -> bm_team_score
@@ -547,9 +550,12 @@ class GameFragment : Fragment(), View.OnClickListener {
                 val team = if (isTeamGreenTurn()) teamGreen else teamPurple
                 val onlyOneEmptySpotOrNull = vm.getEmptySpots(teamViews).takeIf { it.size == 1 }
 
-                if (isRestoringPlayers && onlyOneEmptySpotOrNull != null) {
-                    if (isOnlineMode()) vm.notifyOnlineInput(onlyOneEmptySpotOrNull.first())
-                    animateAddPlayer(teamViews[onlyOneEmptySpotOrNull.first()], team, onlyOneEmptySpotOrNull.first())
+                if (isRestoringPlayers && onlyOneEmptySpotOrNull != null && vm.cardDeck.size >= 5) {
+                    val index = onlyOneEmptySpotOrNull.first()
+
+                    if (isOnlineMode()) vm.notifyOnlineInput(index)
+                    if (vm.canAddPlayerView(teamViews[index], team, index))
+                        animateAddPlayer(teamViews[index], team, index)
                 } else {
                     setOnClickListeners()
                 }
@@ -616,7 +622,6 @@ class GameFragment : Fragment(), View.OnClickListener {
             card_bm_goalie.tag = null
             true
         } else {
-            whole_view.visibility = View.VISIBLE
             txt_winner.text = when {
                 teamBottomScore > teamTopScore -> "Team Green\nwon with $teamBottomScore-$teamTopScore!"
                 else -> "Team Purple\nwon with $teamTopScore-$teamBottomScore!"
@@ -624,9 +629,7 @@ class GameFragment : Fragment(), View.OnClickListener {
             Animations.animateWinner(fading_view, lottie_trophy, txt_winner)
             Util.vibrate(requireContext(), true)
 
-            fading_view.setOnClickListener {
-                view?.let { Navigation.findNavController(it).popBackStack() }
-            }
+            fading_view.setOnClickListener { view?.let { Navigation.findNavController(it).popBackStack() } }
             false
         }
     }

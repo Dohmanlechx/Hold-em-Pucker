@@ -16,6 +16,7 @@ import com.dohman.holdempucker.models.OnlineLobby
 import com.dohman.holdempucker.ui.items.LobbyItem
 import com.dohman.holdempucker.util.Constants
 import com.dohman.holdempucker.util.Constants.Companion.currentGameMode
+import com.dohman.holdempucker.util.Constants.Companion.period
 import com.dohman.holdempucker.util.ViewUtil
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
@@ -48,6 +49,11 @@ class LobbiesFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         setupOnClickListeners()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        v_lobbies_recycler.adapter = null
     }
 
     private fun clearTeams() {
@@ -83,6 +89,7 @@ class LobbiesFragment : Fragment() {
     ) {
         removeAllOnClickListeners()
         clearTeams()
+        period = 1
         if (lobbyId != null) {
             val action = LobbiesFragmentDirections.actionLobbiesFragmentToGameFragment(lobbyId, null)
             view?.findNavController()?.navigate(action)
@@ -106,6 +113,8 @@ class LobbiesFragment : Fragment() {
             v_lobbies_recycler.visibility = View.VISIBLE
             txt_no_lobbies.visibility = View.GONE
         }
+
+        if (lobbies.size == itemAdapter.adapterItemCount) return
 
         itemAdapter.clear()
         lobbies.forEach { lobby ->

@@ -72,6 +72,7 @@ object ViewUtil {
 
             lobbyNameEditText.apply {
                 filters = filterArray
+                hint = "(unnamed)"
                 setSingleLine(true)
             }
 
@@ -87,10 +88,12 @@ object ViewUtil {
             }
 
             setPositiveButton(context.getString(R.string.dialog_lobby_positive)) { _, _ ->
+                var name: String = lobbyNameEditText.text.toString().trim()
                 var password: String? = lobbyPasswordEditText.text.toString().trim()
                 if (password?.isBlank() == true) password = null
 
-                fGoToGameFragment.invoke(lobbyNameEditText.text.toString().trim(), password)
+                if (name.isBlank()) name = "(unnamed)"
+                fGoToGameFragment.invoke(name, password)
             }
 
             setView(layout)
