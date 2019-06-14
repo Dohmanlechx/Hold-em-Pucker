@@ -24,9 +24,13 @@ class LobbiesViewModel : ViewModel() {
         lobbyRepo.lobbies.observeForever(lobbyObserver)
     }
 
-    fun getAmountPlayersOfLobby(lobbyId: String?, fReturnedValue: (Int) -> Unit) = lobbyRepo.getAmountPlayersOfLobby(lobbyId) {
-        fReturnedValue.invoke(it)
-    }
+    fun getAmountPlayersOfLobby(lobbyId: String?, fReturnedValue: (Int) -> Unit) =
+        lobbyRepo.getAmountPlayersOfLobby(lobbyId) {
+            fReturnedValue.invoke(it)
+        }
+
+    fun isPasswordValid(lobbyId: String?, lobbyPassword: String, fReturnedValue: (Boolean) -> Unit) =
+        onlineRepo.checkPassword(lobbyId, lobbyPassword) { isValid -> fReturnedValue.invoke(isValid) }
 
     override fun onCleared() {
         super.onCleared()

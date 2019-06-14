@@ -56,7 +56,7 @@ object ViewUtil {
         return Bitmap.createBitmap(scaledBitmap, 0, 0, scaledBitmap.width, scaledBitmap.height, matrix, true)
     }
 
-    fun buildLobbyNameDialog(context: Context, fGoToGameFragment: (String) -> Unit) =
+    fun buildLobbyNameDialog(context: Context, fGoToGameFragment: (String, String?) -> Unit) =
         AlertDialog.Builder(context).apply {
             val layout = LinearLayout(context)
             layout.orientation = LinearLayout.VERTICAL
@@ -64,6 +64,7 @@ object ViewUtil {
             this.setTitle(context.getString(R.string.dialog_lobby_header))
 
             val lobbyNameEditText = EditText(context)
+            val lobbyPasswordEditText = EditText(context)
 
             val maxLength = 15
             val filterArray = arrayOfNulls<InputFilter>(1)
@@ -74,10 +75,52 @@ object ViewUtil {
                 setSingleLine(true)
             }
 
-            layout.addView(lobbyNameEditText)
+            lobbyPasswordEditText.apply {
+                filters = filterArray
+                hint = "password (optional)"
+                setSingleLine(true)
+            }
+
+            layout.apply {
+                addView(lobbyNameEditText)
+                addView(lobbyPasswordEditText)
+            }
 
             setPositiveButton(context.getString(R.string.dialog_lobby_positive)) { _, _ ->
-                fGoToGameFragment.invoke(lobbyNameEditText.text.toString().trim())
+                var password: String? = lobbyPasswordEditText.text.toString().trim()
+                if (password?.isBlank() == true) password = null
+
+                fGoToGameFragment.invoke(lobbyNameEditText.text.toString().trim(), password)
+            }
+
+            setView(layout)
+            this.create()
+            this.show()
+        }
+
+
+    fun buildLobbyPasswordInput(context: Context, fGoToGameFragment: (String) -> Unit) =
+        AlertDialog.Builder(context).apply {
+            val layout = LinearLayout(context)
+            layout.orientation = LinearLayout.VERTICAL
+
+            this.setTitle(context.getString(R.string.dialog_lobby_password_required))
+
+            val lobbyPasswordEditText = EditText(context)
+
+            val maxLength = 15
+            val filterArray = arrayOfNulls<InputFilter>(1)
+            filterArray[0] = InputFilter.LengthFilter(maxLength)
+
+            lobbyPasswordEditText.apply {
+                filters = filterArray
+                setSingleLine(true)
+            }
+
+            layout.addView(lobbyPasswordEditText)
+
+            setPositiveButton(context.getString(R.string.dialog_lobby_positive)) { _, _ ->
+                fGoToGameFragment.invoke(lobbyPasswordEditText.text.toString().trim())
             }
 
             setView(layout)

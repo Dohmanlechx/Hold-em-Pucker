@@ -18,11 +18,12 @@ class OnlinePlayRepository @Inject constructor(
     var myOnlineTeam: Enum<MyOnlineTeam>
 
     // All paths in a lobby reference
-    private val pathPeriod = "period"
     private val pathBottomInput = "bottomInput"
     private val pathBottomPlayer = "bottomPlayer"
     private val pathCardDeck = "cardDeck"
     private val pathId = "id"
+    private val pathPeriod = "period"
+    private val pathPassword = "password"
     private val pathTopInput = "topInput"
     private val pathTopPlayer = "topPlayer"
 
@@ -110,7 +111,7 @@ class OnlinePlayRepository @Inject constructor(
         db.child(thisLobbyId).child(pathTopPlayer).setValue("taken")
     }
 
-    fun createLobby(cardDeck: List<Card>?, lobbyName: String?) {
+    fun createLobby(cardDeck: List<Card>?, lobbyName: String?, password: String? = null) {
         myOnlineTeam = MyOnlineTeam.BOTTOM
         isMyOnlineTeamGreen = true
 
@@ -118,10 +119,26 @@ class OnlinePlayRepository @Inject constructor(
 
         val sortedCardDeck = getSortedCardDeck(cardDeck)
 
-        val lobby = OnlineLobby(lobbyId, lobbyName, 1, "", "taken", -1, -1, sortedCardDeck)
+        val lobby = OnlineLobby(lobbyId, lobbyName, password, 1, "", "taken", -1, -1, sortedCardDeck)
         thisLobby().setValue(lobby)
 
         waitForOpponent()
+    }
+
+    fun checkPassword(lobbyId: String?, lobbyPassword: String, fReturnedValue: (Boolean) -> Unit) {
+        if (lobbyId == null) {
+            fReturnedValue.invoke(false)
+        } else {
+            var isValid = false
+            db.child(lobbyId).child(pathPassword).addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(passwordChild: DataSnapshot) {
+                    if (passwordChild.value == lobbyPassword) isValid = true
+                    fReturnedValue.invoke(isValid)
+                }
+
+                override fun onCancelled(p0: DatabaseError) {}
+            })
+        }
     }
 
     fun storeCardDeckInLobby(cardDeck: List<Card>?) {

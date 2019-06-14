@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DefaultItemAnimator
@@ -58,9 +59,9 @@ class LobbiesFragment : Fragment() {
 
     private fun setupOnClickListeners() {
         v_fab_create_server.setOnClickListener {
-            ViewUtil.buildLobbyNameDialog(requireContext()) { lobbyName ->
+            ViewUtil.buildLobbyNameDialog(requireContext()) { lobbyName, lobbyPassword ->
                 currentGameMode = Constants.GameMode.ONLINE
-                navigateToGameFragment(null, lobbyName)
+                navigateToGameFragment(null, lobbyName, lobbyPassword)
             }
         }
 
@@ -75,14 +76,18 @@ class LobbiesFragment : Fragment() {
         v_fab_play_offline_multiplayer.setOnClickListener(null)
     }
 
-    private fun navigateToGameFragment(lobbyId: String? = null, lobbyName: String? = null) {
+    private fun navigateToGameFragment(
+        lobbyId: String? = null,
+        lobbyName: String? = null,
+        lobbyPassword: String? = null
+    ) {
         removeAllOnClickListeners()
         clearTeams()
         if (lobbyId != null) {
             val action = LobbiesFragmentDirections.actionLobbiesFragmentToGameFragment(lobbyId, null)
             view?.findNavController()?.navigate(action)
         } else if (lobbyName != null) {
-            val action = LobbiesFragmentDirections.actionLobbiesFragmentToGameFragment(null, lobbyName)
+            val action = LobbiesFragmentDirections.actionLobbiesFragmentToGameFragment(null, lobbyName, lobbyPassword)
             view?.findNavController()?.navigate(action)
         }
     }
@@ -105,11 +110,26 @@ class LobbiesFragment : Fragment() {
         itemAdapter.clear()
         lobbies.forEach { lobby ->
             vm.getAmountPlayersOfLobby(lobby.id) { amountPlayers ->
-                itemAdapter.add(LobbyItem(lobby.id, lobby.name, amountPlayers) { lobbyId ->
-                    // OnClick
-                    currentGameMode = Constants.GameMode.ONLINE
-                    navigateToGameFragment(lobbyId)
-                })
+                itemAdapter.add(
+                    LobbyItem(
+                        lobby.id,
+                        lobby.name,
+                        lobby.password,
+                        amountPlayers
+                    ) { lobbyId, lobbyPassword ->
+                        // OnClick
+                        currentGameMode = Constants.GameMode.ONLINE
+                        if (lobbyPassword.isNullOrBlank()) {
+                            navigateToGameFragment(lobbyId)
+                        } else {
+                            ViewUtil.buildLobbyPasswordInput(requireContext()) { password ->
+                                vm.isPasswordValid(lobbyId, password) { isValid ->
+                                    if (isValid) navigateToGameFragment(lobbyId)
+                                    else Toast.makeText(requireContext(), "Wrong password", Toast.LENGTH_SHORT).show()
+                                }
+                            }
+                        }
+                    })
             }
         }
     }

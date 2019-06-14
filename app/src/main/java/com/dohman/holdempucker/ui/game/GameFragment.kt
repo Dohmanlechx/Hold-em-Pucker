@@ -155,7 +155,11 @@ class GameFragment : Fragment(), View.OnClickListener {
             ViewUtil.setScaleOnRotatedView(flip_view, background_top_goalie)
             ViewUtil.setScaleOnRotatedView(flip_view, flip_top_goalie)
 
-            vm.setGameMode(GameFragmentArgs.fromBundle(arguments!!).argsLobbyId, GameFragmentArgs.fromBundle(arguments!!).argsLobbyName)
+            vm.setGameMode(
+                GameFragmentArgs.fromBundle(arguments!!).argsLobbyId,
+                GameFragmentArgs.fromBundle(arguments!!).argsLobbyName,
+                GameFragmentArgs.fromBundle(arguments!!).argsLobbyPassword
+            )
         }
 
         computer_lamp.post {
@@ -167,7 +171,7 @@ class GameFragment : Fragment(), View.OnClickListener {
         if (isOnlineMode()) {
             whoseTurn = Constants.WhoseTurn.GREEN
             v_progressbar.visibility = View.VISIBLE
-            updateMessageBox("Waiting for opponent...", isNeutralMessage = true)
+            updateMessageBox("Waiting\nfor\nopponent...", isNeutralMessage = true)
         } else {
             updateMessageBox("Press anywhere to start the game! Period: $period", isNeutralMessage = true)
             whole_view.setOnClickListener { initGame() }
