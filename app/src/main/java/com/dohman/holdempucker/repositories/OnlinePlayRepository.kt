@@ -29,6 +29,14 @@ class OnlinePlayRepository @Inject constructor(
 
     private var pathForInput: String = ""
 
+    private val vlForOpponentHasDisconnected = object : ValueEventListener {
+        override fun onDataChange(snapshot: DataSnapshot) {
+            if (snapshot.value == null) opponentHasDisconnected.value = true
+        }
+
+        override fun onCancelled(p0: DatabaseError) {}
+    }
+
     private val vlForPeriod = object : ValueEventListener {
         override fun onDataChange(periodSnapshot: DataSnapshot) {
             val newPeriod = (periodSnapshot.value as? Long)?.toInt()
@@ -77,6 +85,7 @@ class OnlinePlayRepository @Inject constructor(
     val opponentInput: MutableLiveData<Int> = MutableLiveData()
     val opponentFound: MutableLiveData<Boolean> = MutableLiveData()
     val onlineCardDeck: MutableLiveData<List<Card>> = MutableLiveData()
+    val opponentHasDisconnected: MutableLiveData<Boolean> = MutableLiveData()
 
     init {
         myOnlineTeam = MyOnlineTeam.UNDEFINED
@@ -109,6 +118,7 @@ class OnlinePlayRepository @Inject constructor(
         isMyOnlineTeamGreen = false
         opponentFound.value = true
         db.child(thisLobbyId).child(pathTopPlayer).setValue("taken")
+        setListenerForOpponentDisconnected()
     }
 
     fun createLobby(cardDeck: List<Card>?, lobbyName: String?, password: String? = null) {
@@ -122,6 +132,7 @@ class OnlinePlayRepository @Inject constructor(
         val lobby = OnlineLobby(lobbyId, lobbyName, password, 1, "", "taken", -1, -1, sortedCardDeck)
         thisLobby().setValue(lobby)
 
+        setListenerForOpponentDisconnected()
         waitForOpponent()
     }
 
@@ -155,6 +166,8 @@ class OnlinePlayRepository @Inject constructor(
 
     fun setListenerForCardDeck() = thisLobby().child(pathCardDeck).addValueEventListener(vlForOnlineCardDeck)
 
+    private fun setListenerForOpponentDisconnected() = thisLobby().addValueEventListener(vlForOpponentHasDisconnected)
+
     fun setListenerForInput() {
         pathForInput = if (isMyTeamBottom()) pathTopInput else pathBottomInput
         thisLobby().child(pathForInput).addValueEventListener(vlForInput)
@@ -175,10 +188,12 @@ class OnlinePlayRepository @Inject constructor(
         myOnlineTeam = MyOnlineTeam.UNDEFINED
         opponentInput.postValue(-1)
         opponentFound.postValue(false)
+        opponentHasDisconnected.postValue(false)
     }
 
     fun removeAllValueEventListeners() =
         thisLobby().apply {
+            removeEventListener(vlForOpponentHasDisconnected)
             child(pathPeriod).removeEventListener(vlForPeriod)
             child(pathForInput).removeEventListener(vlForInput)
             child(pathTopPlayer).removeEventListener(vlForOpponentAwaiting)

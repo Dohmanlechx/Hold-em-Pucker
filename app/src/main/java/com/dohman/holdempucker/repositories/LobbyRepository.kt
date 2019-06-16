@@ -66,5 +66,7 @@ class LobbyRepository @Inject constructor(
         }
     }
 
-
+    fun removeAllValueListeners() {
+        db.removeEventListener(vlForLobbies)
+    }
 }

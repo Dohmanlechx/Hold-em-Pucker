@@ -8,7 +8,6 @@ import androidx.navigation.findNavController
 import com.dohman.holdempucker.util.Constants.Companion.isOnlineMode
 
 class MainActivity : AppCompatActivity() {
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN)

@@ -54,6 +54,8 @@ class GameFragment : Fragment(), View.OnClickListener {
     private var fvGoalieTopX: Float = 0f
     private var fvGoalieTopY: Float = 0f
 
+    private var isWinnerDeclared = false
+
     private val teamGreenViews = mutableListOf<AppCompatImageView>()
     private val teamPurpleViews = mutableListOf<AppCompatImageView>()
 
@@ -138,6 +140,14 @@ class GameFragment : Fragment(), View.OnClickListener {
                                 "Lobbyid: $lobbyId"
                 }
             })
+        vm.onlineOpponentHasDisconnected.observe(viewLifecycleOwner, Observer { disconnected ->
+            if (disconnected && !isWinnerDeclared) {
+                txt_winner.text = getString(R.string.opponent_disconnected)
+                Animations.animateWinner(fading_view, lottie_trophy, txt_winner)
+                Util.vibrate(requireContext(), true)
+                fading_view.setOnClickListener { view?.let { Navigation.findNavController(it).popBackStack() } }
+            }
+        })
         // End of Observables
 
         return inflater.inflate(R.layout.game_fragment, container, false)
@@ -528,7 +538,9 @@ class GameFragment : Fragment(), View.OnClickListener {
             if (isRestoringPlayers) {
                 vm.botChooseEmptySpot(vm.getEmptySpots(teamPurpleViews)) {
                     // Trigger the bot's move
-                    if (it != -1) animateAddPlayer(teamPurpleViews[it], teamPurple, it)
+                    if (it != -1)
+                        if (vm.canAddPlayerView(teamPurpleViews[it], teamPurple, it))
+                            animateAddPlayer(teamPurpleViews[it], teamPurple, it)
                 }
             } else {
                 // Attacking player
@@ -633,6 +645,7 @@ class GameFragment : Fragment(), View.OnClickListener {
                 teamBottomScore > teamTopScore -> "Team Green\nwon with $teamBottomScore-$teamTopScore!"
                 else -> "Team Purple\nwon with $teamTopScore-$teamBottomScore!"
             }
+            isWinnerDeclared = true
             Animations.animateWinner(fading_view, lottie_trophy, txt_winner)
             Util.vibrate(requireContext(), true)
 

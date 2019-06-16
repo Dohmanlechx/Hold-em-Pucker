@@ -16,6 +16,7 @@
     <string name="dialog_lobby_header">Name the lobby</string>
     <string name="dialog_lobby_positive">Done</string>
     <string name="dialog_lobby_password_required">Password:</string>
+    <string name="opponent_disconnected">Your opponent forfeited.\nYou won!</string>
 
     <string name="bot_inputting">CPU\'s\nmoving...</string>
     <string name="opponent_inputting">Opponent\'s\nmoving...</string>

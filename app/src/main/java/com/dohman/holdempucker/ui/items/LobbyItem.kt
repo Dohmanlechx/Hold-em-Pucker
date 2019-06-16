@@ -23,10 +23,12 @@ class LobbyItem(
     override fun bindView(holder: ViewHolder, payloads: MutableList<Any>) {
         super.bindView(holder, payloads)
 
-        if (amountPlayers >= 2)
-            holder.itemView.card_view_background.setImageDrawable(
-                ContextCompat.getDrawable(holder.context, R.drawable.background_card_view_busy)
-            )
+        val backgroundDrawable =
+            if (amountPlayers >= 2) R.drawable.background_card_view_busy else R.drawable.background_card_view
+
+        holder.itemView.card_view_background.setImageDrawable(
+            ContextCompat.getDrawable(holder.context, backgroundDrawable)
+        )
 
         holder.itemView.v_padlock.visibility = if (lobbyPassword.isNullOrBlank()) View.GONE else View.VISIBLE
 

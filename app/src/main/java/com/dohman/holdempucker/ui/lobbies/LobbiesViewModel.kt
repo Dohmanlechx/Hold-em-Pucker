@@ -35,5 +35,6 @@ class LobbiesViewModel : ViewModel() {
     override fun onCleared() {
         super.onCleared()
         lobbyRepo.lobbies.removeObserver(lobbyObserver)
+        lobbyRepo.removeAllValueListeners()
     }
 }

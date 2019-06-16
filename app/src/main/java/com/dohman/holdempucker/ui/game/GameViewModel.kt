@@ -61,6 +61,7 @@ class GameViewModel : ViewModel() {
     // Online
     val onlineOpponentInputNotifier = MutableLiveData<Int>()
     val onlineOpponentFoundNotifier = MutableLiveData<Boolean>()
+    val onlineOpponentHasDisconnected = MutableLiveData<Boolean>()
 
     private val periodObserver = Observer<Int> { newPeriod ->
         newPeriod?.let { if (newPeriod != period) triggerHalfTime(triggeredFromObserver = true) }
@@ -80,6 +81,7 @@ class GameViewModel : ViewModel() {
             // FIXME OPPONENT HAS DISCONNECTED!
         }
     }
+    private val opponentHasDisconnected = Observer<Boolean> { onlineOpponentHasDisconnected.value = it }
 
     init {
         RepositoryComponent.inject(this)
@@ -111,6 +113,7 @@ class GameViewModel : ViewModel() {
         onlineRepo.opponentFound.removeObserver(opponentFoundObserver)
         onlineRepo.opponentInput.removeObserver(inputObserver)
         onlineRepo.onlineCardDeck.removeObserver(onlineCardDeckObserver)
+        onlineRepo.opponentHasDisconnected.removeObserver(opponentHasDisconnected)
         onlineRepo.resetValues()
     }
 
@@ -135,6 +138,7 @@ class GameViewModel : ViewModel() {
         onlineRepo.period.observeForever(periodObserver)
         onlineRepo.opponentFound.observeForever(opponentFoundObserver)
         onlineRepo.opponentInput.observeForever(inputObserver)
+        onlineRepo.opponentHasDisconnected.observeForever(opponentHasDisconnected)
     }
 
     fun isMyOnlineTeamBottom() = onlineRepo.isMyTeamBottom()
