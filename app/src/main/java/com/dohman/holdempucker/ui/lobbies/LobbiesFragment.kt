@@ -89,7 +89,6 @@ class LobbiesFragment : Fragment() {
     ) {
         removeAllOnClickListeners()
         clearTeams()
-        period = 1
         if (lobbyId != null) {
             val action = LobbiesFragmentDirections.actionLobbiesFragmentToGameFragment(lobbyId, null)
             view?.findNavController()?.navigate(action)

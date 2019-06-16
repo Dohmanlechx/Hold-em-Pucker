@@ -212,7 +212,7 @@ object Animations {
                 .translationX(target.x + 60f - attacker.x)
                 .translationY(target.y - attacker.y)
                 .startDelay(Util.getDelay())
-                .duration(400)
+                .duration(500)
                 .interpolator(LinearOutSlowInInterpolator())
                 .onStop { fOnAddPlayerEnd.invoke() }
             .start()
@@ -244,11 +244,11 @@ object Animations {
                 .translationX(target.x - attacker.x - 20f)
                 .translationY(target.y - attacker.y + 20f)
                 .startDelay(Util.getDelay())
-                .duration(500)
+                .duration(600)
                 .interpolator(LinearOutSlowInInterpolator())
             .thenAnimate(attacker, target)
                 .translationX(screenWidth.toFloat())
-                .duration(500)
+                .duration(600)
                 .interpolator(AnticipateInterpolator(1.0f))
                 .onStop { fOnAttackPlayerEnd.invoke() }
             .start()

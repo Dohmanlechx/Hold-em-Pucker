@@ -193,9 +193,14 @@ class GameViewModel : ViewModel() {
     private fun areThereEnoughCardsToScore(opponentTeam: Array<Card?>): Boolean {
         var amountOfCardsToAttack = 0
 
-        if (opponentTeam[PLAYER_DEFENDER_LEFT] != null || opponentTeam[PLAYER_DEFENDER_RIGHT] != null) amountOfCardsToAttack++
-        if (opponentTeam[PLAYER_CENTER] != null) amountOfCardsToAttack++
-        if (opponentTeam[PLAYER_FORWARD_LEFT] != null || opponentTeam[PLAYER_FORWARD_RIGHT] != null) amountOfCardsToAttack++
+        if (opponentTeam[PLAYER_DEFENDER_LEFT] == null || opponentTeam[PLAYER_DEFENDER_RIGHT] == null) return true
+        amountOfCardsToAttack++
+
+        if (opponentTeam[PLAYER_CENTER] != null)
+            amountOfCardsToAttack++
+
+        if (opponentTeam[PLAYER_FORWARD_LEFT] != null || opponentTeam[PLAYER_FORWARD_RIGHT] != null)
+            amountOfCardsToAttack++
 
         if (cardDeck.size < amountOfCardsToAttack) {
             triggerHalfTime()
