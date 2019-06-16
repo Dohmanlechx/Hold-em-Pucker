@@ -14,9 +14,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.dohman.holdempucker.R
 import com.dohman.holdempucker.models.OnlineLobby
 import com.dohman.holdempucker.ui.items.LobbyItem
+import com.dohman.holdempucker.util.Animations
 import com.dohman.holdempucker.util.Constants
 import com.dohman.holdempucker.util.Constants.Companion.currentGameMode
-import com.dohman.holdempucker.util.Constants.Companion.period
 import com.dohman.holdempucker.util.ViewUtil
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
@@ -89,24 +89,33 @@ class LobbiesFragment : Fragment() {
     ) {
         removeAllOnClickListeners()
         clearTeams()
-        if (lobbyId != null) {
-            val action = LobbiesFragmentDirections.actionLobbiesFragmentToGameFragment(lobbyId, null)
-            view?.findNavController()?.navigate(action)
-        } else if (lobbyName != null) {
-            val action = LobbiesFragmentDirections.actionLobbiesFragmentToGameFragment(null, lobbyName, lobbyPassword)
-            view?.findNavController()?.navigate(action)
+        when {
+            lobbyId != null -> {
+                val action = LobbiesFragmentDirections.actionLobbiesFragmentToGameFragment(lobbyId, null)
+                view?.findNavController()?.navigate(action)
+            }
+            lobbyName != null -> {
+                val action =
+                    LobbiesFragmentDirections.actionLobbiesFragmentToGameFragment(null, lobbyName, lobbyPassword)
+                view?.findNavController()?.navigate(action)
+            }
+            else -> view?.findNavController()?.navigate(R.id.action_lobbiesFragment_to_gameFragment)
         }
     }
 
     private fun setupLobbiesRecycler() = v_lobbies_recycler.apply {
-        itemAnimator = DefaultItemAnimator()
+        itemAnimator = null
         layoutManager = LinearLayoutManager(requireContext())
         adapter = fastAdapter
     }
 
     private fun updateLobbyRecycler(lobbies: List<OnlineLobby>) {
         if (lobbies.isNullOrEmpty()) {
-            v_lobbies_recycler.visibility = View.GONE
+            v_lobbies_recycler.apply {
+                visibility = View.GONE
+                scaleX = 0.0f
+                scaleY = 0.0f
+            }
             txt_no_lobbies.visibility = View.VISIBLE
         } else {
             v_lobbies_recycler.visibility = View.VISIBLE
@@ -115,30 +124,39 @@ class LobbiesFragment : Fragment() {
 
         if (lobbies.size == itemAdapter.adapterItemCount) return
 
-        itemAdapter.clear()
-        lobbies.forEach { lobby ->
-            vm.getAmountPlayersOfLobby(lobby.id) { amountPlayers ->
-                itemAdapter.add(
-                    LobbyItem(
-                        lobby.id,
-                        lobby.name,
-                        lobby.password,
-                        amountPlayers
-                    ) { lobbyId, lobbyPassword ->
-                        // OnClick
-                        currentGameMode = Constants.GameMode.ONLINE
-                        if (lobbyPassword.isNullOrBlank()) {
-                            navigateToGameFragment(lobbyId)
-                        } else {
-                            ViewUtil.buildLobbyPasswordInput(requireContext()) { password ->
-                                vm.isPasswordValid(lobbyId, password) { isValid ->
-                                    if (isValid) navigateToGameFragment(lobbyId)
-                                    else Toast.makeText(requireContext(), "Wrong password", Toast.LENGTH_SHORT).show()
+        Animations.animateLobbyRecycler(v_lobbies_recycler, true) {
+            // onStop
+            itemAdapter.clear()
+            lobbies.forEach { lobby ->
+                vm.getAmountPlayersOfLobby(lobby.id) { amountPlayers ->
+                    itemAdapter.add(
+                        LobbyItem(
+                            lobby.id,
+                            lobby.name,
+                            lobby.password,
+                            amountPlayers
+                        ) { lobbyId, lobbyPassword ->
+                            // OnClick
+                            currentGameMode = Constants.GameMode.ONLINE
+                            if (lobbyPassword.isNullOrBlank()) {
+                                navigateToGameFragment(lobbyId)
+                            } else {
+                                ViewUtil.buildLobbyPasswordInput(requireContext()) { password ->
+                                    vm.isPasswordValid(lobbyId, password) { isValid ->
+                                        if (isValid) navigateToGameFragment(lobbyId)
+                                        else Toast.makeText(
+                                            requireContext(),
+                                            "Wrong password",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    }
                                 }
                             }
-                        }
-                    })
+                        })
+                }
             }
+
+            Animations.animateLobbyRecycler(v_lobbies_recycler, false)
         }
     }
 }

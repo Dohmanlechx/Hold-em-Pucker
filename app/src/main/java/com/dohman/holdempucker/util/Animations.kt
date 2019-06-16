@@ -54,9 +54,23 @@ object Animations {
         listOfAllAnimations.add(
             ViewAnimator
                 .animate(button)
-                .scale(0.9f, 1.0f)
-                .duration(200)
-                .onStop { fNavigateToGameFragment.invoke() }
+                    .scale(0.9f, 1.0f)
+                    .duration(200)
+                    .onStop { fNavigateToGameFragment.invoke() }
+                .start()
+        )
+    }
+
+    fun animateLobbyRecycler(recycler: View, scaleOut: Boolean, fOnAnimationEnd: (() -> Unit)? = null) {
+        val startScale = if (scaleOut) 1.0f else 0f
+        val endScale = if (scaleOut) 0.0f else 1.0f
+
+        listOfAllAnimations.add(
+            ViewAnimator
+                .animate(recycler)
+                    .scale(startScale, endScale)
+                    .duration(200)
+                    .onStop { fOnAnimationEnd?.invoke() }
                 .start()
         )
     }
@@ -248,7 +262,7 @@ object Animations {
                 .interpolator(LinearOutSlowInInterpolator())
             .thenAnimate(attacker, target)
                 .translationX(screenWidth.toFloat())
-                .duration(600)
+                .duration(450)
                 .interpolator(AnticipateInterpolator(1.0f))
                 .onStop { fOnAttackPlayerEnd.invoke() }
             .start()

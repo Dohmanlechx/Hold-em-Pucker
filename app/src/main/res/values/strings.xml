@@ -9,11 +9,14 @@
     <string name="four">4</string>
     <string name="dialog_back_header">Are you sure?</string>
     <string name="dialog_back_message">You are about to go back to main menu. If doing so, you\'ll lose all the progress.</string>
-    <string name="dialog_back_positive">Yes!</string>
+    <string name="dialog_back_message_online">You are about to forfeit the game.</string>
+    <string name="dialog_back_positive">Yes</string>
+    <string name="dialog_back_positive_online">Yes, forfeit</string>
+    <string name="dialog_back_negative">No, stay!</string>
     <string name="dialog_lobby_header">Name the lobby</string>
     <string name="dialog_lobby_positive">Done</string>
     <string name="dialog_lobby_password_required">Password:</string>
-    <string name="dialog_back_negative">No, stay!</string>
+
     <string name="bot_inputting">CPU\'s\nmoving...</string>
     <string name="opponent_inputting">Opponent\'s\nmoving...</string>
     <string name="version">v%s</string>

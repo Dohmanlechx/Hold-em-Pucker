@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.WindowManager
 import androidx.appcompat.app.AlertDialog
 import androidx.navigation.findNavController
+import com.dohman.holdempucker.util.Constants.Companion.isOnlineMode
 
 class MainActivity : AppCompatActivity() {
 
@@ -20,10 +21,15 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun buildDialog() = AlertDialog.Builder(this).apply {
-        this.setTitle(getString(R.string.dialog_back_header))
-        this.setMessage(getString(R.string.dialog_back_message))
+        val message =
+            if (isOnlineMode()) R.string.dialog_back_message_online else R.string.dialog_back_message
+        val positiveButtonText =
+            if (isOnlineMode()) R.string.dialog_back_positive_online else R.string.dialog_back_positive
 
-        setPositiveButton(getString(R.string.dialog_back_positive)) { _, _ ->
+        this.setTitle(getString(R.string.dialog_back_header))
+        this.setMessage(getString(message))
+
+        setPositiveButton(getString(positiveButtonText)) { _, _ ->
             findNavController(R.id.nav_host_fragment).popBackStack()
         }
         setNegativeButton(getString(R.string.dialog_back_negative)) { _, _ -> }
