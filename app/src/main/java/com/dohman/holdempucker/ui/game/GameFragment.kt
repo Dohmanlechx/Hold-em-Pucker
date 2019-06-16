@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.AppCompatImageView
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -135,9 +136,14 @@ class GameFragment : Fragment(), View.OnClickListener {
                     v_progressbar.visibility = View.GONE
                     Handler().postDelayed({ initGame() }, 1000)
 
-                    online_team.text =
-                        if (vm.isMyOnlineTeamBottom()) "Your team is GREEN/GREEN\nLobbyid: $lobbyId" else "Your team is PURPLE/PURPLE\n" +
-                                "Lobbyid: $lobbyId"
+                    txt_online_team.apply {
+                        val textMessage = if (vm.isMyOnlineTeamBottom()) "YOU ARE TEAM GREEN" else "YOU ARE TEAM PURPLE"
+                        val textColor =
+                            if (vm.isMyOnlineTeamBottom()) R.color.text_background_btm else R.color.text_background_top
+
+                        text = textMessage
+                        setTextColor(ContextCompat.getColor(requireContext(), textColor))
+                    }
                 }
             })
         vm.onlineOpponentHasDisconnected.observe(viewLifecycleOwner, Observer { disconnected ->
@@ -183,7 +189,7 @@ class GameFragment : Fragment(), View.OnClickListener {
         if (isOnlineMode()) {
             whoseTurn = Constants.WhoseTurn.GREEN
             v_progressbar.visibility = View.VISIBLE
-            updateMessageBox("Waiting\nfor\nopponent...", isNeutralMessage = true)
+            updateMessageBox("Waiting\nfor\nopponent\n...", isNeutralMessage = true)
         } else {
             updateMessageBox("Press anywhere to start the game! Period: $period", isNeutralMessage = true)
             whole_view.setOnClickListener { initGame() }

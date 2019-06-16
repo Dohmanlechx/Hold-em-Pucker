@@ -17,7 +17,7 @@
     <string name="dialog_lobby_positive">Done</string>
     <string name="dialog_lobby_password_required">Password:</string>
     <string name="opponent_disconnected">Your opponent forfeited.\nYou won!</string>
-
+    <string name="warning_online_beta">This online feature is currently in beta.\nPlease click here to report bugs.</string>
     <string name="bot_inputting">CPU\'s\nmoving...</string>
     <string name="opponent_inputting">Opponent\'s\nmoving...</string>
     <string name="version">v%s</string>

@@ -1,5 +1,6 @@
 package com.dohman.holdempucker.ui.lobbies
 
+import android.content.Intent
 import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -44,6 +45,16 @@ class LobbiesFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         setupLobbiesRecycler()
+
+        txt_online_beta.setOnClickListener {
+            val emailIntent = Intent(Intent.ACTION_SEND)
+            emailIntent.apply {
+                type = "plain/text"
+                putExtra(Intent.EXTRA_EMAIL, arrayOf("dohman_92@hotmail.com"))
+                putExtra(Intent.EXTRA_SUBJECT, "Hold'em Pucker Online - Bug Report")
+            }
+            startActivity(Intent.createChooser(emailIntent, "Choose email client..."))
+        }
     }
 
     override fun onResume() {

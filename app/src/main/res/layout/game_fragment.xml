@@ -9,12 +9,18 @@
 	tools:context=".MainActivity">
 
 	<androidx.appcompat.widget.AppCompatTextView
-		android:id="@+id/online_team"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
+		android:id="@+id/txt_online_team"
+		android:layout_width="0dp"
+		android:layout_height="0dp"
+		android:gravity="center"
+		android:fontFamily="@font/lilita_one"
+		android:textSize="18sp"
 		app:layout_constraintEnd_toEndOf="parent"
 		app:layout_constraintStart_toStartOf="parent"
-		app:layout_constraintTop_toTopOf="parent" />
+		app:layout_constraintBottom_toTopOf="@id/background_top_goalie"
+		app:layout_constraintTop_toTopOf="parent"
+		tools:textColor="@color/text_background_btm"
+		tools:text="YOU ARE TEAM GREEN"/>
 
 	<!-- GUIDE LINES HORIZONTAL -->
 
