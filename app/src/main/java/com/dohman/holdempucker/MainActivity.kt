@@ -6,6 +6,7 @@ import android.view.WindowManager
 import androidx.appcompat.app.AlertDialog
 import androidx.navigation.findNavController
 import com.dohman.holdempucker.util.Constants.Companion.isOnlineMode
+import com.dohman.holdempucker.util.Constants.Companion.isWinnerDeclared
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -15,7 +16,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        if (findNavController(R.id.nav_host_fragment).currentDestination?.id == R.id.gameFragment) buildDialog()
+        if (findNavController(R.id.nav_host_fragment).currentDestination?.id == R.id.gameFragment && !isWinnerDeclared) buildDialog()
         else super.onBackPressed()
     }
 

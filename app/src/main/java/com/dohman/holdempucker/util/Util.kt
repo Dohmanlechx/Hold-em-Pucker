@@ -2,6 +2,7 @@ package com.dohman.holdempucker.util
 
 import android.content.Context
 import android.os.Build
+import android.os.CountDownTimer
 import android.os.VibrationEffect
 import android.os.Vibrator
 import com.dohman.holdempucker.util.Constants.WhoseTurn.Companion.isBotMoving
@@ -47,6 +48,18 @@ object Util {
             } else {
                 val duration = if (isPositive) 100L else 20L
                 vibrator.vibrate(duration)
+            }
+        }
+    }
+
+    fun getOnlineInputTimer(fUpdateTheTimerText: (Long) -> Unit, fTimerReachedTheEnd: () -> Unit): CountDownTimer {
+        return object : CountDownTimer(20000, 1000) {
+            override fun onTick(millisUntilFinished: Long) {
+                fUpdateTheTimerText.invoke(millisUntilFinished)
+            }
+
+            override fun onFinish() {
+                fTimerReachedTheEnd.invoke()
             }
         }
     }

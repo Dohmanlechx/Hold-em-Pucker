@@ -12,15 +12,15 @@
 		android:id="@+id/txt_online_team"
 		android:layout_width="0dp"
 		android:layout_height="0dp"
-		android:gravity="center"
 		android:fontFamily="@font/lilita_one"
+		android:gravity="center"
 		android:textSize="18sp"
+		app:layout_constraintBottom_toTopOf="@id/background_top_goalie"
 		app:layout_constraintEnd_toEndOf="parent"
 		app:layout_constraintStart_toStartOf="parent"
-		app:layout_constraintBottom_toTopOf="@id/background_top_goalie"
 		app:layout_constraintTop_toTopOf="parent"
-		tools:textColor="@color/text_background_btm"
-		tools:text="YOU ARE TEAM GREEN"/>
+		tools:text="YOU ARE TEAM GREEN"
+		tools:textColor="@color/text_background_btm" />
 
 	<!-- GUIDE LINES HORIZONTAL -->
 
@@ -761,6 +761,20 @@
 		app:layout_constraintStart_toStartOf="parent"
 		app:layout_constraintTop_toBottomOf="@id/lottie_trophy"
 		tools:text="Team Bottom won with 6-1!" />
+
+	<androidx.appcompat.widget.AppCompatTextView
+		android:id="@+id/txt_online_timer"
+		android:layout_width="0dp"
+		android:layout_height="0dp"
+		android:fontFamily="@font/press_start_2p"
+		android:gravity="center"
+		android:textColor="@color/red"
+		android:textSize="24sp"
+		app:layout_constraintBottom_toTopOf="@id/gl_hor_98"
+		app:layout_constraintEnd_toEndOf="@id/gl_ver_20"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toBottomOf="@id/gl_hor_82"
+		tools:text="20" />
 
 	<ProgressBar
 		android:id="@+id/v_progressbar"

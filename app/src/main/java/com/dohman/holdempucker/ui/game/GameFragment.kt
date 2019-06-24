@@ -1,16 +1,19 @@
 package com.dohman.holdempucker.ui.game
 
 import android.os.Bundle
+import android.os.CountDownTimer
 import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.Navigation
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.dohman.holdempucker.R
 import com.dohman.holdempucker.models.Card
@@ -29,6 +32,7 @@ import com.dohman.holdempucker.util.Constants.Companion.PLAYER_GOALIE
 import com.dohman.holdempucker.util.Constants.Companion.isMyOnlineTeamGreen
 import com.dohman.holdempucker.util.Constants.Companion.isNotOnlineMode
 import com.dohman.holdempucker.util.Constants.Companion.isOnlineMode
+import com.dohman.holdempucker.util.Constants.Companion.isWinnerDeclared
 import com.dohman.holdempucker.util.Constants.Companion.lobbyId
 import com.dohman.holdempucker.util.Constants.Companion.whoseTurn
 import com.dohman.holdempucker.util.Constants.WhoseTurn.Companion.isBotMoving
@@ -55,16 +59,17 @@ class GameFragment : Fragment(), View.OnClickListener {
     private var fvGoalieTopX: Float = 0f
     private var fvGoalieTopY: Float = 0f
 
-    private var isWinnerDeclared = false
-
     private val teamGreenViews = mutableListOf<AppCompatImageView>()
     private val teamPurpleViews = mutableListOf<AppCompatImageView>()
 
     private var tempGoalieCard: Card? = null
 
+    private var onlineInputTimer: CountDownTimer? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         period = 1
+        isWinnerDeclared = false
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -148,6 +153,7 @@ class GameFragment : Fragment(), View.OnClickListener {
             })
         vm.onlineOpponentHasDisconnected.observe(viewLifecycleOwner, Observer { disconnected ->
             if (disconnected && !isWinnerDeclared) {
+                isWinnerDeclared = true
                 txt_winner.text = getString(R.string.opponent_disconnected)
                 Animations.animateWinner(fading_view, lottie_trophy, txt_winner)
                 Util.vibrate(requireContext(), true)
@@ -210,7 +216,10 @@ class GameFragment : Fragment(), View.OnClickListener {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        if (isOnlineMode()) vm.removeLobbyFromDatabase()
+        if (isOnlineMode()) {
+            vm.removeLobbyFromDatabase()
+            onlineInputTimer?.cancel()
+        }
         lobbyId = ""
         vm.clearAllValueEventListeners()
         Animations.stopAllAnimations()
@@ -218,6 +227,8 @@ class GameFragment : Fragment(), View.OnClickListener {
     }
 
     private fun initGame() {
+        if (card_top_goalie == null) return // Temporary solution for that Handler of initGame()
+
         teamBottomScore = 0
         teamTopScore = 0
         updateScores()
@@ -256,6 +267,10 @@ class GameFragment : Fragment(), View.OnClickListener {
                 bm_team_score.text = teamBottomScore.toString()
             }
         }
+    }
+
+    private fun updateTheTimerText(secsLeftInLong: Long) {
+        txt_online_timer?.let { it.text = (secsLeftInLong / 1000).toString() }
     }
 
     private fun restoreFlipViewsPosition() {
@@ -538,6 +553,26 @@ class GameFragment : Fragment(), View.OnClickListener {
         if (flip_view == null) return
 
         flip_view.flipTheView()
+
+        if (isOnlineMode()) {
+            onlineInputTimer?.cancel()
+            onlineInputTimer = Util.getOnlineInputTimer({ timeLeftInLong ->
+                updateTheTimerText(timeLeftInLong)
+            }, {
+                if ((isOnlineMode() && vm.isMyOnlineTeamBottom() && isTeamGreenTurn())
+                    || (isOnlineMode() && !vm.isMyOnlineTeamBottom() && isTeamPurpleTurn())
+                ) {
+                    vm.removeLobbyFromDatabase()
+                    Toast.makeText(requireContext(), "You didn't make input in time. You forfeited the game.", Toast.LENGTH_LONG).show()
+                    view?.findNavController()?.popBackStack()
+                }
+                else {
+                    vm.removeLobbyFromDatabase()
+                }
+            })
+            onlineInputTimer?.start()
+        }
+
         // Bot's turn
         if (isBotMoving() && !isBadCard) {
             // Adding player
