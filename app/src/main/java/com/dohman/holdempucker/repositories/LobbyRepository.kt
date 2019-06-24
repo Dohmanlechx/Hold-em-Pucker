@@ -11,7 +11,6 @@ import javax.inject.Inject
 class LobbyRepository @Inject constructor(
     private val db: DatabaseReference
 ) {
-
     // All paths in a lobby reference
     private val pathPeriod = "period"
     private val pathBottomInput = "bottomInput"
@@ -22,6 +21,7 @@ class LobbyRepository @Inject constructor(
     private val pathTopPlayer = "topPlayer"
 
     val lobbies: MutableLiveData<List<OnlineLobby>> = MutableLiveData()
+    private var oldLobbiesList = emptyList<OnlineLobby>()
 
     private val vlForLobbies = object : ValueEventListener {
         override fun onDataChange(snapshot: DataSnapshot) {
@@ -39,10 +39,24 @@ class LobbyRepository @Inject constructor(
             val arrayListOfLobbies: ArrayList<OnlineLobby> = ArrayList(hashMap.values)
             arrayListOfLobbies.forEach { lobby -> lobbyList.add(lobby) }
 
-            lobbies.value = lobbyList
+            if (lobbiesShouldBeUpdated(oldLobbiesList, lobbyList))
+                lobbies.value = lobbyList
+
+            oldLobbiesList = lobbyList
         }
 
         override fun onCancelled(p0: DatabaseError) {}
+    }
+
+    private fun lobbiesShouldBeUpdated(oldList: List<OnlineLobby>, newList: List<OnlineLobby>): Boolean {
+        if (oldList.size != newList.size || oldList.isEmpty()) return true
+
+        oldList.forEachIndexed { index, oldOnlineLobby ->
+            val lobbyToCompare = newList.find { it.id == oldOnlineLobby.id }
+            if (oldOnlineLobby.topPlayer != lobbyToCompare?.topPlayer) return true
+        }
+
+        return false
     }
 
     init {

@@ -17,7 +17,7 @@ class MessageTextItem(
     private val message: String,
     private val isNeutralMessage: Boolean = false
 ) : AbstractItem<MessageTextItem, MessageTextItem.ViewHolder>() {
-    override fun getType(): Int = R.id.fastadapter_item
+    override fun getType(): Int = R.id.adapter_type_computer_text
     override fun getViewHolder(v: View): ViewHolder = ViewHolder(v)
     override fun getLayoutRes(): Int = R.layout.message_box_item
 

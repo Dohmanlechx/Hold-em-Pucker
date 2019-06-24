@@ -10,7 +10,6 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.navigation.findNavController
-import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.dohman.holdempucker.R
 import com.dohman.holdempucker.models.OnlineLobby
@@ -132,8 +131,6 @@ class LobbiesFragment : Fragment() {
             v_lobbies_recycler.visibility = View.VISIBLE
             txt_no_lobbies.visibility = View.GONE
         }
-
-        if (lobbies.size == itemAdapter.adapterItemCount) return
 
         Animations.animateLobbyRecycler(v_lobbies_recycler, true) {
             // onStop

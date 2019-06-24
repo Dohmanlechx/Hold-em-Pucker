@@ -16,7 +16,7 @@ class LobbyItem(
     private val amountPlayers: Int,
     private val fOnClick: (String?, String?) -> Unit
 ) : AbstractItem<LobbyItem, LobbyItem.ViewHolder>() {
-    override fun getType(): Int = R.id.fastadapter_item
+    override fun getType(): Int = R.id.adapter_type_lobby
     override fun getViewHolder(v: View): ViewHolder = ViewHolder(v)
     override fun getLayoutRes(): Int = R.layout.lobby_item
 
