@@ -53,7 +53,7 @@ object Util {
     }
 
     fun getOnlineInputTimer(fUpdateTheTimerText: (Long) -> Unit, fTimerReachedTheEnd: () -> Unit): CountDownTimer {
-        return object : CountDownTimer(20000, 1000) {
+        return object : CountDownTimer(21000, 1000) {
             override fun onTick(millisUntilFinished: Long) {
                 fUpdateTheTimerText.invoke(millisUntilFinished)
             }
