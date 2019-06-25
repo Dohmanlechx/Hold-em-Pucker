@@ -7,6 +7,7 @@
     <!--GAME ACTIVITY-->
     <color name="board">#1ACA1D</color>
     <color name="black">#000000</color>
+    <color name="gray">#525252</color>
     <color name="text_black">#CC000000</color>
     <color name="card_border">#80000000</color>
     <color name="text_background_btm">#5CD862</color>
@@ -21,6 +22,7 @@
     <color name="darker_white">#DCDCDC</color>
     <color name="red">#FF0000</color>
     <color name="darker_red">#d02000</color>
+    <color name="darkest_red">#8B1700</color>
     <color name="lighter_red">#FF7878</color>
     <color name="ice_white">#EBE4E4</color>
     <color name="ice_red">#66FF0000</color>

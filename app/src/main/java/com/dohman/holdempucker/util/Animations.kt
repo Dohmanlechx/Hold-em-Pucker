@@ -5,10 +5,11 @@ import android.view.animation.AnticipateInterpolator
 import android.view.animation.OvershootInterpolator
 import androidx.interpolator.view.animation.LinearOutSlowInInterpolator
 import com.airbnb.lottie.LottieAnimationView
-import com.dohman.holdempucker.cards.Card
+import com.dohman.holdempucker.models.Card
 import com.dohman.holdempucker.util.Constants.Companion.possibleMovesIndexes
 import com.dohman.holdempucker.util.Constants.Companion.whoseTurn
 import com.dohman.holdempucker.util.Constants.WhoseTurn.Companion.isBotMoving
+import com.dohman.holdempucker.util.Constants.WhoseTurn.Companion.isOpponentMoving
 import com.github.florent37.viewanimator.ViewAnimator
 import com.wajahatkarim3.easyflipview.EasyFlipView
 
@@ -53,9 +54,23 @@ object Animations {
         listOfAllAnimations.add(
             ViewAnimator
                 .animate(button)
-                .scale(0.9f, 1.0f)
-                .duration(200)
-                .onStop { fNavigateToGameFragment.invoke() }
+                    .scale(0.9f, 1.0f)
+                    .duration(200)
+                    .onStop { fNavigateToGameFragment.invoke() }
+                .start()
+        )
+    }
+
+    fun animateLobbyRecycler(recycler: View, scaleOut: Boolean, fOnAnimationEnd: (() -> Unit)? = null) {
+        val startScale = if (scaleOut) 1.0f else 0f
+        val endScale = if (scaleOut) 0.0f else 1.0f
+
+        listOfAllAnimations.add(
+            ViewAnimator
+                .animate(recycler)
+                    .scale(startScale, endScale)
+                    .duration(200)
+                    .onStop { fOnAnimationEnd?.invoke() }
                 .start()
         )
     }
@@ -85,7 +100,7 @@ object Animations {
     }
 
     fun animatePuck(puck: View, team: String) {
-        val vector = if (team.toLowerCase() == "bottom") 100f else -100f
+        val vector = if (team.toLowerCase() == "green") 100f else -100f
 
         listOfAllAnimations.add(
         ViewAnimator
@@ -134,7 +149,7 @@ object Animations {
         cardsLeftText: View,
         doNotShowMessage: Boolean = false,
         fOnFlipPlayingCardEnd: () -> Unit,
-        fNotifyMessage: (message: String) -> Unit,
+        fNotifyMessage: () -> Unit,
         fHideTheCardBackground: () -> Unit
     ) {
         cardsLeftText.apply {
@@ -153,7 +168,7 @@ object Animations {
                     if (Constants.isRestoringPlayers
                         && !doNotShowMessage
                         && !Constants.isShootingAtGoalie
-                    ) fNotifyMessage.invoke("Please choose a position.")
+                    ) fNotifyMessage.invoke()
                 }
                 .onStop { fOnFlipPlayingCardEnd.invoke() }
             .thenAnimate(cardsLeftText)
@@ -185,7 +200,7 @@ object Animations {
     fun animatePulsingCards(viewsToPulse: List<View>, fNotifyMessage: (message: String) -> Unit) {
         fNotifyMessage.invoke(Util.pulseCardsText(possibleMovesIndexes.size))
 
-        if (isBotMoving()) return
+        if (isBotMoving() || isOpponentMoving()) return
 
         viewsToPulse.forEach {
             listOfPulseAnimations.add(
@@ -211,7 +226,7 @@ object Animations {
                 .translationX(target.x + 60f - attacker.x)
                 .translationY(target.y - attacker.y)
                 .startDelay(Util.getDelay())
-                .duration(400)
+                .duration(500)
                 .interpolator(LinearOutSlowInInterpolator())
                 .onStop { fOnAddPlayerEnd.invoke() }
             .start()
@@ -243,11 +258,11 @@ object Animations {
                 .translationX(target.x - attacker.x - 20f)
                 .translationY(target.y - attacker.y + 20f)
                 .startDelay(Util.getDelay())
-                .duration(500)
+                .duration(600)
                 .interpolator(LinearOutSlowInInterpolator())
             .thenAnimate(attacker, target)
                 .translationX(screenWidth.toFloat())
-                .duration(500)
+                .duration(450)
                 .interpolator(AnticipateInterpolator(1.0f))
                 .onStop { fOnAttackPlayerEnd.invoke() }
             .start()
@@ -271,7 +286,7 @@ object Animations {
         goalie.bringToFront()
 
         val vector = when (whoseTurn) {
-            Constants.WhoseTurn.BOTTOM -> goalie.bottomYWithOffset() - attacker.y
+            Constants.WhoseTurn.GREEN -> goalie.bottomYWithOffset() - attacker.y
             else -> goalie.y - attacker.bottomYWithOffset()
         }
 
@@ -324,7 +339,7 @@ object Animations {
         goalie.bringToFront()
 
         val vector = when (whoseTurn) {
-            Constants.WhoseTurn.BOTTOM -> goalie.bottomYWithOffset() - attacker.y
+            Constants.WhoseTurn.GREEN -> goalie.bottomYWithOffset() - attacker.y
             else -> goalie.y - attacker.bottomYWithOffset()
         }
 

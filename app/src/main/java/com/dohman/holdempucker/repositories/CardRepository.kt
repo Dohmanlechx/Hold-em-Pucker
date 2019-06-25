@@ -1,7 +1,7 @@
 package com.dohman.holdempucker.repositories
 
-import com.dohman.holdempucker.cards.Card
-import com.dohman.holdempucker.cards.Suits
+import com.dohman.holdempucker.models.Card
+import com.dohman.holdempucker.models.Suits
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -15,14 +15,12 @@ class CardRepository @Inject constructor(
     private fun initializeCards(): MutableList<Card> {
         val cardDeck = mutableListOf<Card>()
         enumValues<Suits>().forEach { suit ->
-            suit.let {
-                for (i in 2..14) {
-                    val card = Card()
-                    card.suit = it
-                    card.rank = i
-                    card.src = getImageStr(it, i)
-                    cardDeck.add(card)
-                }
+            for (rank in 2..14) {
+                val card = Card()
+                card.suit = suit
+                card.rank = rank
+                card.src = getImageStr(suit, rank)
+                cardDeck.add(card)
             }
         }
 

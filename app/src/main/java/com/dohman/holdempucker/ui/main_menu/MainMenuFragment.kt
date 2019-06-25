@@ -14,9 +14,8 @@ import com.dohman.holdempucker.ui.how_to_play.HowToPlayDialogFragment.Companion.
 import com.dohman.holdempucker.util.Animations
 import com.dohman.holdempucker.util.Constants
 import com.dohman.holdempucker.util.Constants.Companion.currentGameMode
-import com.dohman.holdempucker.util.Constants.Companion.period
-import com.dohman.holdempucker.util.Constants.Companion.teamBottom
-import com.dohman.holdempucker.util.Constants.Companion.teamTop
+import com.dohman.holdempucker.util.Constants.Companion.teamGreen
+import com.dohman.holdempucker.util.Constants.Companion.teamPurple
 import com.dohman.holdempucker.util.Util
 import kotlinx.android.synthetic.main.main_menu_fragment.*
 
@@ -41,6 +40,7 @@ class MainMenuFragment : Fragment() {
 
         btn_how_to_play.setOnClickListener {
             if (!isHowToPlayDialogShown) showHowToPlayDialog(it)
+            isHowToPlayDialogShown = true
         }
 
         btn_easy_mode.setOnClickListener {
@@ -54,8 +54,7 @@ class MainMenuFragment : Fragment() {
         }
 
         btn_multiplayer.setOnClickListener {
-            currentGameMode = Constants.GameMode.FRIEND
-            navigateToGameFragment(it)
+            navigateToLobbiesFragment(it)
         }
     }
 
@@ -69,8 +68,8 @@ class MainMenuFragment : Fragment() {
 
     private fun clearTeams() {
         for (index in 0..5) {
-            teamTop[index] = null
-            teamBottom[index] = null
+            teamPurple[index] = null
+            teamGreen[index] = null
         }
     }
 
@@ -88,12 +87,23 @@ class MainMenuFragment : Fragment() {
         removeAllOnClickListeners()
 
         clearTeams()
-        period = 1
 
         Util.vibrate(requireContext(), true)
         Animations.animateButton(button) {
             view?.findNavController()?.navigate(R.id.action_mainMenuFragment_to_gameFragment)
         }
+    }
+
+    private fun navigateToLobbiesFragment(button: View) {
+        removeAllOnClickListeners()
+
+        clearTeams()
+
+        Util.vibrate(requireContext(), true)
+        Animations.animateButton(button) {
+            view?.findNavController()?.navigate(R.id.action_mainMenuFragment_to_lobbiesFragment)
+        }
+
     }
 
     private fun removeAllOnClickListeners() {

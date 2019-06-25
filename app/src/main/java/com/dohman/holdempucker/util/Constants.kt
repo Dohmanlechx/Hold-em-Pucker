@@ -1,6 +1,6 @@
 package com.dohman.holdempucker.util
 
-import com.dohman.holdempucker.cards.Card
+import com.dohman.holdempucker.models.Card
 
 class Constants {
     companion object {
@@ -10,16 +10,27 @@ class Constants {
         const val TAG_GAMEACTIVITY = "DBG: GameFragment.kt"
         const val TAG_GAMEVIEWMODEL = "DBG: GameViewModel.kt"
 
+        // Game Mode
+        var currentGameMode = GameMode.NONE
+
+        // Online
+        var lobbyId = ""
+        var isOpponentFound = false
+        var isMyOnlineTeamGreen = false
+        fun isOnlineMode() = currentGameMode == GameMode.ONLINE
+        fun isNotOnlineMode() = currentGameMode != GameMode.ONLINE
+
         // Booleans
         var isVsBotMode = false
         var isOngoingGame = false // Set to true when all cards are laid out
+        var isWinnerDeclared = false
         var isShootingAtGoalie = false // To prevent duplicate message
         var isRestoringPlayers = true // Set to true when a team need to lay out new cards to fulfill
         var areTeamsReadyToStartPeriod = false // Set to true as soon as both teams are full in the very beginning
 
         // Objects
-        val teamTop = arrayOfNulls<Card>(6)
-        val teamBottom = arrayOfNulls<Card>(6)
+        val teamPurple = arrayOfNulls<Card>(6)
+        val teamGreen = arrayOfNulls<Card>(6)
 
         /*  Index 0 = Left forward | 1 = Center | 2 = Right forward
                         3 = Left defender | 4 = Right defender
@@ -42,11 +53,8 @@ class Constants {
         var possibleMovesIndexes = mutableListOf<Int>() // For the pulse animations and AI moves
 
         // Whose turn
-        var whoseTurn = WhoseTurn.BOTTOM
+        var whoseTurn = WhoseTurn.GREEN
         var whoseTeamStartedLastPeriod = whoseTurn
-
-        // Game Mode
-        var currentGameMode = GameMode.NONE
 
         // Cases
         val cases = mutableListOf<List<Int>>().apply {
@@ -77,19 +85,21 @@ class Constants {
 
     // Enums
     enum class WhoseTurn {
-        BOTTOM, TOP;
+        GREEN, PURPLE;
 
         companion object {
             fun toggleTurn() {
-                whoseTurn = if (whoseTurn == BOTTOM) TOP else BOTTOM
+                whoseTurn = if (whoseTurn == GREEN) PURPLE else GREEN
             }
 
-            fun isBotMoving() = whoseTurn == TOP && isVsBotMode
-            fun isTeamBottomTurn() = whoseTurn == BOTTOM
+            fun isBotMoving() = isTeamPurpleTurn() && isVsBotMode
+            fun isOpponentMoving() = (isOnlineMode() && isTeamPurpleTurn() && isMyOnlineTeamGreen) || (isOnlineMode() && isTeamGreenTurn() && !isMyOnlineTeamGreen)
+            fun isTeamGreenTurn() = whoseTurn == GREEN
+            fun isTeamPurpleTurn() = whoseTurn == PURPLE
         }
     }
 
     enum class GameMode {
-        NONE, RANDOM, DEVELOPER, FRIEND;
+        NONE, RANDOM, DEVELOPER, FRIEND, ONLINE
     }
 }

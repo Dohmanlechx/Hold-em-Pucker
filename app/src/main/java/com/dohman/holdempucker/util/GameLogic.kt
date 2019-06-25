@@ -1,19 +1,19 @@
 package com.dohman.holdempucker.util
 
-import com.dohman.holdempucker.cards.Card
+import com.dohman.holdempucker.models.Card
 import com.dohman.holdempucker.util.Constants.Companion.PLAYER_DEFENDER_LEFT
 import com.dohman.holdempucker.util.Constants.Companion.PLAYER_DEFENDER_RIGHT
 import com.dohman.holdempucker.util.Constants.Companion.PLAYER_GOALIE
 import com.dohman.holdempucker.util.Constants.Companion.cases
 import com.dohman.holdempucker.util.Constants.Companion.possibleMovesIndexes
-import com.dohman.holdempucker.util.Constants.Companion.teamBottom
-import com.dohman.holdempucker.util.Constants.Companion.teamTop
-import com.dohman.holdempucker.util.Constants.WhoseTurn.Companion.isTeamBottomTurn
+import com.dohman.holdempucker.util.Constants.Companion.teamGreen
+import com.dohman.holdempucker.util.Constants.Companion.teamPurple
+import com.dohman.holdempucker.util.Constants.WhoseTurn.Companion.isTeamGreenTurn
 
 object GameLogic {
 
     fun isGoalieThereOrAdd(goalieCard: Card): Boolean {
-        val team = if (isTeamBottomTurn()) teamBottom else teamTop
+        val team = if (isTeamGreenTurn()) teamGreen else teamPurple
 
         team.let { if (it[PLAYER_GOALIE] != null) return true else it[PLAYER_GOALIE] = goalieCard }
 
@@ -58,7 +58,7 @@ object GameLogic {
 
     fun isTherePossibleMove(currentCard: Card): Boolean {
         val victimTeam =
-            if (isTeamBottomTurn()) teamTop else teamBottom
+            if (isTeamGreenTurn()) teamPurple else teamGreen
 
         val currentCase = arrayListOf<Int>()
         victimTeam.forEachIndexed { index, card ->

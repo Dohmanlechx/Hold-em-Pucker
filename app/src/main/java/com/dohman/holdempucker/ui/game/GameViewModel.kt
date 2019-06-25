@@ -3,27 +3,38 @@ package com.dohman.holdempucker.ui.game
 import android.view.View
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import com.dohman.holdempucker.R
-import com.dohman.holdempucker.cards.Card
 import com.dohman.holdempucker.dagger.RepositoryComponent
+import com.dohman.holdempucker.models.Card
 import com.dohman.holdempucker.repositories.BotRepository
 import com.dohman.holdempucker.repositories.CardRepository
+import com.dohman.holdempucker.repositories.OnlinePlayRepository
 import com.dohman.holdempucker.repositories.ResourceRepository
+import com.dohman.holdempucker.util.Animations
 import com.dohman.holdempucker.util.Constants
+import com.dohman.holdempucker.util.Constants.Companion.PLAYER_CENTER
+import com.dohman.holdempucker.util.Constants.Companion.PLAYER_DEFENDER_LEFT
+import com.dohman.holdempucker.util.Constants.Companion.PLAYER_DEFENDER_RIGHT
+import com.dohman.holdempucker.util.Constants.Companion.PLAYER_FORWARD_LEFT
+import com.dohman.holdempucker.util.Constants.Companion.PLAYER_FORWARD_RIGHT
 import com.dohman.holdempucker.util.Constants.Companion.areTeamsReadyToStartPeriod
 import com.dohman.holdempucker.util.Constants.Companion.currentGameMode
+import com.dohman.holdempucker.util.Constants.Companion.isNotOnlineMode
 import com.dohman.holdempucker.util.Constants.Companion.isOngoingGame
-import com.dohman.holdempucker.util.Constants.Companion.period
+import com.dohman.holdempucker.util.Constants.Companion.isOnlineMode
+import com.dohman.holdempucker.util.Constants.Companion.isOpponentFound
 import com.dohman.holdempucker.util.Constants.Companion.isRestoringPlayers
-import com.dohman.holdempucker.util.Constants.Companion.teamBottom
-import com.dohman.holdempucker.util.Constants.Companion.teamBottomScore
-import com.dohman.holdempucker.util.Constants.Companion.teamTop
-import com.dohman.holdempucker.util.Constants.Companion.teamTopScore
 import com.dohman.holdempucker.util.Constants.Companion.isVsBotMode
+import com.dohman.holdempucker.util.Constants.Companion.period
+import com.dohman.holdempucker.util.Constants.Companion.teamGreen
+import com.dohman.holdempucker.util.Constants.Companion.teamBottomScore
+import com.dohman.holdempucker.util.Constants.Companion.teamPurple
+import com.dohman.holdempucker.util.Constants.Companion.teamTopScore
 import com.dohman.holdempucker.util.Constants.Companion.whoseTeamStartedLastPeriod
 import com.dohman.holdempucker.util.Constants.Companion.whoseTurn
-import com.dohman.holdempucker.util.Constants.WhoseTurn.Companion.isTeamBottomTurn
+import com.dohman.holdempucker.util.Constants.WhoseTurn.Companion.isTeamGreenTurn
 import com.dohman.holdempucker.util.GameLogic
 import com.dohman.holdempucker.util.Util
 import javax.inject.Inject
@@ -35,6 +46,8 @@ class GameViewModel : ViewModel() {
     lateinit var cardRepo: CardRepository
     @Inject
     lateinit var botRepo: BotRepository
+    @Inject
+    lateinit var onlineRepo: OnlinePlayRepository
 
     var cardDeck = mutableListOf<Card>()
     var firstCardInDeck: Card
@@ -45,6 +58,30 @@ class GameViewModel : ViewModel() {
     val pickedCardNotifier = MutableLiveData<Int>()
     val cardsCountNotifier = MutableLiveData<Int>()
     val badCardNotifier = MutableLiveData<Boolean>()
+    // Online
+    val onlineOpponentInputNotifier = MutableLiveData<Int>()
+    val onlineOpponentFoundNotifier = MutableLiveData<Boolean>()
+    val onlineOpponentHasDisconnected = MutableLiveData<Boolean>()
+
+    private val periodObserver = Observer<Int> { newPeriod ->
+        newPeriod?.let { if (newPeriod != period) triggerHalfTime(triggeredFromObserver = true) }
+    }
+    private val opponentFoundObserver = Observer<Boolean> { found ->
+        isOpponentFound = found
+        if (found && period == 1) onlineOpponentFoundNotifier.value = found
+    }
+    private val inputObserver = Observer<Int> { input ->
+        onlineOpponentInputNotifier.value = input.takeIf { it in 0..5 }
+    }
+    private val onlineCardDeckObserver = Observer<List<Card>> { newCardDeck ->
+        if (newCardDeck.isNotEmpty()) {
+            cardDeck = newCardDeck.toMutableList()
+            firstCardInDeck = cardDeck.first()
+        } else {
+            // FIXME OPPONENT HAS DISCONNECTED!
+        }
+    }
+    private val opponentHasDisconnected = Observer<Boolean> { onlineOpponentHasDisconnected.value = it }
 
     init {
         RepositoryComponent.inject(this)
@@ -59,14 +96,56 @@ class GameViewModel : ViewModel() {
 
     fun getScreenWidth() = appRepo.getScreenWidth()
 
-    fun setGameMode() {
+    fun setGameMode(argsLobbyId: String? = null, lobbyName: String? = null, lobbyPassword: String? = null) {
         isVsBotMode = when (currentGameMode) {
             Constants.GameMode.RANDOM -> true
             Constants.GameMode.DEVELOPER -> true
-            Constants.GameMode.FRIEND -> false
             else -> false
         }
+
+        if (currentGameMode == Constants.GameMode.ONLINE) setupOnlineGame(argsLobbyId, lobbyName, lobbyPassword)
     }
+
+    override fun onCleared() {
+        super.onCleared()
+
+        onlineRepo.period.removeObserver(periodObserver)
+        onlineRepo.opponentFound.removeObserver(opponentFoundObserver)
+        onlineRepo.opponentInput.removeObserver(inputObserver)
+        onlineRepo.onlineCardDeck.removeObserver(onlineCardDeckObserver)
+        onlineRepo.opponentHasDisconnected.removeObserver(opponentHasDisconnected)
+        onlineRepo.resetValues()
+    }
+
+    /*
+    * Online functions
+    * */
+
+    private fun setupOnlineGame(argsLobbyId: String? = null, lobbyName: String? = null, lobbyPassword: String? = null) {
+        if (argsLobbyId != null)
+            onlineRepo.joinThisLobby(argsLobbyId)
+        else if (lobbyName != null)
+            onlineRepo.createLobby(cardDeck, lobbyName, lobbyPassword)
+
+        // Lobby is created
+        if (!onlineRepo.isMyTeamBottom()) {
+            onlineRepo.setListenerForCardDeck()
+            onlineRepo.onlineCardDeck.observeForever(onlineCardDeckObserver)
+        }
+
+        onlineRepo.setListenerForInput()
+        onlineRepo.setListenerForPeriod()
+        onlineRepo.period.observeForever(periodObserver)
+        onlineRepo.opponentFound.observeForever(opponentFoundObserver)
+        onlineRepo.opponentInput.observeForever(inputObserver)
+        onlineRepo.opponentHasDisconnected.observeForever(opponentHasDisconnected)
+    }
+
+    fun isMyOnlineTeamBottom() = onlineRepo.isMyTeamBottom()
+
+    fun clearAllValueEventListeners() = onlineRepo.removeAllValueEventListeners()
+
+    fun removeLobbyFromDatabase() = onlineRepo.removeLobbyFromDatabase()
 
     /*
     * Notify functions
@@ -84,6 +163,8 @@ class GameViewModel : ViewModel() {
     fun notifyMessage(message: String, isNeutralMessage: Boolean = false) {
         messageNotifier.value = Pair(message, isNeutralMessage)
     }
+
+    fun notifyOnlineInput(input: Int) = onlineRepo.updateInput(input)
 
     /*
     * Card deck functions
@@ -106,6 +187,26 @@ class GameViewModel : ViewModel() {
     private fun areThereEnoughCards(team: Array<Card?>): Boolean {
         val amountOfCardsToFill = team.filter { it == null }.size
         if ((amountOfCardsToFill + 4) > cardDeck.size) { // 4 is the minimum amount to score an goal
+            triggerHalfTime()
+            return false
+        }
+
+        return true
+    }
+
+    private fun areThereEnoughCardsToScore(opponentTeam: Array<Card?>): Boolean {
+        var amountOfCardsToAttack = 0
+
+        if (opponentTeam[PLAYER_DEFENDER_LEFT] == null || opponentTeam[PLAYER_DEFENDER_RIGHT] == null) return true
+        amountOfCardsToAttack++
+
+        if (opponentTeam[PLAYER_CENTER] != null)
+            amountOfCardsToAttack++
+
+        if (opponentTeam[PLAYER_FORWARD_LEFT] != null || opponentTeam[PLAYER_FORWARD_RIGHT] != null)
+            amountOfCardsToAttack++
+
+        if (cardDeck.size < amountOfCardsToAttack) {
             triggerHalfTime()
             return false
         }
@@ -169,7 +270,7 @@ class GameViewModel : ViewModel() {
             )
 
             whoseTurn =
-                if (whoseTeamStartedLastPeriod == Constants.WhoseTurn.BOTTOM) Constants.WhoseTurn.TOP else Constants.WhoseTurn.BOTTOM
+                if (whoseTeamStartedLastPeriod == Constants.WhoseTurn.GREEN) Constants.WhoseTurn.PURPLE else Constants.WhoseTurn.GREEN
 
             whoseTeamStartedLastPeriod = whoseTurn
 
@@ -177,16 +278,39 @@ class GameViewModel : ViewModel() {
         }
     }
 
-    private fun triggerHalfTime() {
+    private fun dealNewCardDeck() {
         cardDeck = cardRepo.createCards() as MutableList<Card>
         firstCardInDeck = cardDeck.first()
+    }
 
-        for (index in 0..5) {
-            teamBottom[index] = null
-            teamTop[index] = null
+    private fun triggerHalfTime(triggeredFromObserver: Boolean = false) {
+        if (triggeredFromObserver && (period == onlineRepo.period.value)) return
+
+        if (isNotOnlineMode()) {
+            dealNewCardDeck()
+        } else {
+            if (isMyOnlineTeamBottom()) {
+                dealNewCardDeck()
+                onlineRepo.storeCardDeckInLobby(cardDeck)
+            } else {
+                if (!onlineRepo.hasCardDeckBeenRetrievedCorrectly(cardDeck))
+                    onlineRepo.retrieveCardDeckFromLobby().let { newCardDeck ->
+                        if (!newCardDeck.isNullOrEmpty()) {
+                            cardDeck = newCardDeck.toMutableList()
+                            firstCardInDeck = cardDeck.first()
+                        }
+                    }
+            }
         }
 
+        for (index in 0..5) {
+            teamGreen[index] = null
+            teamPurple[index] = null
+        }
+
+        period++
         halfTimeNotifier.value = 1
+        if (isOnlineMode() && !triggeredFromObserver) onlineRepo.updatePeriod(period)
         if (period <= 3) notifyMessage("Not enough cards. Period $period started.", isNeutralMessage = true)
         isOngoingGame = false
         areTeamsReadyToStartPeriod = false
@@ -197,7 +321,7 @@ class GameViewModel : ViewModel() {
     }
 
     fun addGoalToScore() {
-        if (isTeamBottomTurn()) teamBottomScore++ else teamTopScore++
+        if (isTeamGreenTurn()) teamBottomScore++ else teamTopScore++
     }
 
     /*
@@ -215,8 +339,8 @@ class GameViewModel : ViewModel() {
     }
 
     private fun areTeamsReady(): Boolean {
-        teamBottom.forEach { if (it == null) return false }
-        teamTop.forEach { if (it == null) return false }
+        teamGreen.forEach { if (it == null) return false }
+        teamPurple.forEach { if (it == null) return false }
 
         isOngoingGame = true
         areTeamsReadyToStartPeriod = true
@@ -226,7 +350,7 @@ class GameViewModel : ViewModel() {
 
     fun isThisTeamReady(): Boolean {
         val teamToCheck =
-            if (isTeamBottomTurn()) teamBottom else teamTop
+            if (isTeamGreenTurn()) teamGreen else teamPurple
 
         teamToCheck.forEach { if (it == null) return false }
 
@@ -267,6 +391,10 @@ class GameViewModel : ViewModel() {
         spotIndex: Int,
         victimView: AppCompatImageView
     ): Boolean {
+        if (cardDeck.size <= 3 && !areThereEnoughCardsToScore(if (isTeamGreenTurn()) teamPurple else teamGreen)) {
+            Animations.stopAllPulsingCards()
+            return false
+        }
         if (victimView.tag == Integer.valueOf(android.R.color.transparent)) return false
         if (GameLogic.isAttacked(firstCardInDeck, victimTeam, spotIndex)) return true
 
@@ -307,7 +435,7 @@ class GameViewModel : ViewModel() {
     fun onAttackedAnimationEnd(view: AppCompatImageView, fPrepareViewsToPulse: () -> Unit) {
         view.setImageResource(android.R.color.transparent)
         view.tag = Integer.valueOf(android.R.color.transparent)
-        removeCardFromDeck()
-        checkGameSituation(true, fPrepareViewsToPulse)
+        if (removeCardFromDeck())
+            checkGameSituation(true, fPrepareViewsToPulse)
     }
 }

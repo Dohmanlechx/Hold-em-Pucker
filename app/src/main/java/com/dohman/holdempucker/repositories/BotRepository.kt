@@ -1,6 +1,6 @@
 package com.dohman.holdempucker.repositories
 
-import com.dohman.holdempucker.cards.Card
+import com.dohman.holdempucker.models.Card
 import com.dohman.holdempucker.util.Constants
 import com.dohman.holdempucker.util.Constants.Companion.PLAYER_CENTER
 import com.dohman.holdempucker.util.Constants.Companion.PLAYER_DEFENDER_LEFT
@@ -9,7 +9,7 @@ import com.dohman.holdempucker.util.Constants.Companion.PLAYER_FORWARD_LEFT
 import com.dohman.holdempucker.util.Constants.Companion.PLAYER_FORWARD_RIGHT
 import com.dohman.holdempucker.util.Constants.Companion.PLAYER_GOALIE
 import com.dohman.holdempucker.util.Constants.Companion.isRestoringPlayers
-import com.dohman.holdempucker.util.Constants.Companion.teamBottom
+import com.dohman.holdempucker.util.Constants.Companion.teamGreen
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -50,8 +50,8 @@ class BotRepository @Inject constructor(
             // Attack player
             if (possibleMoves.contains(PLAYER_CENTER)) {
                 // First, check if center is alive. Then, check if it is equal to 10 or stronger. If yes, attack it.
-                if (teamBottom[PLAYER_CENTER]?.beats(8)!!) {
-                    return if (playingCard.beats(teamBottom[PLAYER_CENTER]?.rank!!)) PLAYER_CENTER
+                if (teamGreen[PLAYER_CENTER]?.beats(8)!!) {
+                    return if (playingCard.beats(teamGreen[PLAYER_CENTER]?.rank!!)) PLAYER_CENTER
                     else attackTheStrongest(possibleMoves)
                 }
             } else if (possibleMoves.contains(PLAYER_GOALIE)) {
@@ -59,12 +59,12 @@ class BotRepository @Inject constructor(
                 return if (playingCard.beats(10)) PLAYER_GOALIE
                 else attackTheStrongest(possibleMoves)
             } else if (possibleMoves.contains(PLAYER_DEFENDER_LEFT)
-                && teamBottom[PLAYER_DEFENDER_LEFT]?.beats(8)!!
+                && teamGreen[PLAYER_DEFENDER_LEFT]?.beats(8)!!
             ) {
                 // Check if any defender is free to attack, then check if its rank is equal to 8 or stronger.
                 return PLAYER_DEFENDER_LEFT
             } else if (possibleMoves.contains(PLAYER_DEFENDER_RIGHT)
-                && teamBottom[PLAYER_DEFENDER_RIGHT]?.beats(8)!!
+                && teamGreen[PLAYER_DEFENDER_RIGHT]?.beats(8)!!
             ) {
                 return PLAYER_DEFENDER_RIGHT
             } else {
@@ -78,12 +78,12 @@ class BotRepository @Inject constructor(
     }
 
     private fun attackTheStrongest(possibleMoves: List<Int>): Int {
-        var strongestRank: Int = teamBottom[possibleMoves.first()]?.rank!!
+        var strongestRank: Int = teamGreen[possibleMoves.first()]?.rank!!
         var index: Int = possibleMoves.first()
 
         possibleMoves.forEach {
-            if (teamBottom[it]?.rank!! > strongestRank) {
-                strongestRank = teamBottom[it]?.rank!!
+            if (teamGreen[it]?.rank!! > strongestRank) {
+                strongestRank = teamGreen[it]?.rank!!
                 index = it
             }
         }
