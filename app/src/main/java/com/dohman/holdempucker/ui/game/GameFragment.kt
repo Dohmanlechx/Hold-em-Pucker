@@ -439,6 +439,8 @@ class GameFragment : Fragment(), View.OnClickListener {
             // Attacking goalie
             isShootingAtGoalie = true
 
+            if (isOnlineMode()) onlineInputTimer?.cancel()
+
             if (vm.canAttack(victimTeam, spotIndex, victimView)) {
                 removeAllOnClickListeners()
                 Animations.stopAllPulsingCards()
@@ -502,6 +504,8 @@ class GameFragment : Fragment(), View.OnClickListener {
 
         isShootingAtGoalie = true
 
+        if (isOnlineMode()) onlineInputTimer?.cancel()
+
         vm.notifyMessageAttackingGoalie()
 
         val isTargetGoalieBottom = !isTeamGreenTurn()
@@ -556,21 +560,26 @@ class GameFragment : Fragment(), View.OnClickListener {
 
         if (isOnlineMode()) {
             onlineInputTimer?.cancel()
-            onlineInputTimer = Util.getOnlineInputTimer({ timeLeftInLong ->
-                updateTheTimerText(timeLeftInLong)
-            }, {
-                if ((isOnlineMode() && vm.isMyOnlineTeamBottom() && isTeamGreenTurn())
-                    || (isOnlineMode() && !vm.isMyOnlineTeamBottom() && isTeamPurpleTurn())
-                ) {
-                    vm.removeLobbyFromDatabase()
-                    Toast.makeText(requireContext(), "You didn't make input in time. You forfeited the game.", Toast.LENGTH_LONG).show()
-                    view?.findNavController()?.popBackStack()
-                }
-                else {
-                    vm.removeLobbyFromDatabase()
-                }
-            })
-            onlineInputTimer?.start()
+            if (!isBadCard) {
+                onlineInputTimer = Util.getOnlineInputTimer({ timeLeftInLong ->
+                    updateTheTimerText(timeLeftInLong)
+                }, {
+                    if ((isOnlineMode() && vm.isMyOnlineTeamBottom() && isTeamGreenTurn())
+                        || (isOnlineMode() && !vm.isMyOnlineTeamBottom() && isTeamPurpleTurn())
+                    ) {
+                        vm.removeLobbyFromDatabase()
+                        Toast.makeText(
+                            requireContext(),
+                            "You didn't make input in time. You forfeited the game.",
+                            Toast.LENGTH_LONG
+                        ).show()
+                        view?.findNavController()?.popBackStack()
+                    } else {
+                        vm.removeLobbyFromDatabase()
+                    }
+                })
+                onlineInputTimer?.start()
+            }
         }
 
         // Bot's turn
