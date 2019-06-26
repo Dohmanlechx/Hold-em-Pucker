@@ -61,13 +61,17 @@ class GameViewModel : ViewModel() {
     val onlineOpponentInputNotifier = MutableLiveData<Int>()
     val onlineOpponentFoundNotifier = MutableLiveData<Boolean>()
     val onlineOpponentHasDisconnected = MutableLiveData<Boolean>()
+    var opponentFoundHasBeenCalled = false
 
     private val periodObserver = Observer<Int> { newPeriod ->
         newPeriod?.let { if (newPeriod != period) triggerHalfTime(triggeredFromObserver = true) }
     }
     private val opponentFoundObserver = Observer<Boolean> { found ->
         isOpponentFound = found
-        if (found && period == 1) onlineOpponentFoundNotifier.value = found
+        if (found && period == 1 && !opponentFoundHasBeenCalled) {
+            onlineOpponentFoundNotifier.value = found
+            opponentFoundHasBeenCalled = true
+        }
     }
     private val inputObserver = Observer<Int> { input ->
         onlineOpponentInputNotifier.value = input.takeIf { it in 0..5 }
@@ -93,7 +97,19 @@ class GameViewModel : ViewModel() {
     * Analytics functions
     * */
 
-    fun analyticsMatchStarted(mode: String) = analyticsRepo.matchStarted(mode)
+    fun analyticsMatchStarted(mode: Constants.GameMode) {
+        if (mode == Constants.GameMode.ONLINE)
+            analyticsRepo.onlineMatchStarted()
+        else
+            analyticsRepo.matchStarted(mode.toString())
+    }
+
+    fun analyticsOnlineMatchDisconnected() = analyticsRepo.onlineMatchDisconnected()
+
+    fun analyticsOnlineMatchFulfilled() = analyticsRepo.onlineMatchFulfilled()
+
+    fun analyticsMatchVsBotFulfilled(mode: Constants.GameMode, didWin: Boolean) =
+        analyticsRepo.matchVsBotFulfilled(mode, didWin)
 
     /*
     * General functions
