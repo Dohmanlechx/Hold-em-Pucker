@@ -29,6 +29,7 @@ import com.dohman.holdempucker.util.Constants.Companion.teamBottomScore
 import com.dohman.holdempucker.util.Constants.Companion.teamPurple
 import com.dohman.holdempucker.util.Constants.Companion.teamTopScore
 import com.dohman.holdempucker.util.Constants.Companion.PLAYER_GOALIE
+import com.dohman.holdempucker.util.Constants.Companion.currentGameMode
 import com.dohman.holdempucker.util.Constants.Companion.isMyOnlineTeamGreen
 import com.dohman.holdempucker.util.Constants.Companion.isNotOnlineMode
 import com.dohman.holdempucker.util.Constants.Companion.isOnlineMode
@@ -70,6 +71,8 @@ class GameFragment : Fragment(), View.OnClickListener {
         super.onCreate(savedInstanceState)
         period = 1
         isWinnerDeclared = false
+
+        whoseTurn = Constants.WhoseTurn.GREEN
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -154,6 +157,8 @@ class GameFragment : Fragment(), View.OnClickListener {
         vm.onlineOpponentHasDisconnected.observe(viewLifecycleOwner, Observer { disconnected ->
             if (disconnected && !isWinnerDeclared) {
                 isWinnerDeclared = true
+                vm.analyticsOnlineMatchDisconnected()
+                onlineInputTimer?.cancel()
                 txt_winner.text = getString(R.string.opponent_disconnected)
                 Animations.animateWinner(fading_view, lottie_trophy, txt_winner)
                 Util.vibrate(requireContext(), true)
@@ -193,7 +198,6 @@ class GameFragment : Fragment(), View.OnClickListener {
         setupMessageRecycler()
 
         if (isOnlineMode()) {
-            whoseTurn = Constants.WhoseTurn.GREEN
             v_progressbar.visibility = View.VISIBLE
             updateMessageBox("Waiting\nfor\nopponent\n...", isNeutralMessage = true)
         } else {
@@ -228,6 +232,8 @@ class GameFragment : Fragment(), View.OnClickListener {
 
     private fun initGame() {
         if (card_top_goalie == null) return // Temporary solution for that Handler of initGame()
+
+        vm.analyticsMatchStarted(currentGameMode)
 
         teamBottomScore = 0
         teamTopScore = 0
@@ -574,8 +580,6 @@ class GameFragment : Fragment(), View.OnClickListener {
                             Toast.LENGTH_LONG
                         ).show()
                         view?.findNavController()?.popBackStack()
-                    } else {
-                        vm.removeLobbyFromDatabase()
                     }
                 })
                 onlineInputTimer?.start()
@@ -691,6 +695,11 @@ class GameFragment : Fragment(), View.OnClickListener {
             card_bm_goalie.tag = null
             true
         } else {
+            if (isOnlineMode())
+                vm.analyticsOnlineMatchFulfilled()
+            else
+                vm.analyticsMatchVsBotFulfilled(currentGameMode, teamBottomScore > teamTopScore)
+
             txt_winner.text = when {
                 teamBottomScore > teamTopScore -> "Team Green\nwon with $teamBottomScore-$teamTopScore!"
                 else -> "Team Purple\nwon with $teamTopScore-$teamBottomScore!"

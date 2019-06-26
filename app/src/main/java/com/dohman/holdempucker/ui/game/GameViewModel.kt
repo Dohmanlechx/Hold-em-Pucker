@@ -8,10 +8,7 @@ import androidx.lifecycle.ViewModel
 import com.dohman.holdempucker.R
 import com.dohman.holdempucker.dagger.RepositoryComponent
 import com.dohman.holdempucker.models.Card
-import com.dohman.holdempucker.repositories.BotRepository
-import com.dohman.holdempucker.repositories.CardRepository
-import com.dohman.holdempucker.repositories.OnlinePlayRepository
-import com.dohman.holdempucker.repositories.ResourceRepository
+import com.dohman.holdempucker.repositories.*
 import com.dohman.holdempucker.util.Animations
 import com.dohman.holdempucker.util.Constants
 import com.dohman.holdempucker.util.Constants.Companion.PLAYER_CENTER
@@ -48,6 +45,8 @@ class GameViewModel : ViewModel() {
     lateinit var botRepo: BotRepository
     @Inject
     lateinit var onlineRepo: OnlinePlayRepository
+    @Inject
+    lateinit var analyticsRepo: AnalyticsRepository
 
     var cardDeck = mutableListOf<Card>()
     var firstCardInDeck: Card
@@ -62,13 +61,17 @@ class GameViewModel : ViewModel() {
     val onlineOpponentInputNotifier = MutableLiveData<Int>()
     val onlineOpponentFoundNotifier = MutableLiveData<Boolean>()
     val onlineOpponentHasDisconnected = MutableLiveData<Boolean>()
+    var opponentFoundHasBeenCalled = false
 
     private val periodObserver = Observer<Int> { newPeriod ->
         newPeriod?.let { if (newPeriod != period) triggerHalfTime(triggeredFromObserver = true) }
     }
     private val opponentFoundObserver = Observer<Boolean> { found ->
         isOpponentFound = found
-        if (found && period == 1) onlineOpponentFoundNotifier.value = found
+        if (found && period == 1 && !opponentFoundHasBeenCalled) {
+            onlineOpponentFoundNotifier.value = found
+            opponentFoundHasBeenCalled = true
+        }
     }
     private val inputObserver = Observer<Int> { input ->
         onlineOpponentInputNotifier.value = input.takeIf { it in 0..5 }
@@ -89,6 +92,24 @@ class GameViewModel : ViewModel() {
         cardDeck = cardRepo.createCards() as MutableList<Card>
         firstCardInDeck = cardDeck.first()
     }
+
+    /*
+    * Analytics functions
+    * */
+
+    fun analyticsMatchStarted(mode: Constants.GameMode) {
+        if (mode == Constants.GameMode.ONLINE)
+            analyticsRepo.onlineMatchStarted()
+        else
+            analyticsRepo.matchStarted(mode.toString())
+    }
+
+    fun analyticsOnlineMatchDisconnected() = analyticsRepo.onlineMatchDisconnected()
+
+    fun analyticsOnlineMatchFulfilled() = analyticsRepo.onlineMatchFulfilled()
+
+    fun analyticsMatchVsBotFulfilled(mode: Constants.GameMode, didWin: Boolean) =
+        analyticsRepo.matchVsBotFulfilled(mode, didWin)
 
     /*
     * General functions
