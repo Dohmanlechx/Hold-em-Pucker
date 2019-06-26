@@ -72,7 +72,7 @@ class GameFragment : Fragment(), View.OnClickListener {
         period = 1
         isWinnerDeclared = false
 
-        if (isOnlineMode()) whoseTurn = Constants.WhoseTurn.GREEN
+        whoseTurn = Constants.WhoseTurn.GREEN
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
