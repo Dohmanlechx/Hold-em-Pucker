@@ -29,6 +29,7 @@ import com.dohman.holdempucker.util.Constants.Companion.teamBottomScore
 import com.dohman.holdempucker.util.Constants.Companion.teamPurple
 import com.dohman.holdempucker.util.Constants.Companion.teamTopScore
 import com.dohman.holdempucker.util.Constants.Companion.PLAYER_GOALIE
+import com.dohman.holdempucker.util.Constants.Companion.currentGameMode
 import com.dohman.holdempucker.util.Constants.Companion.isMyOnlineTeamGreen
 import com.dohman.holdempucker.util.Constants.Companion.isNotOnlineMode
 import com.dohman.holdempucker.util.Constants.Companion.isOnlineMode
@@ -228,6 +229,8 @@ class GameFragment : Fragment(), View.OnClickListener {
 
     private fun initGame() {
         if (card_top_goalie == null) return // Temporary solution for that Handler of initGame()
+
+        vm.analyticsMatchStarted(currentGameMode.toString())
 
         teamBottomScore = 0
         teamTopScore = 0

@@ -8,10 +8,7 @@ import androidx.lifecycle.ViewModel
 import com.dohman.holdempucker.R
 import com.dohman.holdempucker.dagger.RepositoryComponent
 import com.dohman.holdempucker.models.Card
-import com.dohman.holdempucker.repositories.BotRepository
-import com.dohman.holdempucker.repositories.CardRepository
-import com.dohman.holdempucker.repositories.OnlinePlayRepository
-import com.dohman.holdempucker.repositories.ResourceRepository
+import com.dohman.holdempucker.repositories.*
 import com.dohman.holdempucker.util.Animations
 import com.dohman.holdempucker.util.Constants
 import com.dohman.holdempucker.util.Constants.Companion.PLAYER_CENTER
@@ -48,6 +45,8 @@ class GameViewModel : ViewModel() {
     lateinit var botRepo: BotRepository
     @Inject
     lateinit var onlineRepo: OnlinePlayRepository
+    @Inject
+    lateinit var analyticsRepo: AnalyticsRepository
 
     var cardDeck = mutableListOf<Card>()
     var firstCardInDeck: Card
@@ -89,6 +88,12 @@ class GameViewModel : ViewModel() {
         cardDeck = cardRepo.createCards() as MutableList<Card>
         firstCardInDeck = cardDeck.first()
     }
+
+    /*
+    * Analytics functions
+    * */
+
+    fun analyticsMatchStarted(mode: String) = analyticsRepo.matchStarted(mode)
 
     /*
     * General functions
