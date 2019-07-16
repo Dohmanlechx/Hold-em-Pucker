@@ -58,6 +58,5 @@ class AnalyticsRepository @Inject constructor(
         private const val ONLINE_MATCH_STARTED = "online_match_started"
         private const val ONLINE_MATCH_DISCONNECTED = "online_match_disconnected"
         private const val ONLINE_MATCH_FULFILLED = "online_match_fulfilled"
-        private const val MATCH_FORFEITED = "match_forfeited"
     }
 }
