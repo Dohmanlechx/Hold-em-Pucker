@@ -58,7 +58,7 @@ class Constants {
 
         // Cases
         val cases = mutableListOf<List<Int>>().apply {
-            add(0, listOf(0, 1, 2, 3, 4, 5)) // ( 0, 1, 2)
+            add(0, listOf(0, 1, 2, 3, 4, 5)) // (0, 1, 2)
             add(1, listOf(1, 2, 3, 4, 5)) // (1, 2, 3)
             add(2, listOf(0, 2, 3, 4, 5)) // (0, 2)
             add(3, listOf(0, 1, 3, 4, 5)) // (0, 1)

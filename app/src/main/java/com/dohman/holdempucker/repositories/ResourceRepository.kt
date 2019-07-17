@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.res.Resources
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.math.min
 
 @Singleton
 class ResourceRepository @Inject constructor(
@@ -20,6 +21,6 @@ class ResourceRepository @Inject constructor(
         val width = context.resources.displayMetrics.widthPixels
         val height = context.resources.displayMetrics.heightPixels
 
-        return Math.min(width, height)
+        return min(width, height)
     }
 }
