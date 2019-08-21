@@ -3,6 +3,7 @@ package com.dohman.holdempucker.repositories
 import android.os.Bundle
 import com.dohman.holdempucker.util.Constants
 import com.google.firebase.analytics.FirebaseAnalytics
+import java.util.*
 import javax.inject.Inject
 
 class AnalyticsRepository @Inject constructor(
@@ -13,7 +14,7 @@ class AnalyticsRepository @Inject constructor(
 
     fun matchStarted(mode: String) {
         bundle.clear()
-        bundle.putString(GAME_MODE, mode.toLowerCase())
+        bundle.putString(GAME_MODE, mode.toLowerCase(Locale.ROOT))
         analytics?.logEvent(MATCH_STARTED, bundle)
     }
 
@@ -29,7 +30,6 @@ class AnalyticsRepository @Inject constructor(
         }
 
         bundle.clear()
-
         event?.let { analytics?.logEvent(it, bundle) }
     }
 
