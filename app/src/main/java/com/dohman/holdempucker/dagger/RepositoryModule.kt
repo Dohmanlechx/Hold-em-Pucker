@@ -27,5 +27,5 @@ class RepositoryModule {
 
     @Provides
     @Singleton
-    fun providesAnalyticsRepository(analytics: FirebaseAnalytics) = AnalyticsRepository(analytics)
+    fun providesAnalyticsRepository(analytics: FirebaseAnalytics?) = AnalyticsRepository(analytics)
 }

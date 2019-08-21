@@ -6,7 +6,7 @@ import com.google.firebase.analytics.FirebaseAnalytics
 import javax.inject.Inject
 
 class AnalyticsRepository @Inject constructor(
-    private val analytics: FirebaseAnalytics
+    private val analytics: FirebaseAnalytics?
 ) {
 
     private val bundle = Bundle()
@@ -14,7 +14,7 @@ class AnalyticsRepository @Inject constructor(
     fun matchStarted(mode: String) {
         bundle.clear()
         bundle.putString(GAME_MODE, mode.toLowerCase())
-        analytics.logEvent(MATCH_STARTED, bundle)
+        analytics?.logEvent(MATCH_STARTED, bundle)
     }
 
     fun matchVsBotFulfilled(mode: Constants.GameMode, won: Boolean) {
@@ -30,22 +30,22 @@ class AnalyticsRepository @Inject constructor(
 
         bundle.clear()
 
-        event?.let { analytics.logEvent(it, bundle) }
+        event?.let { analytics?.logEvent(it, bundle) }
     }
 
     fun onlineMatchStarted() {
         bundle.clear()
-        analytics.logEvent(ONLINE_MATCH_STARTED, bundle)
+        analytics?.logEvent(ONLINE_MATCH_STARTED, bundle)
     }
 
     fun onlineMatchDisconnected() {
         bundle.clear()
-        analytics.logEvent(ONLINE_MATCH_DISCONNECTED, bundle)
+        analytics?.logEvent(ONLINE_MATCH_DISCONNECTED, bundle)
     }
 
     fun onlineMatchFulfilled() {
         bundle.clear()
-        analytics.logEvent(ONLINE_MATCH_FULFILLED, bundle)
+        analytics?.logEvent(ONLINE_MATCH_FULFILLED, bundle)
     }
 
     companion object {
