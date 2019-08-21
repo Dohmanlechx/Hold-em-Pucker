@@ -7,13 +7,13 @@ apply plugin: 'com.google.gms.google-services'
 apply plugin: 'io.fabric'
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 29
     defaultConfig {
         applicationId "com.dohman.holdempucker"
         minSdkVersion 21
-        targetSdkVersion 28
-        versionCode 4
-        versionName "2.00"
+        targetSdkVersion 29
+        versionCode 5
+        versionName "2.10"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
