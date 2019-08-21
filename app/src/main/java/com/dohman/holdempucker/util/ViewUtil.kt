@@ -11,6 +11,7 @@ import android.widget.LinearLayout
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.AppCompatImageView
 import com.dohman.holdempucker.R
+import com.dohman.holdempucker.util.Constants.Companion.isOnlineMode
 import com.wajahatkarim3.easyflipview.EasyFlipView
 
 object ViewUtil {
@@ -33,10 +34,18 @@ object ViewUtil {
 
         if (flipView.isBackSide) {
             back.setImageResource(cover)
-            if (isVertical) resId?.let { front.setImageResource(it) } else bitmap?.let { front.setImageBitmap(it) }
+            if (isVertical) resId?.let { front.setImageResource(it) } else bitmap?.let {
+                front.setImageBitmap(
+                    it
+                )
+            }
         } else {
             front.setImageResource(cover)
-            if (isVertical) resId?.let { back.setImageResource(it) } else bitmap?.let { back.setImageBitmap(it) }
+            if (isVertical) resId?.let { back.setImageResource(it) } else bitmap?.let {
+                back.setImageBitmap(
+                    it
+                )
+            }
         }
 
         flipView.visibility = View.VISIBLE
@@ -53,7 +62,15 @@ object ViewUtil {
             true
         )
 
-        return Bitmap.createBitmap(scaledBitmap, 0, 0, scaledBitmap.width, scaledBitmap.height, matrix, true)
+        return Bitmap.createBitmap(
+            scaledBitmap,
+            0,
+            0,
+            scaledBitmap.width,
+            scaledBitmap.height,
+            matrix,
+            true
+        )
     }
 
     fun buildLobbyNameDialog(context: Context, fGoToGameFragment: (String, String?) -> Unit) =
@@ -73,13 +90,13 @@ object ViewUtil {
             lobbyNameEditText.apply {
                 filters = filterArray
                 hint = "(unnamed)"
-                setSingleLine(true)
+                isSingleLine = true
             }
 
             lobbyPasswordEditText.apply {
                 filters = filterArray
                 hint = "password (optional)"
-                setSingleLine(true)
+                isSingleLine = true
             }
 
             layout.apply {

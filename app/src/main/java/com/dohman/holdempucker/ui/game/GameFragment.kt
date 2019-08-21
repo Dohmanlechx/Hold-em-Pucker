@@ -280,6 +280,8 @@ class GameFragment : Fragment(), View.OnClickListener {
     }
 
     private fun restoreFlipViewsPosition() {
+        if (flip_view == null || flip_btm_goalie == null || flip_top_goalie == null) return
+
         flip_view.rotation = 0f
         flip_view.x = fvMainX
         flip_view.y = fvMainY
