@@ -50,7 +50,8 @@ class GameFragment : Fragment(), View.OnClickListener {
     private lateinit var vm: GameViewModel
 
     private val itemAdapter = ItemAdapter<AbstractItem<*, *>>()
-    private val fastAdapter = FastAdapter.with<AbstractItem<*, *>, ItemAdapter<AbstractItem<*, *>>>(itemAdapter)
+    private val fastAdapter =
+        FastAdapter.with<AbstractItem<*, *>, ItemAdapter<AbstractItem<*, *>>>(itemAdapter)
 
     // x and y values of all three FlipViews
     private var fvMainX: Float = 0f
@@ -67,26 +68,33 @@ class GameFragment : Fragment(), View.OnClickListener {
 
     private var onlineInputTimer: CountDownTimer? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        period = 1
-        isWinnerDeclared = false
-
-        whoseTurn = Constants.WhoseTurn.GREEN
-    }
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         vm = ViewModelProviders.of(this).get(GameViewModel::class.java)
 
         // Observables
-        vm.messageNotifier.observe(viewLifecycleOwner, Observer { updateMessageBox(it.first, it.second) })
+        vm.messageNotifier.observe(
+            viewLifecycleOwner,
+            Observer { updateMessageBox(it.first, it.second) })
+
         vm.halfTimeNotifier.observe(viewLifecycleOwner, Observer {
             removeAllOnClickListeners()
             if (isNextPeriodReady(it)) addGoalieView(true, withStartDelay = true)
         })
-        vm.whoseTurnNotifier.observe(viewLifecycleOwner, Observer { Animations.animatePuck(puck, it) })
+
+        vm.whoseTurnNotifier.observe(
+            viewLifecycleOwner,
+            Observer { Animations.animatePuck(puck, it) })
+
         vm.pickedCardNotifier.observe(viewLifecycleOwner, Observer { flipNewCard(it) })
-        vm.cardsCountNotifier.observe(viewLifecycleOwner, Observer { cards_left.text = it.toString() })
+
+        vm.cardsCountNotifier.observe(
+            viewLifecycleOwner,
+            Observer { cards_left.text = it.toString() })
+
         vm.badCardNotifier.observe(
             viewLifecycleOwner,
             Observer {
@@ -131,6 +139,7 @@ class GameFragment : Fragment(), View.OnClickListener {
                 }
             }
         })
+
         vm.onlineOpponentFoundNotifier.observe(
             viewLifecycleOwner,
             Observer { found ->
@@ -145,7 +154,8 @@ class GameFragment : Fragment(), View.OnClickListener {
                     Handler().postDelayed({ initGame() }, 1000)
 
                     txt_online_team.apply {
-                        val textMessage = if (vm.isMyOnlineTeamBottom()) "YOU ARE TEAM GREEN" else "YOU ARE TEAM PURPLE"
+                        val textMessage =
+                            if (vm.isMyOnlineTeamBottom()) "YOU ARE TEAM GREEN" else "YOU ARE TEAM PURPLE"
                         val textColor =
                             if (vm.isMyOnlineTeamBottom()) R.color.text_background_btm else R.color.text_background_top
 
@@ -154,6 +164,7 @@ class GameFragment : Fragment(), View.OnClickListener {
                     }
                 }
             })
+
         vm.onlineOpponentHasDisconnected.observe(viewLifecycleOwner, Observer { disconnected ->
             if (disconnected && !isWinnerDeclared) {
                 isWinnerDeclared = true
@@ -162,7 +173,11 @@ class GameFragment : Fragment(), View.OnClickListener {
                 txt_winner.text = getString(R.string.opponent_disconnected)
                 Animations.animateWinner(fading_view, lottie_trophy, txt_winner)
                 Util.vibrate(requireContext(), true)
-                fading_view.setOnClickListener { view?.let { Navigation.findNavController(it).popBackStack() } }
+                fading_view.setOnClickListener {
+                    view?.let {
+                        Navigation.findNavController(it).popBackStack()
+                    }
+                }
             }
         })
         // End of Observables
@@ -201,7 +216,10 @@ class GameFragment : Fragment(), View.OnClickListener {
             v_progressbar.visibility = View.VISIBLE
             updateMessageBox("Waiting\nfor\nopponent\n...", isNeutralMessage = true)
         } else {
-            updateMessageBox("Press anywhere to start the game! Period: $period", isNeutralMessage = true)
+            updateMessageBox(
+                "Press anywhere to start the game! Period: $period",
+                isNeutralMessage = true
+            )
             whole_view.setOnClickListener { initGame() }
         }
 
@@ -340,21 +358,23 @@ class GameFragment : Fragment(), View.OnClickListener {
         if (vm.cardDeck.size > 50) return
 
         ViewUtil.setImagesOnFlipView(
-            flip_view,
-            card_deck,
-            card_picked,
-            resId,
-            null,
+            flipView = flip_view,
+            front = card_deck,
+            back = card_picked,
+            resId = resId,
+            bitmap = null,
             isVertical = true
         )
 
         Animations.animateFlipPlayingCard(
-            flip_view,
-            cards_left,
-            vm.cardDeck.size > 50,
-            { onFlipPlayingCardEnd(isBadCard) },
-            { vm.notifyMessage("Please choose a position.") },
-            { if (vm.cardDeck.size <= 1) card_background.visibility = View.GONE }
+            flipView = flip_view,
+            cardsLeftText = cards_left,
+            doNotShowMessage = vm.cardDeck.size > 50,
+            fOnFlipPlayingCardEnd = { onFlipPlayingCardEnd(isBadCard) },
+            fNotifyMessage = { vm.notifyMessage("Please choose a position.") },
+            fHideTheCardBackground = {
+                if (vm.cardDeck.size <= 1) card_background.visibility = View.GONE
+            }
         )
     }
 
@@ -442,7 +462,11 @@ class GameFragment : Fragment(), View.OnClickListener {
         }
     }
 
-    private fun prepareAttackPlayer(victimTeam: Array<Card?>, spotIndex: Int, victimView: AppCompatImageView) {
+    private fun prepareAttackPlayer(
+        victimTeam: Array<Card?>,
+        spotIndex: Int,
+        victimView: AppCompatImageView
+    ) {
         if (spotIndex == 5) {
             // Attacking goalie
             isShootingAtGoalie = true
@@ -457,8 +481,10 @@ class GameFragment : Fragment(), View.OnClickListener {
 
                 val isTargetGoalieBottom = !isTeamGreenTurn()
                 val targetView = if (isTargetGoalieBottom) flip_btm_goalie else flip_top_goalie
-                val targetViewFront = if (isTargetGoalieBottom) flip_btm_goalie_front else flip_top_goalie_front
-                val targetViewBack = if (isTargetGoalieBottom) flip_btm_goalie_back else flip_top_goalie_back
+                val targetViewFront =
+                    if (isTargetGoalieBottom) flip_btm_goalie_front else flip_top_goalie_front
+                val targetViewBack =
+                    if (isTargetGoalieBottom) flip_btm_goalie_back else flip_top_goalie_back
                 val targetTeam = if (isTargetGoalieBottom) teamGreen else teamPurple
 
                 ViewUtil.setImagesOnFlipView(
@@ -518,8 +544,10 @@ class GameFragment : Fragment(), View.OnClickListener {
 
         val isTargetGoalieBottom = !isTeamGreenTurn()
         val targetView = if (isTargetGoalieBottom) flip_btm_goalie else flip_top_goalie
-        val targetViewFront = if (isTargetGoalieBottom) flip_btm_goalie_front else flip_top_goalie_front
-        val targetViewBack = if (isTargetGoalieBottom) flip_btm_goalie_back else flip_top_goalie_back
+        val targetViewFront =
+            if (isTargetGoalieBottom) flip_btm_goalie_front else flip_top_goalie_front
+        val targetViewBack =
+            if (isTargetGoalieBottom) flip_btm_goalie_back else flip_top_goalie_back
         val targetTeam = if (isTargetGoalieBottom) teamGreen else teamPurple
 
         ViewUtil.setImagesOnFlipView(
@@ -549,10 +577,8 @@ class GameFragment : Fragment(), View.OnClickListener {
                 // OnStop
                 onGoalieActionEnd(targetView, false, targetTeam)
 
-                if (vm.cardDeck.size <= 1)
-                    vm.removeCardFromDeck(doNotNotify = true)
-                else
-                    addGoalieView(bottom = isTargetGoalieBottom)
+                if (vm.cardDeck.size <= 1) vm.removeCardFromDeck(doNotNotify = true)
+                else addGoalieView(bottom = isTargetGoalieBottom)
             }
         )
     }
@@ -605,7 +631,12 @@ class GameFragment : Fragment(), View.OnClickListener {
                     }
                     PLAYER_GOALIE -> {
                         tempGoalieCard = teamGreen[PLAYER_GOALIE]
-                        if (vm.canAttack(teamGreen, PLAYER_GOALIE, card_bm_goalie)) prepareAttackPlayer(
+                        if (vm.canAttack(
+                                teamGreen,
+                                PLAYER_GOALIE,
+                                card_bm_goalie
+                            )
+                        ) prepareAttackPlayer(
                             teamGreen,
                             PLAYER_GOALIE,
                             card_bm_goalie
@@ -710,7 +741,11 @@ class GameFragment : Fragment(), View.OnClickListener {
             Animations.animateWinner(fading_view, lottie_trophy, txt_winner)
             Util.vibrate(requireContext(), true)
 
-            fading_view.setOnClickListener { view?.let { Navigation.findNavController(it).popBackStack() } }
+            fading_view.setOnClickListener {
+                view?.let {
+                    Navigation.findNavController(it).popBackStack()
+                }
+            }
             false
         }
     }

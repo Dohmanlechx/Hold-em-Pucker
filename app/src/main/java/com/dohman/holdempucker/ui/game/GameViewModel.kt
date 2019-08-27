@@ -66,6 +66,7 @@ class GameViewModel : ViewModel() {
     private val periodObserver = Observer<Int> { newPeriod ->
         newPeriod?.let { if (newPeriod != period) triggerHalfTime(triggeredFromObserver = true) }
     }
+
     private val opponentFoundObserver = Observer<Boolean> { found ->
         isOpponentFound = found
         if (found && period == 1 && !opponentFoundHasBeenCalled) {
@@ -73,9 +74,11 @@ class GameViewModel : ViewModel() {
             opponentFoundHasBeenCalled = true
         }
     }
+
     private val inputObserver = Observer<Int> { input ->
         onlineOpponentInputNotifier.value = input.takeIf { it in 0..5 }
     }
+
     private val onlineCardDeckObserver = Observer<List<Card>> { newCardDeck ->
         if (newCardDeck.isNotEmpty()) {
             cardDeck = newCardDeck.toMutableList()
@@ -84,10 +87,16 @@ class GameViewModel : ViewModel() {
             // FIXME OPPONENT HAS DISCONNECTED!
         }
     }
-    private val opponentHasDisconnected = Observer<Boolean> { onlineOpponentHasDisconnected.value = it }
+
+    private val opponentHasDisconnected =
+        Observer<Boolean> { onlineOpponentHasDisconnected.value = it }
 
     init {
         RepositoryComponent.inject(this)
+
+        period = 1
+        Constants.isWinnerDeclared = false
+        whoseTurn = Constants.WhoseTurn.GREEN
 
         cardDeck = cardRepo.createCards() as MutableList<Card>
         firstCardInDeck = cardDeck.first()
@@ -117,14 +126,22 @@ class GameViewModel : ViewModel() {
 
     fun getScreenWidth() = appRepo.getScreenWidth()
 
-    fun setGameMode(argsLobbyId: String? = null, lobbyName: String? = null, lobbyPassword: String? = null) {
+    fun setGameMode(
+        argsLobbyId: String? = null,
+        lobbyName: String? = null,
+        lobbyPassword: String? = null
+    ) {
         isVsBotMode = when (currentGameMode) {
             Constants.GameMode.RANDOM -> true
             Constants.GameMode.DEVELOPER -> true
             else -> false
         }
 
-        if (currentGameMode == Constants.GameMode.ONLINE) setupOnlineGame(argsLobbyId, lobbyName, lobbyPassword)
+        if (currentGameMode == Constants.GameMode.ONLINE) setupOnlineGame(
+            argsLobbyId,
+            lobbyName,
+            lobbyPassword
+        )
     }
 
     override fun onCleared() {
@@ -142,7 +159,11 @@ class GameViewModel : ViewModel() {
     * Online functions
     * */
 
-    private fun setupOnlineGame(argsLobbyId: String? = null, lobbyName: String? = null, lobbyPassword: String? = null) {
+    private fun setupOnlineGame(
+        argsLobbyId: String? = null,
+        lobbyName: String? = null,
+        lobbyPassword: String? = null
+    ) {
         if (argsLobbyId != null)
             onlineRepo.joinThisLobby(argsLobbyId)
         else if (lobbyName != null)
@@ -332,7 +353,10 @@ class GameViewModel : ViewModel() {
         period++
         halfTimeNotifier.value = 1
         if (isOnlineMode() && !triggeredFromObserver) onlineRepo.updatePeriod(period)
-        if (period <= 3) notifyMessage("Not enough cards. Period $period started.", isNeutralMessage = true)
+        if (period <= 3) notifyMessage(
+            "Not enough cards. Period $period started.",
+            isNeutralMessage = true
+        )
         isOngoingGame = false
         areTeamsReadyToStartPeriod = false
     }
@@ -354,7 +378,11 @@ class GameViewModel : ViewModel() {
         return false // But goalie is added now
     }
 
-    private fun setPlayerInTeam(team: Array<Card?>, spotIndex: Int, fPrepareViewsToPulse: () -> Unit) {
+    private fun setPlayerInTeam(
+        team: Array<Card?>,
+        spotIndex: Int,
+        fPrepareViewsToPulse: () -> Unit
+    ) {
         team[spotIndex] = firstCardInDeck
         if (removeCardFromDeck()) checkGameSituation(false, fPrepareViewsToPulse)
     }
@@ -427,7 +455,13 @@ class GameViewModel : ViewModel() {
     * */
 
     fun botChooseEmptySpot(possibleMoves: List<Int>, fTriggerBotMove: (Int) -> Unit) {
-        fTriggerBotMove.invoke(botRepo.getMoveIndex(currentGameMode, possibleMoves, firstCardInDeck))
+        fTriggerBotMove.invoke(
+            botRepo.getMoveIndex(
+                currentGameMode,
+                possibleMoves,
+                firstCardInDeck
+            )
+        )
     }
 
     fun botChooseIndexToAttack(indexes: List<Int>): Int =
