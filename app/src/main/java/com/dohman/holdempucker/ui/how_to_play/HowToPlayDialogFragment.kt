@@ -10,6 +10,7 @@ import kotlinx.android.synthetic.main.dialog_htp.*
 
 class HowToPlayDialogFragment : DialogFragment() {
 
+    @Deprecated("Deprecated in Java")
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         dialog?.window?.attributes?.windowAnimations = R.style.DialogAnimation
