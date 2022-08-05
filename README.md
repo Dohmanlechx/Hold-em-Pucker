@@ -5,3 +5,6 @@ There is also a big feature in this project - online support. Able to play over 
 
 ## Author
 * **David Öhman, 2019**
+
+## Available on Google Play!
+https://play.google.com/store/apps/details?id=com.dohman.holdempucker
