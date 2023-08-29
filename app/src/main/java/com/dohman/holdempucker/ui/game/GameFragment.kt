@@ -71,7 +71,7 @@ class GameFragment : Fragment(), View.OnClickListener {
     private var _binding: GameFragmentBinding? = null
     private var _computerBinding: ComputerLayoutBinding? = null
     private val binding get() = _binding!!
-    private val computerBinding get() = _computerBinding!!
+    private val computerBinding get() = _binding!!.idComputerLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -88,8 +88,97 @@ class GameFragment : Fragment(), View.OnClickListener {
     ): View? {
         vm = ViewModelProviders.of(this).get(GameViewModel::class.java)
         _binding = GameFragmentBinding.inflate(inflater, container, false)
-        _computerBinding = ComputerLayoutBinding.inflate(inflater, container, false)
         val view = binding.root
+
+        // Observables
+        vm.messageNotifier.observe(viewLifecycleOwner, Observer { updateMessageBox(it.first, it.second) })
+        vm.halfTimeNotifier.observe(viewLifecycleOwner, Observer {
+            removeAllOnClickListeners()
+            if (isNextPeriodReady(it)) addGoalieView(true, withStartDelay = true)
+        })
+        vm.whoseTurnNotifier.observe(viewLifecycleOwner, Observer { Animations.animatePuck(binding.puck, it) })
+        vm.pickedCardNotifier.observe(viewLifecycleOwner, Observer { flipNewCard(it) })
+        vm.cardsCountNotifier.observe(viewLifecycleOwner, Observer { binding.cardsLeft.text = it.toString() })
+        vm.badCardNotifier.observe(
+            viewLifecycleOwner,
+            Observer {
+                flipNewCard(vm.resIdOfCard(vm.firstCardInDeck), isBadCard = true)
+                vm.notifyMessage("Aw, too weak card! It goes out!")
+            })
+
+        // Online
+        vm.onlineOpponentInputNotifier.observe(viewLifecycleOwner, Observer { input ->
+            input?.let {
+                when (vm.isMyOnlineTeamBottom()) {
+                    true -> {
+                        if (isRestoringPlayers) {
+                            animateAddPlayer(teamPurpleViews[input], teamPurple, input)
+                        } else {
+                            if (input == PLAYER_GOALIE) {
+                                tempGoalieCard = teamGreen[PLAYER_GOALIE]
+                                if (vm.canAttack(teamGreen, PLAYER_GOALIE, binding.cardBmGoalie))
+                                    prepareAttackPlayer(teamGreen, input, teamGreenViews[input])
+                                else
+                                    prepareGoalieSaved(binding.cardBmGoalie)
+                            } else {
+                                prepareAttackPlayer(teamGreen, input, teamGreenViews[input])
+                            }
+                        }
+                    }
+                    false -> {
+                        if (isRestoringPlayers) {
+                            animateAddPlayer(teamGreenViews[input], teamGreen, input)
+                        } else {
+                            if (input == PLAYER_GOALIE) {
+                                tempGoalieCard = teamPurple[PLAYER_GOALIE]
+                                if (vm.canAttack(teamPurple, PLAYER_GOALIE, binding.cardTopGoalie))
+                                    prepareAttackPlayer(teamPurple, input, teamPurpleViews[input])
+                                else
+                                    prepareGoalieSaved(binding.cardTopGoalie)
+                            } else {
+                                prepareAttackPlayer(teamPurple, input, teamPurpleViews[input])
+                            }
+                        }
+                    }
+                }
+            }
+        })
+        vm.onlineOpponentFoundNotifier.observe(
+            viewLifecycleOwner,
+            Observer { found ->
+                if (found) {
+                    val message =
+                        if (vm.isMyOnlineTeamBottom()) "Opponent joined, game is starting! Period: $period"
+                        else "You joined, game is starting! Period: $period"
+
+                    updateMessageBox(message, isNeutralMessage = true)
+
+                    binding.vProgressbar.visibility = View.GONE
+                    Handler().postDelayed({ initGame() }, 1000)
+
+                    binding.txtOnlineTeam.apply {
+                        val textMessage = if (vm.isMyOnlineTeamBottom()) "YOU ARE TEAM GREEN" else "YOU ARE TEAM PURPLE"
+                        val textColor =
+                            if (vm.isMyOnlineTeamBottom()) R.color.text_background_btm else R.color.text_background_top
+
+                        text = textMessage
+                        setTextColor(ContextCompat.getColor(requireContext(), textColor))
+                    }
+                }
+            })
+        vm.onlineOpponentHasDisconnected.observe(viewLifecycleOwner, Observer { disconnected ->
+            if (disconnected && !isWinnerDeclared) {
+                isWinnerDeclared = true
+                vm.analyticsOnlineMatchDisconnected()
+                onlineInputTimer?.cancel()
+                binding.txtWinner.text = getString(R.string.opponent_disconnected)
+                Animations.animateWinner(binding.fadingView, binding.lottieTrophy, binding.txtWinner)
+                Util.vibrate(requireContext(), true)
+                binding.fadingView.setOnClickListener { view?.let { Navigation.findNavController(it).popBackStack() } }
+            }
+        })
+        // End of Observables
+
         return view
     }
 
@@ -158,8 +247,6 @@ class GameFragment : Fragment(), View.OnClickListener {
     }
 
     private fun initGame() {
-        if (binding.cardTopGoalie == null) return // Temporary solution for that Handler of initGame()
-
         vm.analyticsMatchStarted(currentGameMode)
 
         teamBottomScore = 0

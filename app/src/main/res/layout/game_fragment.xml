@@ -283,7 +283,10 @@
 		app:layout_constraintStart_toStartOf="parent"
 		app:layout_constraintTop_toTopOf="parent">
 
-		<include layout="@layout/computer_layout" />
+		<include
+			android:id="@+id/id_computer_layout"
+			layout="@layout/computer_layout"
+			/>
 
 	</FrameLayout>
 
