@@ -12,6 +12,7 @@ import androidx.lifecycle.Observer
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.dohman.holdempucker.R
+import com.dohman.holdempucker.databinding.LobbiesFragmentBinding
 import com.dohman.holdempucker.models.OnlineLobby
 import com.dohman.holdempucker.ui.items.LobbyItem
 import com.dohman.holdempucker.util.Animations
@@ -21,7 +22,6 @@ import com.dohman.holdempucker.util.ViewUtil
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.items.AbstractItem
-import kotlinx.android.synthetic.main.lobbies_fragment.*
 
 
 class LobbiesFragment : Fragment() {
@@ -30,14 +30,23 @@ class LobbiesFragment : Fragment() {
     private val itemAdapter = ItemAdapter<AbstractItem<*, *>>()
     private val fastAdapter = FastAdapter.with<AbstractItem<*, *>, ItemAdapter<AbstractItem<*, *>>>(itemAdapter)
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    private var _binding: LobbiesFragmentBinding? = null
+    private val binding get() = _binding!!
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         vm = ViewModelProviders.of(this).get(LobbiesViewModel::class.java)
 
         vm.lobbyNotifier.observe(viewLifecycleOwner, Observer { lobbies ->
             updateLobbyRecycler(lobbies)
         })
 
-        return inflater.inflate(R.layout.lobbies_fragment, container, false)
+        _binding = LobbiesFragmentBinding.inflate(inflater, container, false)
+        val view = binding.root
+        return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -45,7 +54,7 @@ class LobbiesFragment : Fragment() {
 
         setupLobbiesRecycler()
 
-        txt_online_beta.setOnClickListener {
+        binding.txtOnlineBeta.setOnClickListener {
             val emailIntent = Intent(Intent.ACTION_SEND)
             emailIntent.apply {
                 type = "plain/text"
@@ -63,7 +72,8 @@ class LobbiesFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        v_lobbies_recycler.adapter = null
+        binding.vLobbiesRecycler.adapter = null
+        _binding = null
     }
 
     private fun clearTeams() {
@@ -74,22 +84,22 @@ class LobbiesFragment : Fragment() {
     }
 
     private fun setupOnClickListeners() {
-        v_fab_create_server.setOnClickListener {
+        binding.vFabCreateServer.setOnClickListener {
             ViewUtil.buildLobbyNameDialog(requireContext()) { lobbyName, lobbyPassword ->
                 currentGameMode = Constants.GameMode.ONLINE
                 navigateToGameFragment(null, lobbyName, lobbyPassword)
             }
         }
 
-        v_fab_play_offline_multiplayer.setOnClickListener {
+        binding.vFabPlayOfflineMultiplayer.setOnClickListener {
             currentGameMode = Constants.GameMode.FRIEND
             navigateToGameFragment()
         }
     }
 
     private fun removeAllOnClickListeners() {
-        v_fab_create_server.setOnClickListener(null)
-        v_fab_play_offline_multiplayer.setOnClickListener(null)
+        binding.vFabCreateServer.setOnClickListener(null)
+        binding.vFabPlayOfflineMultiplayer.setOnClickListener(null)
     }
 
     private fun navigateToGameFragment(
@@ -113,7 +123,7 @@ class LobbiesFragment : Fragment() {
         }
     }
 
-    private fun setupLobbiesRecycler() = v_lobbies_recycler.apply {
+    private fun setupLobbiesRecycler() = binding.vLobbiesRecycler.apply {
         itemAnimator = null
         layoutManager = LinearLayoutManager(requireContext())
         adapter = fastAdapter
@@ -121,18 +131,18 @@ class LobbiesFragment : Fragment() {
 
     private fun updateLobbyRecycler(lobbies: List<OnlineLobby>) {
         if (lobbies.isNullOrEmpty()) {
-            v_lobbies_recycler.apply {
+            binding.vLobbiesRecycler.apply {
                 visibility = View.GONE
                 scaleX = 0.0f
                 scaleY = 0.0f
             }
-            txt_no_lobbies.visibility = View.VISIBLE
+            binding.txtNoLobbies.visibility = View.VISIBLE
         } else {
-            v_lobbies_recycler.visibility = View.VISIBLE
-            txt_no_lobbies.visibility = View.GONE
+            binding.vLobbiesRecycler.visibility = View.VISIBLE
+            binding.txtNoLobbies.visibility = View.GONE
         }
 
-        Animations.animateLobbyRecycler(v_lobbies_recycler, true) {
+        Animations.animateLobbyRecycler(binding.vLobbiesRecycler, true) {
             // onStop
             itemAdapter.clear()
             lobbies.forEach { lobby ->
@@ -164,7 +174,7 @@ class LobbiesFragment : Fragment() {
                 }
             }
 
-            Animations.animateLobbyRecycler(v_lobbies_recycler, false)
+            Animations.animateLobbyRecycler(binding.vLobbiesRecycler, false)
         }
     }
 }

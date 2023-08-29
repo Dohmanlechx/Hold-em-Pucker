@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import androidx.navigation.findNavController
 import com.dohman.holdempucker.BuildConfig
 import com.dohman.holdempucker.R
+import com.dohman.holdempucker.databinding.MainMenuFragmentBinding
 import com.dohman.holdempucker.ui.how_to_play.HowToPlayDialogFragment
 import com.dohman.holdempucker.ui.how_to_play.HowToPlayDialogFragment.Companion.isHowToPlayDialogShown
 import com.dohman.holdempucker.util.Animations
@@ -17,43 +18,52 @@ import com.dohman.holdempucker.util.Constants.Companion.currentGameMode
 import com.dohman.holdempucker.util.Constants.Companion.teamGreen
 import com.dohman.holdempucker.util.Constants.Companion.teamPurple
 import com.dohman.holdempucker.util.Util
-import kotlinx.android.synthetic.main.main_menu_fragment.*
 
 class MainMenuFragment : Fragment() {
     private lateinit var vm: MainMenuViewModel
-
     private var howToPlayDialogFragment: HowToPlayDialogFragment? = null
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        vm = ViewModelProviders.of(this).get(MainMenuViewModel::class.java)
-        return inflater.inflate(R.layout.main_menu_fragment, container, false)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        _binding = MainMenuFragmentBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    private var _binding: MainMenuFragmentBinding? = null
+    private val binding get() = _binding!!
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        txt_version.text = String.format(getString(R.string.version, BuildConfig.VERSION_NAME))
+        binding.txtVersion.text = String.format(getString(R.string.version, BuildConfig.VERSION_NAME))
     }
 
     override fun onResume() {
         super.onResume()
 
-        btn_how_to_play.setOnClickListener {
+        binding.btnHowToPlay.setOnClickListener {
             if (!isHowToPlayDialogShown) showHowToPlayDialog(it)
             isHowToPlayDialogShown = true
         }
 
-        btn_easy_mode.setOnClickListener {
+        binding.btnEasyMode.setOnClickListener {
             currentGameMode = Constants.GameMode.RANDOM
             navigateToGameFragment(it)
         }
 
-        btn_hard_mode.setOnClickListener {
+        binding.btnHardMode.setOnClickListener {
             currentGameMode = Constants.GameMode.DEVELOPER
             navigateToGameFragment(it)
         }
 
-        btn_multiplayer.setOnClickListener {
+        binding.btnMultiplayer.setOnClickListener {
             navigateToLobbiesFragment(it)
         }
     }
@@ -107,9 +117,9 @@ class MainMenuFragment : Fragment() {
     }
 
     private fun removeAllOnClickListeners() {
-        btn_how_to_play.setOnClickListener(null)
-        btn_easy_mode.setOnClickListener(null)
-        btn_hard_mode.setOnClickListener(null)
-        btn_multiplayer.setOnClickListener(null)
+        binding.btnHowToPlay.setOnClickListener(null)
+        binding.btnEasyMode.setOnClickListener(null)
+        binding.btnHardMode.setOnClickListener(null)
+        binding.btnMultiplayer.setOnClickListener(null)
     }
 }

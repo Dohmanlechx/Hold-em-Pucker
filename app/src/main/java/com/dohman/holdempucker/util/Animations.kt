@@ -6,11 +6,11 @@ import android.view.animation.OvershootInterpolator
 import androidx.interpolator.view.animation.LinearOutSlowInInterpolator
 import com.airbnb.lottie.LottieAnimationView
 import com.dohman.holdempucker.models.Card
+import com.dohman.holdempucker.ui.florent37.ViewAnimator
 import com.dohman.holdempucker.util.Constants.Companion.possibleMovesIndexes
 import com.dohman.holdempucker.util.Constants.Companion.whoseTurn
 import com.dohman.holdempucker.util.Constants.WhoseTurn.Companion.isBotMoving
 import com.dohman.holdempucker.util.Constants.WhoseTurn.Companion.isOpponentMoving
-import com.github.florent37.viewanimator.ViewAnimator
 import com.wajahatkarim3.easyflipview.EasyFlipView
 
 object Animations {

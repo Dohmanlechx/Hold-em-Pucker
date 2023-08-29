@@ -2,6 +2,7 @@ package com.dohman.holdempucker.ui.items
 
 import android.content.Context
 import android.view.View
+import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.dohman.holdempucker.R
@@ -11,7 +12,6 @@ import com.dohman.holdempucker.util.Constants.WhoseTurn.Companion.isBotMoving
 import com.dohman.holdempucker.util.Constants.WhoseTurn.Companion.isOpponentMoving
 import com.dohman.holdempucker.util.Constants.WhoseTurn.Companion.isTeamGreenTurn
 import com.mikepenz.fastadapter.items.AbstractItem
-import kotlinx.android.synthetic.main.message_box_item.view.*
 
 class MessageTextItem(
     private val message: String,
@@ -24,7 +24,9 @@ class MessageTextItem(
     override fun bindView(holder: ViewHolder, payloads: MutableList<Any>) {
         super.bindView(holder, payloads)
 
-        holder.itemView.txt_message.setTextColor(
+        val txtMessage = holder.itemView.findViewById<AppCompatTextView>(R.id.txt_message)
+
+        txtMessage.setTextColor(
             ContextCompat.getColor(
                 holder.context,
                 when {
@@ -36,11 +38,11 @@ class MessageTextItem(
         )
 
         if (isBotMoving() && !isNeutralMessage && !isShootingAtGoalie) {
-            holder.itemView.txt_message.text = holder.context.getString(R.string.bot_inputting)
+            txtMessage.text = holder.context.getString(R.string.bot_inputting)
         } else if (isOpponentMoving() && !isNeutralMessage && !isShootingAtGoalie) {
-            holder.itemView.txt_message.text = holder.context.getString(R.string.opponent_inputting)
+            txtMessage.text = holder.context.getString(R.string.opponent_inputting)
         } else {
-            holder.itemView.txt_message.apply {
+            txtMessage.apply {
                 text = message
                 Animations.animateComputerText(this)
             }
