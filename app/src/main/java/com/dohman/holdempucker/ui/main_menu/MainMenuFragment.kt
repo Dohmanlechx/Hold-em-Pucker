@@ -102,7 +102,9 @@ class MainMenuFragment : Fragment() {
 
         Util.vibrate(requireContext(), true)
         Animations.animateButton(button) {
-            view?.findNavController()?.navigate(R.id.action_mainMenuFragment_to_lobbiesFragment)
+            //view?.findNavController()?.navigate(R.id.action_mainMenuFragment_to_lobbiesFragment)
+            currentGameMode = Constants.GameMode.FRIEND
+            view?.findNavController()?.navigate(R.id.action_mainMenuFragment_to_gameFragment)
         }
 
     }
