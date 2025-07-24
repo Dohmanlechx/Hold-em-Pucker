@@ -3,6 +3,7 @@ package com.dohman.holdempucker.ui.game
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.os.Handler
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,6 +18,7 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.dohman.holdempucker.R
 import com.dohman.holdempucker.databinding.ActivityMainBinding
+import com.dohman.holdempucker.databinding.ComputerLayoutBinding
 import com.dohman.holdempucker.databinding.GameFragmentBinding
 import com.dohman.holdempucker.models.Card
 import com.dohman.holdempucker.ui.items.MessageTextItem
@@ -47,11 +49,12 @@ import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.items.AbstractItem
 
 class GameFragment : Fragment(), View.OnClickListener {
-    private var _binding: GameFragmentBinding? = null
-    private val binding get() = _binding!!
+    private lateinit var binding: GameFragmentBinding
+    private lateinit var computerLayoutBinding: ComputerLayoutBinding
     private lateinit var vm: GameViewModel
 
     private val itemAdapter = ItemAdapter<AbstractItem<*>>()
+    val fastAdapter = FastAdapter.with(itemAdapter)
 
     // x and y values of all three FlipViews
     private var fvMainX: Float = 0f
@@ -168,7 +171,8 @@ class GameFragment : Fragment(), View.OnClickListener {
         })
         // End of Observables
 
-        _binding = GameFragmentBinding.inflate(inflater, container, false)
+        binding = GameFragmentBinding.inflate(inflater, container, false)
+        computerLayoutBinding = ComputerLayoutBinding.bind(binding.root)
         return binding.root
     }
 
@@ -193,8 +197,8 @@ class GameFragment : Fragment(), View.OnClickListener {
             ViewUtil.setScaleOnRotatedView(binding.flipView, binding.flipTopGoalie)
         }
 
-        computer_lamp.post {
-            Animations.animateLamp(computer_lamp)
+        computerLayoutBinding.computerLamp.post {
+            Animations.animateLamp(computerLayoutBinding.computerLamp)
         }
 
         setupMessageRecycler()
@@ -230,7 +234,6 @@ class GameFragment : Fragment(), View.OnClickListener {
         vm.clearAllValueEventListeners()
         Animations.stopAllAnimations()
         Animations.stopAllPulsingCards()
-        _binding = null
     }
 
     private fun initGame() {
@@ -318,7 +321,7 @@ class GameFragment : Fragment(), View.OnClickListener {
         }
     }
 
-    private fun setupMessageRecycler() = v_recycler.apply {
+    private fun setupMessageRecycler() = computerLayoutBinding.vRecycler.apply {
         itemAnimator = null
         layoutManager = LinearLayoutManager(requireContext())
         adapter = fastAdapter
