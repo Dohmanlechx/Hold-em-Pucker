@@ -12,25 +12,27 @@ import androidx.navigation.Navigation
 import androidx.navigation.findNavController
 
 import com.dohman.holdempucker.R
+import com.dohman.holdempucker.databinding.SplashFragmentBinding
 import com.dohman.holdempucker.util.Animations
-import kotlinx.android.synthetic.main.splash_fragment.*
 
 class SplashFragment : Fragment() {
+    private lateinit var binding: SplashFragmentBinding
     private lateinit var vm: SplashViewModel
 
     private var wasSplashShown = false
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         vm = ViewModelProviders.of(this).get(SplashViewModel::class.java)
-        return inflater.inflate(R.layout.splash_fragment, container, false)
+        binding = SplashFragmentBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onResume() {
         super.onResume()
         if (!wasSplashShown) {
             wasSplashShown = true
-            tv_title.post {
-                Animations.animateSplashText(tv_title) { /* OnStop */ navigateToMainMenu() }
+            binding.tvTitle.post {
+                Animations.animateSplashText(binding.tvTitle) { /* OnStop */ navigateToMainMenu() }
             }
         } else {
             navigateToMainMenu()

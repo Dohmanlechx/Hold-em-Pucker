@@ -6,9 +6,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import com.dohman.holdempucker.R
-import kotlinx.android.synthetic.main.dialog_htp.*
+import com.dohman.holdempucker.databinding.DialogHtpBinding
 
 class HowToPlayDialogFragment : DialogFragment() {
+    private lateinit var binding: DialogHtpBinding
 
     @Deprecated("Deprecated in Java")
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -22,13 +23,14 @@ class HowToPlayDialogFragment : DialogFragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        return inflater.inflate(R.layout.dialog_htp, container, false)
+        binding = DialogHtpBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        whole_dialog_view.setOnClickListener {
+        binding.wholeDialogView.setOnClickListener {
             this@HowToPlayDialogFragment.dismiss()
             isHowToPlayDialogShown = false
         }

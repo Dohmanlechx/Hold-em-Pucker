@@ -16,6 +16,8 @@ import androidx.navigation.Navigation
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.dohman.holdempucker.R
+import com.dohman.holdempucker.databinding.ActivityMainBinding
+import com.dohman.holdempucker.databinding.GameFragmentBinding
 import com.dohman.holdempucker.models.Card
 import com.dohman.holdempucker.ui.items.MessageTextItem
 import com.dohman.holdempucker.util.*
@@ -43,14 +45,13 @@ import com.dohman.holdempucker.util.Constants.WhoseTurn.Companion.isTeamPurpleTu
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.items.AbstractItem
-import kotlinx.android.synthetic.main.computer_layout.*
-import kotlinx.android.synthetic.main.game_fragment.*
 
 class GameFragment : Fragment(), View.OnClickListener {
+    private var _binding: GameFragmentBinding? = null
+    private val binding get() = _binding!!
     private lateinit var vm: GameViewModel
 
-    private val itemAdapter = ItemAdapter<AbstractItem<*, *>>()
-    private val fastAdapter = FastAdapter.with<AbstractItem<*, *>, ItemAdapter<AbstractItem<*, *>>>(itemAdapter)
+    private val itemAdapter = ItemAdapter<AbstractItem<*>>()
 
     // x and y values of all three FlipViews
     private var fvMainX: Float = 0f
@@ -84,9 +85,9 @@ class GameFragment : Fragment(), View.OnClickListener {
             removeAllOnClickListeners()
             if (isNextPeriodReady(it)) addGoalieView(true, withStartDelay = true)
         })
-        vm.whoseTurnNotifier.observe(viewLifecycleOwner, Observer { Animations.animatePuck(puck, it) })
+        vm.whoseTurnNotifier.observe(viewLifecycleOwner, Observer { Animations.animatePuck(binding.puck, it) })
         vm.pickedCardNotifier.observe(viewLifecycleOwner, Observer { flipNewCard(it) })
-        vm.cardsCountNotifier.observe(viewLifecycleOwner, Observer { cards_left.text = it.toString() })
+        vm.cardsCountNotifier.observe(viewLifecycleOwner, Observer { binding.cardsLeft.text = it.toString() })
         vm.badCardNotifier.observe(
             viewLifecycleOwner,
             Observer {
@@ -104,10 +105,10 @@ class GameFragment : Fragment(), View.OnClickListener {
                         } else {
                             if (input == PLAYER_GOALIE) {
                                 tempGoalieCard = teamGreen[PLAYER_GOALIE]
-                                if (vm.canAttack(teamGreen, PLAYER_GOALIE, card_bm_goalie))
+                                if (vm.canAttack(teamGreen, PLAYER_GOALIE, binding.cardBmGoalie))
                                     prepareAttackPlayer(teamGreen, input, teamGreenViews[input])
                                 else
-                                    prepareGoalieSaved(card_bm_goalie)
+                                    prepareGoalieSaved(binding.cardBmGoalie)
                             } else {
                                 prepareAttackPlayer(teamGreen, input, teamGreenViews[input])
                             }
@@ -119,10 +120,10 @@ class GameFragment : Fragment(), View.OnClickListener {
                         } else {
                             if (input == PLAYER_GOALIE) {
                                 tempGoalieCard = teamPurple[PLAYER_GOALIE]
-                                if (vm.canAttack(teamPurple, PLAYER_GOALIE, card_top_goalie))
+                                if (vm.canAttack(teamPurple, PLAYER_GOALIE, binding.cardTopGoalie))
                                     prepareAttackPlayer(teamPurple, input, teamPurpleViews[input])
                                 else
-                                    prepareGoalieSaved(card_top_goalie)
+                                    prepareGoalieSaved(binding.cardTopGoalie)
                             } else {
                                 prepareAttackPlayer(teamPurple, input, teamPurpleViews[input])
                             }
@@ -141,10 +142,10 @@ class GameFragment : Fragment(), View.OnClickListener {
 
                     updateMessageBox(message, isNeutralMessage = true)
 
-                    v_progressbar.visibility = View.GONE
+                    binding.vProgressbar.visibility = View.GONE
                     Handler().postDelayed({ initGame() }, 1000)
 
-                    txt_online_team.apply {
+                    binding.txtOnlineTeam.apply {
                         val textMessage = if (vm.isMyOnlineTeamBottom()) "YOU ARE TEAM GREEN" else "YOU ARE TEAM PURPLE"
                         val textColor =
                             if (vm.isMyOnlineTeamBottom()) R.color.text_background_btm else R.color.text_background_top
@@ -159,36 +160,37 @@ class GameFragment : Fragment(), View.OnClickListener {
                 isWinnerDeclared = true
                 vm.analyticsOnlineMatchDisconnected()
                 onlineInputTimer?.cancel()
-                txt_winner.text = getString(R.string.opponent_disconnected)
-                Animations.animateWinner(fading_view, lottie_trophy, txt_winner)
+                binding.txtWinner.text = getString(R.string.opponent_disconnected)
+                Animations.animateWinner(binding.fadingView, binding.lottieTrophy, binding.txtWinner)
                 Util.vibrate(requireContext(), true)
-                fading_view.setOnClickListener { view?.let { Navigation.findNavController(it).popBackStack() } }
+                binding.fadingView.setOnClickListener { view?.let { Navigation.findNavController(it).popBackStack() } }
             }
         })
         // End of Observables
 
-        return inflater.inflate(R.layout.game_fragment, container, false)
+        _binding = GameFragmentBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        flip_view.post {
-            flip_view.bringToFront()
-            fvMainX = flip_view.x
-            fvMainY = flip_view.y
+        binding.flipView.post {
+            binding.flipView.bringToFront()
+            fvMainX = binding.flipView.x
+            fvMainY = binding.flipView.y
         }
 
-        flip_btm_goalie.post {
-            ViewUtil.setScaleOnRotatedView(flip_view, card_bm_goalie)
-            ViewUtil.setScaleOnRotatedView(flip_view, background_bm_goalie)
-            ViewUtil.setScaleOnRotatedView(flip_view, flip_btm_goalie)
+        binding.flipBtmGoalie.post {
+            ViewUtil.setScaleOnRotatedView(binding.flipView, binding.cardBmGoalie)
+            ViewUtil.setScaleOnRotatedView(binding.flipView, binding.backgroundBmGoalie)
+            ViewUtil.setScaleOnRotatedView(binding.flipView, binding.flipBtmGoalie)
         }
 
-        flip_top_goalie.post {
-            ViewUtil.setScaleOnRotatedView(flip_view, card_top_goalie)
-            ViewUtil.setScaleOnRotatedView(flip_view, background_top_goalie)
-            ViewUtil.setScaleOnRotatedView(flip_view, flip_top_goalie)
+        binding.flipTopGoalie.post {
+            ViewUtil.setScaleOnRotatedView(binding.flipView, binding.cardTopGoalie)
+            ViewUtil.setScaleOnRotatedView(binding.flipView, binding.backgroundTopGoalie)
+            ViewUtil.setScaleOnRotatedView(binding.flipView, binding.flipTopGoalie)
         }
 
         computer_lamp.post {
@@ -198,17 +200,17 @@ class GameFragment : Fragment(), View.OnClickListener {
         setupMessageRecycler()
 
         if (isOnlineMode()) {
-            v_progressbar.visibility = View.VISIBLE
+            binding.vProgressbar.visibility = View.VISIBLE
             updateMessageBox("Waiting\nfor\nopponent\n...", isNeutralMessage = true)
         } else {
             updateMessageBox("Press anywhere to start the game! Period: $period", isNeutralMessage = true)
-            whole_view.setOnClickListener { initGame() }
+            binding.wholeView.setOnClickListener { initGame() }
         }
 
         vm.setGameMode(
-            GameFragmentArgs.fromBundle(arguments!!).argsLobbyId,
-            GameFragmentArgs.fromBundle(arguments!!).argsLobbyName,
-            GameFragmentArgs.fromBundle(arguments!!).argsLobbyPassword
+            GameFragmentArgs.fromBundle(requireArguments()).argsLobbyId,
+            GameFragmentArgs.fromBundle(requireArguments()).argsLobbyName,
+            GameFragmentArgs.fromBundle(requireArguments()).argsLobbyPassword
         )
     }
 
@@ -228,11 +230,10 @@ class GameFragment : Fragment(), View.OnClickListener {
         vm.clearAllValueEventListeners()
         Animations.stopAllAnimations()
         Animations.stopAllPulsingCards()
+        _binding = null
     }
 
     private fun initGame() {
-        if (card_top_goalie == null) return // Temporary solution for that Handler of initGame()
-
         vm.analyticsMatchStarted(currentGameMode)
 
         teamBottomScore = 0
@@ -243,11 +244,11 @@ class GameFragment : Fragment(), View.OnClickListener {
 
         resetAllCards(teamGreenViews)
         resetAllCards(teamPurpleViews)
-        card_top_goalie.tag = null
-        card_bm_goalie.tag = null
+        binding.cardTopGoalie.tag = null
+        binding.cardBmGoalie.tag = null
 
         addGoalieView(bottom = true)
-        whole_view.visibility = View.GONE
+        binding.wholeView.visibility = View.GONE
     }
 
     /*
@@ -255,38 +256,36 @@ class GameFragment : Fragment(), View.OnClickListener {
     * */
 
     private fun updateScores() {
-        if (top_team_score == null || bm_team_score == null) return
-
         val scorerTextView = when {
-            teamTopScore > Integer.parseInt(top_team_score.text.toString()) -> top_team_score
-            teamBottomScore > Integer.parseInt(bm_team_score.text.toString()) -> bm_team_score
+            teamTopScore > Integer.parseInt(binding.topTeamScore.text.toString()) -> binding.topTeamScore
+            teamBottomScore > Integer.parseInt(binding.bmTeamScore.text.toString()) -> binding.bmTeamScore
             else -> null
         }
 
         if (scorerTextView == null) {
-            top_team_score.text = teamTopScore.toString()
-            bm_team_score.text = teamBottomScore.toString()
+            binding.topTeamScore.text = teamTopScore.toString()
+            binding.bmTeamScore.text = teamBottomScore.toString()
         } else {
             Animations.animateScore(scorerTextView) {
                 Util.vibrate(requireContext(), true)
-                top_team_score.text = teamTopScore.toString()
-                bm_team_score.text = teamBottomScore.toString()
+                binding.topTeamScore.text = teamTopScore.toString()
+                binding.bmTeamScore.text = teamBottomScore.toString()
             }
         }
     }
 
     private fun updateTheTimerText(secsLeftInLong: Long) {
-        txt_online_timer?.let { it.text = (secsLeftInLong / 1000).toString() }
+        binding.txtOnlineTimer.let { it.text = (secsLeftInLong / 1000).toString() }
     }
 
     private fun restoreFlipViewsPosition() {
-        flip_view.rotation = 0f
-        flip_view.x = fvMainX
-        flip_view.y = fvMainY
-        flip_btm_goalie.x = fvGoalieBtmX
-        flip_btm_goalie.y = fvGoalieBtmY
-        flip_top_goalie.x = fvGoalieTopX
-        flip_top_goalie.y = fvGoalieTopY
+        binding.flipView.rotation = 0f
+        binding.flipView.x = fvMainX
+        binding.flipView.y = fvMainY
+        binding.flipBtmGoalie.x = fvGoalieBtmX
+        binding.flipBtmGoalie.y = fvGoalieBtmY
+        binding.flipTopGoalie.x = fvGoalieTopX
+        binding.flipTopGoalie.y = fvGoalieTopY
     }
 
     private fun storeAllViews() {
@@ -294,21 +293,21 @@ class GameFragment : Fragment(), View.OnClickListener {
         teamPurpleViews.clear()
 
         teamGreenViews.apply {
-            add(card_bm_forward_left)
-            add(card_bm_center)
-            add(card_bm_forward_right)
-            add(card_bm_defender_left)
-            add(card_bm_defender_right)
-            add(card_bm_goalie)
+            add(binding.cardBmForwardLeft)
+            add(binding.cardBmCenter)
+            add(binding.cardBmForwardRight)
+            add(binding.cardBmDefenderLeft)
+            add(binding.cardBmDefenderRight)
+            add(binding.cardBmGoalie)
         }
 
         teamPurpleViews.apply {
-            add(card_top_forward_left)
-            add(card_top_center)
-            add(card_top_forward_right)
-            add(card_top_defender_left)
-            add(card_top_defender_right)
-            add(card_top_goalie)
+            add(binding.cardTopForwardLeft)
+            add(binding.cardTopCenter)
+            add(binding.cardTopForwardRight)
+            add(binding.cardTopDefenderLeft)
+            add(binding.cardTopDefenderRight)
+            add(binding.cardTopGoalie)
         }
     }
 
@@ -338,21 +337,21 @@ class GameFragment : Fragment(), View.OnClickListener {
         if (vm.cardDeck.size > 50) return
 
         ViewUtil.setImagesOnFlipView(
-            flip_view,
-            card_deck,
-            card_picked,
+            binding.flipView,
+            binding.cardDeck,
+            binding.cardPicked,
             resId,
             null,
             isVertical = true
         )
 
         Animations.animateFlipPlayingCard(
-            flip_view,
-            cards_left,
+            binding.flipView,
+            binding.cardsLeft,
             vm.cardDeck.size > 50,
             { onFlipPlayingCardEnd(isBadCard) },
             { vm.notifyMessage("Please choose a position.") },
-            { if (vm.cardDeck.size <= 1) card_background.visibility = View.GONE }
+            { if (vm.cardDeck.size <= 1) binding.cardBackground.visibility = View.GONE }
         )
     }
 
@@ -374,26 +373,26 @@ class GameFragment : Fragment(), View.OnClickListener {
         withStartDelay: Boolean = false
     ) {
         if (fvGoalieBtmX == 0f) {
-            fvGoalieBtmX = flip_btm_goalie.x
-            fvGoalieBtmY = flip_btm_goalie.y
-            fvGoalieTopX = flip_top_goalie.x
-            fvGoalieTopY = flip_top_goalie.y
+            fvGoalieBtmX = binding.flipBtmGoalie.x
+            fvGoalieBtmY = binding.flipBtmGoalie.y
+            fvGoalieTopX = binding.flipTopGoalie.x
+            fvGoalieTopY = binding.flipTopGoalie.y
         }
 
         // ONLY adding view. No real goalie card is assigning to that team by this function.
         removeAllOnClickListeners()
 
-        val view = if (bottom) card_bm_goalie else card_top_goalie
+        val view = if (bottom) binding.cardBmGoalie else binding.cardTopGoalie
 
-        card_deck.setImageResource(R.drawable.red_back_vertical)
-        card_picked.setImageResource(R.drawable.red_back_vertical)
+        binding.cardDeck.setImageResource(R.drawable.red_back_vertical)
+        binding.cardPicked.setImageResource(R.drawable.red_back_vertical)
 
         val delay: Long = if (withStartDelay) 2500 else 250
 
         Animations.animateAddGoalie(
-            flipView = flip_view,
+            flipView = binding.flipView,
             goalie = view,
-            xForAttacker = card_bm_center.x,
+            xForAttacker = binding.cardBmCenter.x,
             delay = delay
         )
         {
@@ -403,11 +402,11 @@ class GameFragment : Fragment(), View.OnClickListener {
 
             vm.checkGameSituation()
             vm.removeCardFromDeck(doNotNotify = true)
-            if (card_top_goalie.tag != Integer.valueOf(R.drawable.red_back)) {
+            if (binding.cardTopGoalie.tag != Integer.valueOf(R.drawable.red_back)) {
                 addGoalieView(bottom = false)
             } else {
                 vm.notifyPickedCard()
-                cards_left.visibility = View.VISIBLE
+                binding.cardsLeft.visibility = View.VISIBLE
             }
         }
     }
@@ -417,7 +416,7 @@ class GameFragment : Fragment(), View.OnClickListener {
         team: Array<Card?>,
         spotIndex: Int
     ) {
-        Animations.animateAddPlayer(flip_view, targetView) {
+        Animations.animateAddPlayer(binding.flipView, targetView) {
             // OnStop
             restoreFlipViewsPosition()
             vm.onPlayerAddedAnimationEnd(targetView, team, spotIndex) { prepareViewsToPulse() }
@@ -431,7 +430,7 @@ class GameFragment : Fragment(), View.OnClickListener {
         val victimOriginalX = targetView.x
         val victimOriginalY = targetView.y
 
-        Animations.animateAttackPlayer(flip_view, targetView, vm.getScreenWidth()) {
+        Animations.animateAttackPlayer(binding.flipView, targetView, vm.getScreenWidth()) {
             // OnStop
             targetView.x = victimOriginalX
             targetView.y = victimOriginalY
@@ -454,9 +453,9 @@ class GameFragment : Fragment(), View.OnClickListener {
                 vm.notifyMessageAttackingGoalie()
 
                 val isTargetGoalieBottom = !isTeamGreenTurn()
-                val targetView = if (isTargetGoalieBottom) flip_btm_goalie else flip_top_goalie
-                val targetViewFront = if (isTargetGoalieBottom) flip_btm_goalie_front else flip_top_goalie_front
-                val targetViewBack = if (isTargetGoalieBottom) flip_btm_goalie_back else flip_top_goalie_back
+                val targetView = if (isTargetGoalieBottom) binding.flipBtmGoalie else binding.flipTopGoalie
+                val targetViewFront = if (isTargetGoalieBottom) binding.flipBtmGoalieFront else binding.flipTopGoalieFront
+                val targetViewBack = if (isTargetGoalieBottom) binding.flipBtmGoalieBack else binding.flipTopGoalieBack
                 val targetTeam = if (isTargetGoalieBottom) teamGreen else teamPurple
 
                 ViewUtil.setImagesOnFlipView(
@@ -475,11 +474,11 @@ class GameFragment : Fragment(), View.OnClickListener {
                     vm.removeCardFromDeck(doNotNotify = true)
 
                 Animations.animateScoredAtGoalie(
-                    fading_view,
-                    flip_view,
+                    binding.fadingView,
+                    binding.flipView,
                     targetView,
                     vm.getScreenWidth(),
-                    card_top_center.x,
+                    binding.cardTopCenter.x,
                     tempGoalieCard,
                     { message -> updateMessageBox(message) },
                     {
@@ -515,9 +514,9 @@ class GameFragment : Fragment(), View.OnClickListener {
         vm.notifyMessageAttackingGoalie()
 
         val isTargetGoalieBottom = !isTeamGreenTurn()
-        val targetView = if (isTargetGoalieBottom) flip_btm_goalie else flip_top_goalie
-        val targetViewFront = if (isTargetGoalieBottom) flip_btm_goalie_front else flip_top_goalie_front
-        val targetViewBack = if (isTargetGoalieBottom) flip_btm_goalie_back else flip_top_goalie_back
+        val targetView = if (isTargetGoalieBottom) binding.flipBtmGoalie else binding.flipTopGoalie
+        val targetViewFront = if (isTargetGoalieBottom) binding.flipBtmGoalieFront else binding.flipTopGoalieFront
+        val targetViewBack = if (isTargetGoalieBottom) binding.flipBtmGoalieBack else binding.flipTopGoalieBack
         val targetTeam = if (isTargetGoalieBottom) teamGreen else teamPurple
 
         ViewUtil.setImagesOnFlipView(
@@ -536,11 +535,11 @@ class GameFragment : Fragment(), View.OnClickListener {
             vm.removeCardFromDeck(doNotNotify = true)
 
         Animations.animateGoalieSaved(
-            fading_view,
-            flip_view,
+            binding.fadingView,
+            binding.flipView,
             targetView,
             vm.getScreenWidth(),
-            card_top_center.x,
+            binding.cardTopCenter.x,
             tempGoalieCard,
             { message -> updateMessageBox(message) },
             {
@@ -560,9 +559,9 @@ class GameFragment : Fragment(), View.OnClickListener {
     * */
 
     private fun onFlipPlayingCardEnd(isBadCard: Boolean) {
-        if (flip_view == null) return
+        if (binding.flipView == null) return
 
-        flip_view.flipTheView()
+        binding.flipView.flipTheView()
 
         if (isOnlineMode()) {
             onlineInputTimer?.cancel()
@@ -603,12 +602,12 @@ class GameFragment : Fragment(), View.OnClickListener {
                     }
                     PLAYER_GOALIE -> {
                         tempGoalieCard = teamGreen[PLAYER_GOALIE]
-                        if (vm.canAttack(teamGreen, PLAYER_GOALIE, card_bm_goalie)) prepareAttackPlayer(
+                        if (vm.canAttack(teamGreen, PLAYER_GOALIE, binding.cardBmGoalie)) prepareAttackPlayer(
                             teamGreen,
                             PLAYER_GOALIE,
-                            card_bm_goalie
+                            binding.cardBmGoalie
                         )
-                        else prepareGoalieSaved(card_bm_goalie)
+                        else prepareGoalieSaved(binding.cardBmGoalie)
                     }
                     else -> prepareAttackPlayer(teamGreen, chosenIndex, teamGreenViews[chosenIndex])
                 }
@@ -635,7 +634,7 @@ class GameFragment : Fragment(), View.OnClickListener {
             } else {
                 // If it is bad card, this runs
                 Animations.animateBadCard(
-                    flip_view,
+                    binding.flipView,
                     vm.getScreenWidth(),
                     { removeAllOnClickListeners() },
                     {
@@ -663,7 +662,7 @@ class GameFragment : Fragment(), View.OnClickListener {
 
     private fun onGoalieActionEnd(view: View, isGoal: Boolean = false, team: Array<Card?>) {
         if (isShootingAtGoalie) isShootingAtGoalie = false
-        fading_view.visibility = View.GONE
+        binding.fadingView.visibility = View.GONE
         view.visibility = View.GONE
         isOngoingGame = false
         isRestoringPlayers = true
@@ -684,15 +683,15 @@ class GameFragment : Fragment(), View.OnClickListener {
 
         isRestoringPlayers = true
 
-        cards_left.text = getString(R.string.full_card_deck_amount)
+        binding.cardsLeft.text = getString(R.string.full_card_deck_amount)
         restoreFlipViewsPosition()
 
         return if (vm.isNextPeriodReady()) {
-            card_background.visibility = View.VISIBLE
+            binding.cardBackground.visibility = View.VISIBLE
             resetAllCards(teamGreenViews)
             resetAllCards(teamPurpleViews)
-            card_top_goalie.tag = null
-            card_bm_goalie.tag = null
+            binding.cardTopGoalie.tag = null
+            binding.cardBmGoalie.tag = null
             true
         } else {
             if (isOnlineMode())
@@ -700,15 +699,15 @@ class GameFragment : Fragment(), View.OnClickListener {
             else
                 vm.analyticsMatchVsBotFulfilled(currentGameMode, teamBottomScore > teamTopScore)
 
-            txt_winner.text = when {
+            binding.txtWinner.text = when {
                 teamBottomScore > teamTopScore -> "Team Green\nwon with $teamBottomScore-$teamTopScore!"
                 else -> "Team Purple\nwon with $teamTopScore-$teamBottomScore!"
             }
             isWinnerDeclared = true
-            Animations.animateWinner(fading_view, lottie_trophy, txt_winner)
+            Animations.animateWinner(binding.fadingView, binding.lottieTrophy, binding.txtWinner)
             Util.vibrate(requireContext(), true)
 
-            fading_view.setOnClickListener { view?.let { Navigation.findNavController(it).popBackStack() } }
+            binding.fadingView.setOnClickListener { view?.let { Navigation.findNavController(it).popBackStack() } }
             false
         }
     }

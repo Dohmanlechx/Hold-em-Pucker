@@ -1,0 +1,45 @@
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion 36
+    defaultConfig {
+        minSdkVersion 21
+        targetSdkVersion 36
+        versionCode 1
+        versionName "1.0.1"
+    }
+    namespace 'com.github.florent37.viewanimator'
+}
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation 'androidx.appcompat:appcompat:1.7.1'
+}
+
+ext {
+    bintrayRepo = 'maven'
+    bintrayName = 'ViewAnimator'
+    orgName = 'florent37'
+
+    publishedGroupId = 'com.github.florent37'
+    libraryName = 'ViewAnimator'
+    artifact = 'viewanimator'
+
+    libraryDescription = ''
+
+    siteUrl = 'https://github.com/florent37/ViewAnimator'
+    gitUrl = 'https://github.com/florent37/ViewAnimator.git'
+
+    developerId = 'florent37'
+    developerName = 'florent37'
+    developerEmail = 'champigny.florent@gmail.com'
+
+    licenseName = 'The Apache Software License, Version 2.0'
+    licenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+    allLicenses = ["Apache-2.0"]
+}
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
